@@ -1,12 +1,12 @@
 const express = require('express')
-const sequelize = require('../config/database');
+const sequelize = require('./config/database');
 
-const User = require('../models/user');
-const Status = require('../models/status');
-const Category = require('../models/category');
-const Claims = require('../models/claims');
-const Receipt = require('../models/receipt');
-const Item = require('../models/items');
+const User = require('./models/user');
+const Status = require('./models/status');
+const Category = require('./models/category');
+const Claims = require('./models/claims');
+const Receipt = require('./models/receipt');
+const Item = require('./models/items');
 const app = express()
 
 User.hasMany(Claims, { foreignKey: 'user_id', onDelete: 'CASCADE' });
