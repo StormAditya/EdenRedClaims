@@ -48,17 +48,12 @@ const User = sequelize.define('User', {
         type:DataTypes.STRING,
         allowNull: false,
         validate: {
-            notEmpty: {
-                msg: 'Type is required'
-            },
-            notNull: {
-                msg: 'Type is required'
-            }
+            isAlpha: true
         }
     },
     balance: {
         type: DataTypes.FLOAT,
-        allowNull: truw,
+        allowNull: true,
     }
 }, {
     tableName: 'User',

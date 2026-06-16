@@ -2,12 +2,32 @@ const user = require('../models/user')
 
 const createUser = async (req, res) => {
     try{
-        const {id, name, password, user_type, balance, email_id, address, contact_number} = req.body
+        const {name, password, user_type, balance, email_id, address, contact_number} = req.body
 
         
         if(user_type.toLowerCase() === 'admin'){
-            const newUser = await user.create 
+            const newUser = await user.create({
+
+                name: name,
+                password: password,
+                user_type: user_type,
+                email_id: email_id
+            })
         }
+        else{
+            const newUser = await user.create({
+
+                name: name,
+                password: password,
+                user_type: user_type,
+                email_id: email_id,
+                address: address,
+                contact_number: contact_number,
+                balance: balance
+            })
+        }
+
+        res.status(200).json({success:true, msg: 'User Created'})
     }
     catch(err){
         console.error(err)
