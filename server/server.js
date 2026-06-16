@@ -1,4 +1,18 @@
-require('dotenv').config();
-require('./config/index');
+const express = require('express');
+const cors = require('cors');
 
-console.log('Server module loaded. If the app started, it is listening on port 5000.');
+require('./config/index'); 
+
+const loginRouter = require('./routes/router-login');
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.use('/api', loginRouter);
+
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}...`);
+});
