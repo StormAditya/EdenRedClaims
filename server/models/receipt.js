@@ -46,7 +46,7 @@ const Receipt = sequelize.define('Receipt', {
         }
     }
 }, {
-    tableName: 'receipt',
+    tableName: 'Receipt',
     timestamps: true,
     underscored: true
 })
