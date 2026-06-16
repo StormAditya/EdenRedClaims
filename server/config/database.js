@@ -11,6 +11,7 @@ const sequelize = new Sequelize(
         port: 5432,
         ssl: true,
         clientMinMessages: 'notice',
+        logging: console.log
     }
 )
 

@@ -24,15 +24,24 @@ const Claims = sequelize.define('Claims', {
     description: {
         type: DataTypes.STRING,
         allowNull: true,
+        validate: {
+            isAlpha: true
+        }
     },
     submission_date: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+        validate: {
+            isDate: true
+        }
     }, 
     validation_date: {
         type: DataTypes.DATE,
         allowNull: true,
+        validate: {
+            isDate: true
+        }
     },
     category_id:{
         type: DataTypes.INTEGER,
