@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const {getUser} = require('../controllers/controller-admin')
+const { getUser, updateUser } = require('../controllers/controller-admin')
 
 router.get('/users', getUser)
+router.patch('/users',updateUser)
 
 module.exports = router
