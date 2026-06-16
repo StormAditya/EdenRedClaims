@@ -11,6 +11,10 @@ const app = express()
 User.hasMany(Claims, { foreignKey: 'user_id', onDelete: 'CASCADE' });
 Claims.belongsTo(User, { foreignKey: 'user_id' });
 
+sequelize.sync().then(() => {
+    console.log('Database connected and synchronised...')
+})
+
 app.listen(5000, () => {
     console.log('running...')
 })
