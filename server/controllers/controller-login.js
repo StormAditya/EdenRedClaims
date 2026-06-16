@@ -1,4 +1,4 @@
-const user = require('../models/user')
+const User = require('../models/user')
 
 const createUser = async (req, res) => {
     try{
@@ -6,7 +6,7 @@ const createUser = async (req, res) => {
         
         
         if(user_type === 'admin'){
-            const newUser = await user.create({
+          const newUser = await User.create({
 
                 name: name,
                 password: password,
@@ -16,7 +16,7 @@ const createUser = async (req, res) => {
             res.status(200).json({success:true, data: newUser})
         }
         else{
-            const newUser = await user.create({
+          const newUser = await User.create({
 
                 name: name,
                 password: password,
@@ -60,4 +60,9 @@ const loginUser = async (req, res) => {
     console.error(error)
     res.status(500).json({success: false, msg: 'Error while logging in!'});
   }
+}
+
+module.exports = {
+  createUser,
+  loginUser,
 }
