@@ -6,4 +6,13 @@ const getUser = async (req, res) => {
     return res.status(200).json({success:true, data: users})
 }
 
-module.exports = {getUser,}
+const removeUser = async (req, res) => {
+    const {id} = req.params
+    const remove = await user.destroy({
+        where: {
+            id : id
+        }
+    })
+}
+
+module.exports = {getUser, removeUser}
