@@ -11,6 +11,9 @@ const app = express()
 User.hasMany(Claims, { foreignKey: 'user_id', onDelete: 'CASCADE' });
 Claims.belongsTo(User, { foreignKey: 'user_id' });
 
+Status.hasMany(Claims, {foreignKey: 'status_id', onDelete: 'CASCADE' });
+Claims.belongsTo(Status, {foreignKey: 'status_id'});
+
 app.listen(5000, () => {
     console.log('running...')
 })
