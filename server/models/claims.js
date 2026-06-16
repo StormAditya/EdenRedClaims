@@ -20,7 +20,7 @@ const Claims = sequelize.define('Claims', {
             }
         }
     },
-    Description: {
+    description: {
         type: DataTypes.STRING,
         allowNull: true,
     },
