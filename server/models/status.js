@@ -3,7 +3,7 @@ const sequelize = require('../config/database');
 
 const Status = sequelize.define('Status', {
 
-  status_id: {
+  id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
