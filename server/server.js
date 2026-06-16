@@ -12,6 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
 app.use('/api', loginRouter);
 app.use('/api/admin-dashboard', adminRouter);
 

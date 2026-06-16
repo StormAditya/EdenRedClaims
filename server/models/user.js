@@ -49,7 +49,7 @@ const User = sequelize.define('User', {
         allowNull: true,
     },
     contact_number: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: true,
     },
     user_type: {
