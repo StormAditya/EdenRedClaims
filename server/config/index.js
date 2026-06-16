@@ -14,6 +14,9 @@ Claims.belongsTo(User, { foreignKey: 'user_id' });
 Status.hasMany(Claims, {foreignKey: 'status_id', onDelete: 'CASCADE' });
 Claims.belongsTo(Status, {foreignKey: 'status_id'});
 
+Receipt.hasOne(Claims, {foreignKey: 'claim_id', onDelete: 'CASCADE'})
+Claims.belongsTo(Receipt, {foreignKey: 'claim_id'})
+
 sequelize.sync().then(() => {
     console.log('Database connected and synchronised...')
 })
