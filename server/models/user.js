@@ -34,42 +34,15 @@ const User = sequelize.define('User', {
     },
     email_id: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'Email-ID is required'
-            },
-            notNull: {
-                msg: 'Email-ID is required'
-            },
-            isEmail: true
-        }
+        allowNull: true,
     }, 
     address: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'Address is required'
-            },
-            notNull: {
-                msg: 'Address is required'
-            }
-        }
+        allowNull: true,
     },
     contact_number: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'Address is required'
-            },
-            notNull: {
-                msg: 'Address is required'
-            },
-            len: [10],
-            isNumeric: true,
-        }
+        allowNull: true,
     },
     user_type: {
         type:DataTypes.STRING,
@@ -85,16 +58,7 @@ const User = sequelize.define('User', {
     },
     balance: {
         type: DataTypes.FLOAT,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'Balance cannot be empty'
-            },
-            notNull: {
-                msg: 'Balance cannot be null'
-            },
-            isFloat: true,
-        }
+        allowNull: truw,
     }
 }, {
     tableName: 'User',
