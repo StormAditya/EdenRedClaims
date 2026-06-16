@@ -6,4 +6,31 @@ const getUser = async (req, res) => {
     return res.status(200).json({success:true, data: users})
 }
 
-module.exports = {getUser,}
+const updateUser = async (req, res) => {
+    try {
+        const { name, password, user_type, balance, email_id, address, contact_number } = req.body
+
+        const [updatedRows] = await user.update(
+            {
+                name,
+                password,
+                user_type,
+                address,
+                contact_number,
+                balance
+            },
+            { where: { email_id: email_id } }
+        )
+
+        if (updatedRows === 0) {
+            return res.status(404).json({ success: false, msg: 'User not found with that email' })
+        }
+
+        return res.status(200).json({ success: true, msg: 'User updated successfully' })
+    } catch (err) {
+        console.error(err)
+        return res.status(500).json({ success: false, msg: 'Error updating user', error: err.message })
+    }
+}
+
+module.exports = {getUser, updateUser}
