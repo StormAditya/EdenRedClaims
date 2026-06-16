@@ -3,7 +3,7 @@ const user = require('../models/user')
 const createUser = async (req, res) => {
     try{
         const {name, password, user_type, balance, email_id, address, contact_number} = req.body
-
+        
         
         if(user_type === 'admin'){
             const newUser = await user.create({
@@ -13,6 +13,7 @@ const createUser = async (req, res) => {
                 user_type: user_type,
                 email_id: email_id
             })
+            res.status(200).json({success:true, data: newUser})
         }
         else{
             const newUser = await user.create({
@@ -24,10 +25,12 @@ const createUser = async (req, res) => {
                 address: address,
                 contact_number: contact_number,
                 balance: balance
+                
             })
+            res.status(200).json({success:true, data: newUser})
         }
 
-        res.status(200).json({success:true, msg: 'User Created'})
+        
     }
     catch(err){
         console.error(err)
@@ -51,7 +54,7 @@ const loginUser = async (req, res) => {
     }
 
     console.log(`User logged in: ${user.name} (ID: ${user.id})`);
-    res.status(200).json({success: true, msg: `${user.name} is logged in as an : ${user.user_type}`});
+    res.status(200).json({success: true, data: user});
     
   } catch (error) {
     console.error(error)
