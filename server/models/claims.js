@@ -17,7 +17,8 @@ const Claims = sequelize.define('Claims', {
             },
             notNull: {
                 msg: 'Claim amount is required'
-            }
+            },
+            isFloat: true
         }
     },
     description: {
