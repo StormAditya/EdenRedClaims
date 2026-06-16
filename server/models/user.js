@@ -34,7 +34,15 @@ const User = sequelize.define('User', {
     },
     email_id: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'email is required'
+            },
+            notNull: {
+                msg: 'email is required'
+            }
+        }
     }, 
     address: {
         type: DataTypes.STRING,
