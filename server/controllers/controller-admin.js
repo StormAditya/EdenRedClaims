@@ -8,7 +8,7 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const { name, password, user_type, balance, email_id, address, contact_number } = req.body
+        const { id, name, password, user_type, balance, email_id, address, contact_number } = req.body
 
         const [updatedRows] = await user.update(
             {
@@ -19,7 +19,7 @@ const updateUser = async (req, res) => {
                 contact_number,
                 balance
             },
-            { where: { email_id: email_id } }
+            { where: { id:id } }
         )
 
         if (updatedRows === 0) {
@@ -33,7 +33,6 @@ const updateUser = async (req, res) => {
     }
 }
 
-module.exports = {getUser, updateUser}
 const removeUser = async (req, res) => {
     const {id} = req.params
     
@@ -52,4 +51,4 @@ const removeUser = async (req, res) => {
     
 }
 
-module.exports = {getUser, removeUser}
+module.exports = {getUser, removeUser, updateUser}
