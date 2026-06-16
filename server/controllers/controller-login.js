@@ -5,7 +5,7 @@ const createUser = async (req, res) => {
         const {name, password, user_type, balance, email_id, address, contact_number} = req.body
 
         
-        if(user_type.toLowerCase() === 'admin'){
+        if(user_type === 'admin'){
             const newUser = await user.create({
 
                 name: name,
@@ -47,14 +47,14 @@ const loginUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).send('Invalid credentials');
+      return res.status(400).json({success: false, msg: 'Invalid credentials'});
     }
 
     console.log(`User logged in: ${user.name} (ID: ${user.id})`);
-    res.send(`${user.name} is logged in as an : ${user.user_type}`);
+    res.status(200).json({success: true, msg: `${user.name} is logged in as an : ${user.user_type}`});
     
   } catch (error) {
     console.error(error)
-    res.status(500).send('Error while logging in!');
+    res.status(500).json({success: false, msg: 'Error while logging in!'});
   }
 }
