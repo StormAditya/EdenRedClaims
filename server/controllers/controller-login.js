@@ -54,6 +54,7 @@ const loginUser = async (req, res) => {
     res.send(`${user.name} is logged in as an : ${user.user_type}`);
     
   } catch (error) {
+    console.error(error)
     res.status(500).send('Error while logging in!');
   }
 }
