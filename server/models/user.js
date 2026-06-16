@@ -84,7 +84,7 @@ const User = sequelize.define('User', {
         }
     },
     balance: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.FLOAT,
         allowNull: false,
         validate: {
             notEmpty: {
@@ -93,7 +93,7 @@ const User = sequelize.define('User', {
             notNull: {
                 msg: 'Balance cannot be null'
             },
-            isNumeric: true,
+            isFloat: true,
         }
     }
 }, {
