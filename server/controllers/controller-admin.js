@@ -36,11 +36,20 @@ const updateUser = async (req, res) => {
 module.exports = {getUser, updateUser}
 const removeUser = async (req, res) => {
     const {id} = req.params
-    const remove = await user.destroy({
-        where: {
-            id : id
-        }
-    })
+    
+    try{
+        const remove = await user.destroy({
+                where: {
+                    id : id
+                }
+        })
+        res.status(200).json({success:true, msg: "Deleted User"})
+    }
+    catch(err){
+        console.error(err)
+        res.status(500).json({success:false, msg:"User not found"})
+    }
+    
 }
 
 module.exports = {getUser, removeUser}
