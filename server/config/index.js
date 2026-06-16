@@ -21,7 +21,7 @@ Claims.belongsTo(Receipt, {foreignKey: 'claim_id'})
 //ADD a foregin key in ITEMS:
 //REFERENCING: RECEIPT_ID
 
-sequelize.sync().then(() => {
+sequelize.sync({ alter: true }).then(() => {
     console.log('Database connected and synchronised...')
 })
 
