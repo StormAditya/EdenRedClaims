@@ -63,9 +63,16 @@ const loginUser = async (req, res) => {
 }
 
 const getUser = async (req, res) => {
-    const users = await user.findAll()
+  try{
+    const users = await User.findAll()
 
     return res.status(200).json({success:true, data: users})
+  }
+  catch(err){
+    console.error(err)
+    res.status(500).json({success: false, msg: "Server Error"})
+  }
+    
 }
 
 const updateUser = async (req, res) => {
