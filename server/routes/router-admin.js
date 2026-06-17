@@ -10,7 +10,7 @@ router.put('/claims', updateClaimAdmin)
 
 router.get('/users', getUser)
 router.patch('/users',updateUser)
-router.delete('/users/:id', removeUser)
+router.delete('/users', removeUser)
 
 router.post('/receipts/:id',findReceiptInfo)
 
