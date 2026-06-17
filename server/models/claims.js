@@ -24,9 +24,6 @@ const Claims = sequelize.define('Claims', {
     description: {
         type: DataTypes.STRING,
         allowNull: true,
-        validate: {
-            isAlpha: true
-        }
     },
     submission_date: {
         type: DataTypes.DATE,
