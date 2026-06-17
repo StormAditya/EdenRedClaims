@@ -16,7 +16,9 @@ app.use(express.json());
 
 app.use('/api', loginRouter);
 app.use('/api/admin-dashboard', adminRouter);
-app.use('/api/employee-dashboard/:id', employeeRouter);
+app.use('/api/employee-dashboard', employeeRouter);
+
+//app.use('/api/employee-dashboard/:id', employeeRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {

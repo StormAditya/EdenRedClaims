@@ -29,7 +29,7 @@ const getAllClaims = async (req,res) => {
 }
 
 const getClaims = async (req, res) => {
-    const {user_id} = req.params
+    const {user_id} = req.body
     try{
         const claimsData = await claims.findAll({
             where: {

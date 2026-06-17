@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const { getUser, updateUser, removeUser } = require('../controllers/controller-user')
-const { getAllClaims } = require('../controllers/controller-claim')
+const { getAllClaims, updateClaimAdmin } = require('../controllers/controller-claim')
 const { findReceiptInfo } = require('../controllers/controller-receipt')
 
 router.get('/claims', getAllClaims)
+router.put('/claims', updateClaimAdmin)
 
 
 router.get('/users', getUser)
