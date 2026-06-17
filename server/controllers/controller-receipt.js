@@ -1,4 +1,4 @@
-const receipt = require('../models/claims')
+const receipt = require('../models/receipt')
 
 const findReceiptInfo = async (req, res) => {
     try {
@@ -20,7 +20,7 @@ const findReceiptInfo = async (req, res) => {
 const addReceiptInfo = async (req, res) => {
         try{
             const { claim_id,  receipt_amount, merchant_name } = req.body
-            const newClaim = await claims.create({
+            const newClaim = await receipt.create({
                 claim_id: claim_id,
                 receipt_amount: receipt_amount,
                 merchant_name: merchant_name

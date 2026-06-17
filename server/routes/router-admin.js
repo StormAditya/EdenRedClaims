@@ -5,13 +5,13 @@ const { getAllClaims, updateClaimAdmin } = require('../controllers/controller-cl
 const { findReceiptInfo } = require('../controllers/controller-receipt')
 
 router.get('/claims', getAllClaims)
-router.put('/claims', updateClaimAdmin)
+router.patch('/claims', updateClaimAdmin)
 
 
 router.get('/users', getUser)
 router.patch('/users',updateUser)
 router.delete('/users', removeUser)
 
-router.post('/receipts/:id',findReceiptInfo)
+router.post('/receipts',findReceiptInfo)
 
 module.exports = router
