@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const { getUser, updateUser, removeUser, getClaims } = require('../controllers/controller-admin')
+const { getUser, updateUser, removeUser } = require('../controllers/controller-user')
+const { getClaims } = require('../controllers/controller-claim')
 
 
 router.get('/users', getUser)

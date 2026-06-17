@@ -18,7 +18,19 @@ const createClaim = async (req, res) => {
     }
 }
 
+const getClaims = async (req,res) => {
+    try{
+        const claimsData = await claims.findAll()
+        return res.status(200).json({success:true, data: claimsData})
+    }catch(err){
+        console.error(err)
+        res.status(500).json({success:false, msg:"Error fetching claims"})
+    }
+    
+}
+
 
 module.exports = {
-    createClaim
+    createClaim,
+    getClaims
 }
