@@ -17,7 +17,7 @@ const createClaim = async (req, res) => {
     }
 }
 
-const getClaims = async (req,res) => {
+const getAllClaims = async (req,res) => {
     try{
         const claimsData = await claims.findAll()
         return res.status(200).json({success:true, data: claimsData})
@@ -27,6 +27,22 @@ const getClaims = async (req,res) => {
     }
     
 }
+
+const getClaims = async (req, res) => {
+    const {user_id} = req.params
+    try{
+        const claimsData = await claims.findAll({
+            where: {
+                user_id: user_id
+            }
+        }) 
+        return res.status(200).json({success:true, data: claimsData})
+    }catch(err){
+        console.error(err)
+        res.status(500).json({success:false, msg:"Error fetching claims"})
+    }
+}
+
 
 const updateClaimEmployee = async (req, res) => {
     try{
@@ -104,6 +120,7 @@ const removeClaim = async (req, res) => {
 module.exports = {
     createClaim,
     getClaims,
+    getAllClaims,
     updateClaimAdmin,
     updateClaimEmployee,
     removeClaim
