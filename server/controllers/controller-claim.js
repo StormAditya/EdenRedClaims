@@ -100,7 +100,7 @@ const updateClaimAdmin = async (req, res) => {
 }
 
 const removeClaim = async (req, res) => {
-    const { claim_id } = req.params
+    const { claim_id } = req.body
     try{
         const removedClaim = claims.destroy({
             where: {
