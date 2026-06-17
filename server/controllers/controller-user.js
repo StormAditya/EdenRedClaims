@@ -96,7 +96,7 @@ const updateUser = async (req, res) => {
 }
 
 const removeUser = async (req, res) => {
-    const {id} = req.params
+    const {id} = req.body;
     
     try{
         const remove = await user.destroy({

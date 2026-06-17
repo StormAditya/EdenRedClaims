@@ -2,7 +2,7 @@ const receipt = require('../models/claims')
 
 const findReceiptInfo = async (req, res) => {
     try {
-        const { user_id } = req.params;
+        const { user_id } = req.body;
         const foundreceipt = await receipt.findOne({ 
             where: { 
                 user_id: user_id 
@@ -33,7 +33,7 @@ const addReceiptInfo = async (req, res) => {
 }
 const deleteReceiptInfo = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.body;
         const deletedRows = await receipt.destroy({
             where: { id: id }
         });

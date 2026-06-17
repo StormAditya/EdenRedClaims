@@ -5,11 +5,11 @@ const { findReceiptInfo, addReceiptInfo, deleteReceiptInfo} = require('../contro
 
 router.post('/claims', createClaim)
 router.put('/claims', updateClaimEmployee)
-router.delete('/claims/:id', removeClaim)
+router.delete('/claims/', removeClaim)
 router.get('/claims', getClaims)
 
 router.post('/receipts/find',findReceiptInfo)
 router.post('/receipts/add',addReceiptInfo)
-router.delete('/receipts/:id', deleteReceiptInfo)
+router.delete('/receipts/', deleteReceiptInfo)
 
 module.exports = router
