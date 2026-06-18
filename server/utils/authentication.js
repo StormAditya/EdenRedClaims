@@ -3,11 +3,13 @@ require('dotenv').config()
 
 const isAuth = (req, res, next) => {  
   const authorization = req.headers.authorization;
-  if (authorization) {
-    const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
-    jwt.verify(
+  const token = authorization && authorization.slice(' ')[1];      // Bearer XXXXXX
+
+  if (token) {
+    try{
+      jwt.verify(
       token,
-      process.env.JWT_SECRET || 'somethingsecret',
+      process.env.JWT_SECRET,
       (err, decode) => {
         if (err) {
           res.status(401).send({ message: 'Invalid Token' });
@@ -17,6 +19,12 @@ const isAuth = (req, res, next) => {
         }
       }
     );
+    }
+    catch(err){
+      console.error(err)
+      return res.status(403).json({success: false, message: 'Invalid Token'})
+    }
+    
   } else {
     res.status(401).send({ message: 'No Token' });
   }
