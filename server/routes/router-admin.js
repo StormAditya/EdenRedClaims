@@ -15,7 +15,7 @@ router.delete('/users', isAuth, isAdmin, removeUser)
 
 router.post('/receipts',isAuth, isAdmin,findReceiptInfo)
 
-router.post('/', isAuth, isAdmin, addCategory)
-router.post('/', isAuth, isAdmin, removeCategory)
+router.post('/category', isAuth, isAdmin, addCategory)
+router.post('/category', isAuth, isAdmin, removeCategory)
 
 module.exports = router
