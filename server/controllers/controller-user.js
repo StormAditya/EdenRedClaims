@@ -1,6 +1,6 @@
 const User = require('../models/user')
 const { encrypt, validate } = require('../utils/passwordEncryption')
-
+const jwt = require('jsonwebtoken');
 const createUser = async (req, res) => {
     try{
         const {name, password, user_type, balance, email_id, address, contact_number} = req.body
@@ -57,7 +57,15 @@ const loginUser = async (req, res) => {
     }
     else{
       console.log(`User logged in: ${user.name} (ID: ${user.id})`);
-      res.status(200).json({success: true, data: user});
+      const payload = {
+        userId: user.id,
+        name: user.name,
+        email: user.email_id,
+        contact_number: user.contact_number,
+        user_type: user.user_type,
+      };
+      const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
+      res.status(200).json({success: true,token:accessToken, data: user});
     }
     
   } catch (error) {
