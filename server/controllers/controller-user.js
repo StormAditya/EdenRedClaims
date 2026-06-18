@@ -1,4 +1,5 @@
-const User = require('../models/user')
+const User = require('../models/user');
+const { isAdmin } = require('../utils/authentication');
 const { encrypt, validate } = require('../utils/passwordEncryption')
 const jwt = require('jsonwebtoken');
 const createUser = async (req, res) => {
@@ -62,7 +63,7 @@ const loginUser = async (req, res) => {
         name: user.name,
         email: user.email_id,
         contact_number: user.contact_number,
-        user_type: user.user_type,
+        isAdmin: (user.user_type=='admin') ? true : false;
       };
       const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
       console.log("accessToken", accessToken)
