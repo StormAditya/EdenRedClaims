@@ -1,10 +1,11 @@
 const claims = require('../models/claims')
+const {isAuth} = require('../utils/authentication')
 const createClaim = async (req, res) => {
     try{
-        const { user_id, status_id, category_id, description, claim_amount} = req.body
+        const { status_id, category_id, description, claim_amount} = req.body
         const newClaim = await claims.create({
-            user_id: user_id,
-            status_id: status_id,
+            user_id: req.user.userId,
+            status_id: 1,
             category_id: category_id,
             description: description,
             claim_amount: claim_amount,
@@ -29,11 +30,16 @@ const getAllClaims = async (req,res) => {
 }
 
 const getClaims = async (req, res) => {
-    const {user_id} = req.body
     try{
+        const userId = req.user.userId
+
+        if (!userId) {
+            return res.status(401).json({ success: false, msg: 'Unauthorized: missing user id in token' })
+        }
+
         const claimsData = await claims.findAll({
             where: {
-                user_id: user_id
+                user_id: userId
             }
         }) 
         return res.status(200).json({success:true, data: claimsData})
