@@ -22,7 +22,33 @@ Claims.belongsTo(Receipt, {foreignKey: 'claim_id'})
 //ADD a foregin key in ITEMS:
 //REFERENCING: RECEIPT_ID
 
-sequelize.sync({alter: true}).then(() => {
-    console.log('Database connected and synchronised...')
-})
+sequelize.sync({ alter: true }).then(async () => {
+    console.log('Database connected and synchronised...');
+
+        const statuses = [
+            { id: 1, status_name: 'Pending' },
+            { id: 2, status_name: 'Approved' },
+            { id: 3, status_name: 'Denied' }
+        ];
+        for (const s of statuses) {
+            await Status.findOrCreate({
+                where: { status_name: s.status_name },
+                defaults: { id: s.id, status_name: s.status_name }
+            });
+        }
+
+        const categories = [
+            { id: 1, category_name: 'Travel' },
+            { id: 2, category_name: 'Food' },
+            { id: 3, category_name: 'Medical' }
+        ];
+        for (const c of categories) {
+            await Category.findOrCreate({
+                where: { category_name: c.category_name },
+                defaults: { id: c.id, category_name: c.category_name }
+            });
+        }
+}).catch(err => {
+    console.error('Database sync error:', err);
+});
 

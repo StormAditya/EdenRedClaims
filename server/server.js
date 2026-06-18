@@ -6,6 +6,8 @@ require('./config/index');
 
 const loginRouter = require('./routes/router-login');
 const adminRouter = require('./routes/router-admin')
+const employeeRouter = require('./routes/router-employe')
+const globalRouter = require('./routes/router-global')
 
 const app = express();
 
@@ -13,8 +15,12 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use('/api', loginRouter);
+app.use('/', loginRouter)
+app.use('/api', globalRouter)
 app.use('/api/admin-dashboard', adminRouter);
+app.use('/api/employee-dashboard', employeeRouter);
+
+//app.use('/api/employee-dashboard/:id', employeeRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {
