@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Login from './Login';
+import EmployeeDashboard from './EmployeeDashboard';
 import { USERS } from "./mockData";
 
 export default function App(){
@@ -17,10 +18,10 @@ export default function App(){
   }
 
   if (viewWorkspace) {
-    if (user.role === 'ADMIN') {
-      return <div className='text-white p-8'>Admin Dashboard Placeholder</div>;
+    if (user.role === 'admin') {
+      return <div className='min-h-screen bg-zinc-950text-white p-8'>Admin Dashboard Placeholder</div>;
     }
-    return <div className='text-white p-8'>Employee Dashboard Placeholder</div>;
+    return <EmployeeDashboard user={user} onLogout={handleLogout}/>;
   }
 
   return (

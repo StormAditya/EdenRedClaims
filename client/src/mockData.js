@@ -19,7 +19,7 @@ export const USERS = [
     role: "admin",
     balance: 0.00
   }
-];
+];[]
 
 export const CLAIMS = [
   {
