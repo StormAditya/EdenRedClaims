@@ -1,11 +1,11 @@
 const receipt = require('../models/receipt')
+const {isAuth} = require('../utils/authentication')
 
 const findReceiptInfo = async (req, res) => {
     try {
-        const { user_id } = req.body;
         const foundreceipt = await receipt.findOne({ 
             where: { 
-                user_id: user_id 
+                user_id: req.user.userId
             } 
         });
         if (!foundreceipt) {

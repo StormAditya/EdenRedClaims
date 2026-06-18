@@ -2,10 +2,10 @@ const claims = require('../models/claims')
 const {isAuth} = require('../utils/authentication')
 const createClaim = async (req, res) => {
     try{
-        const { user_id, status_id, category_id, description, claim_amount} = req.body
+        const { status_id, category_id, description, claim_amount} = req.body
         const newClaim = await claims.create({
-            user_id: user_id,
-            status_id: status_id,
+            user_id: req.user.userId,
+            status_id: 1,
             category_id: category_id,
             description: description,
             claim_amount: claim_amount,

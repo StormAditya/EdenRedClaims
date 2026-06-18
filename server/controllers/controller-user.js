@@ -101,7 +101,7 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const { id, name, password, user_type, balance, email_id, address, contact_number } = req.body
+        const { name, password, user_type, balance, email_id, address, contact_number } = req.body
 
         const [updatedRows] = await user.update(
             {
@@ -112,7 +112,7 @@ const updateUser = async (req, res) => {
                 contact_number,
                 balance
             },
-            { where: { id: id } }
+            { where: { id: req.user.userId } }
         )
 
         if (updatedRows === 0) {
