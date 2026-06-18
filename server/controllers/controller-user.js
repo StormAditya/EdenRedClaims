@@ -65,6 +65,7 @@ const loginUser = async (req, res) => {
         user_type: user.user_type,
       };
       const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
+      console.log("accessToken", accessToken)
       res.status(200).json({success: true,token:accessToken, data: user});
     }
     

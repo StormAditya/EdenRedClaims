@@ -4,8 +4,9 @@ const { getUser, updateUser, removeUser } = require('../controllers/controller-u
 const { getAllClaims, updateClaimAdmin } = require('../controllers/controller-claim')
 const { findReceiptInfo } = require('../controllers/controller-receipt')
 const { addCategory, removeCategory } = require('../controllers/controller-category')
+const  {isAdmin, isAuth} = require('../utils/authentication')
 
-router.get('/claims', getAllClaims)
+router.get('/claims', isAuth, isAdmin, getAllClaims)
 router.patch('/claims', updateClaimAdmin)
 
 router.get('/users', getUser)
