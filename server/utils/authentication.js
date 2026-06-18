@@ -1,41 +1,29 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 
-const isAuth = (req, res, next) => {  
-  const authorization = req.headers.authorization;
-  const token = authorization && authorization.slice(' ')[1];      // Bearer XXXXXX
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me'
 
-  if (token) {
-    try{
-      jwt.verify(
-      token,
-      process.env.JWT_SECRET,
-      (err, decode) => {
-        if (err) {
-          res.status(401).send({ message: 'Invalid Token' });
-        } else {
-          req.user = decode;
-          next();
-        }
-      }
-    );
+const isAuth = (req, res, next) => {  
+  const authorization = req.headers.authorization || '';
+  if (authorization) {
+    const token = authorization.trim();
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      req.user = decoded;
+      return next();
+    } catch (err) {
+      console.error('Token verification failed:', err.message);
+      return res.status(401).json({ message: 'Invalid Token', details: err.message });
     }
-    catch(err){
-      console.error(err)
-      return res.status(403).json({success: false, message: 'Invalid Token'})
-    }
-    
-  } else {
-    res.status(401).send({ message: 'No Token' });
   }
+  return res.status(401).json({ message: 'No Token provided or bad Authorization header' });
 };
 
 const isAdmin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
-    next();
-  } else {
-    res.status(401).send({ message: 'Invalid Admin Token' });
+    return next();
   }
+  return res.status(403).json({ message: 'Invalid Admin Token' });
 };
 
 module.exports = {isAdmin, isAuth};
