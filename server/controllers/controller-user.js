@@ -1,15 +1,17 @@
 const User = require('../models/user')
+const { encrypt, validate } = require('../utils/passwordEncryption')
 
 const createUser = async (req, res) => {
     try{
         const {name, password, user_type, balance, email_id, address, contact_number} = req.body
         
+        const hashedPassword = await encrypt(String(password));
         
         if(user_type === 'admin'){
           const newUser = await User.create({
 
                 name: name,
-                password: password,
+                password: hashedPassword,
                 user_type: user_type,
                 email_id: email_id
             })
@@ -19,7 +21,7 @@ const createUser = async (req, res) => {
           const newUser = await User.create({
 
                 name: name,
-                password: password,
+                password: hashedPassword,
                 user_type: user_type,
                 email_id: email_id,
                 address: address,
@@ -45,16 +47,18 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ 
       where: { 
         email_id: email_id, 
-        password: password 
       } 
     });
 
-    if (!user) {
+    const check = await validate(String(password), String(user.password));
+
+    if (!user || !check) {
       return res.status(400).json({success: false, msg: 'Invalid credentials'});
     }
-
-    console.log(`User logged in: ${user.name} (ID: ${user.id})`);
-    res.status(200).json({success: true, data: user});
+    else{
+      console.log(`User logged in: ${user.name} (ID: ${user.id})`);
+      res.status(200).json({success: true, data: user});
+    }
     
   } catch (error) {
     console.error(error)
