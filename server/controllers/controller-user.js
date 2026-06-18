@@ -69,7 +69,7 @@ const loginUser = async (req, res) => {
       name: user.name,
       email: user.email_id,
       contact_number: user.contact_number,
-      isAdmin: (user.user_type == 'admin') ? true : false,
+      isAdmin: (user.user_type === 'admin') ? true : false,
     };
 
     const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' });
