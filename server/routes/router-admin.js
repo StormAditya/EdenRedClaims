@@ -9,13 +9,13 @@ const  {isAdmin, isAuth} = require('../utils/authentication')
 router.get('/claims', isAuth, isAdmin, getAllClaims)
 router.patch('/claims', updateClaimAdmin)
 
-router.get('/users', getUser)
-router.patch('/users',updateUser)
-router.delete('/users', removeUser)
+router.get('/users',isAuth,isAdmin, getUser)
+router.patch('/users',isAuth, isAdmin, updateUser)
+router.delete('/users', isAuth, isAdmin, removeUser)
 
-router.post('/receipts',findReceiptInfo)
+router.post('/receipts',isAuth, isAdmin,findReceiptInfo)
 
-router.post('/', addCategory)
-router.post('/', removeCategory)
+router.post('/', isAuth, isAdmin, addCategory)
+router.post('/', isAuth, isAdmin, removeCategory)
 
 module.exports = router

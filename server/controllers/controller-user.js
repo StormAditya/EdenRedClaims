@@ -2,6 +2,8 @@ const User = require('../models/user');
 const { isAdmin } = require('../utils/authentication');
 const { encrypt, validate } = require('../utils/passwordEncryption')
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me'
 const createUser = async (req, res) => {
     try{
         const {name, password, user_type, balance, email_id, address, contact_number} = req.body
@@ -51,24 +53,32 @@ const loginUser = async (req, res) => {
       } 
     });
 
-    const check = await validate(String(password), String(user.password));
-
-    if (!user || !check) {
+    if (!user) {
       return res.status(400).json({success: false, msg: 'Invalid credentials'});
     }
-    else{
-      console.log(`User logged in: ${user.name} (ID: ${user.id})`);
-      const payload = {
-        userId: user.id,
-        name: user.name,
-        email: user.email_id,
-        contact_number: user.contact_number,
-        isAdmin: (user.user_type=='admin') ? true : false;
-      };
-      const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
-      console.log("accessToken", accessToken)
-      res.status(200).json({success: true,token:accessToken, data: user});
+
+    const check = await validate(String(password), String(user.password));
+
+    if (!check) {
+      return res.status(400).json({success: false, msg: 'Invalid credentials'});
     }
+
+    console.log(`User logged in: ${user.name} (ID: ${user.id})`);
+    const payload = {
+      userId: user.id,
+      name: user.name,
+      email: user.email_id,
+      contact_number: user.contact_number,
+      isAdmin: (user.user_type == 'admin') ? true : false,
+    };
+
+    const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' });
+    console.log('accessToken', accessToken)
+
+    const userData = user.get({ plain: true });
+    delete userData.password;
+
+    res.status(200).json({success: true, token: accessToken, data: userData });
     
   } catch (error) {
     console.error(error)
