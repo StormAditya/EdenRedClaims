@@ -4,13 +4,13 @@ const { createClaim, updateClaimEmployee, removeClaim, getClaims } = require('..
 const { findReceiptInfo, addReceiptInfo, deleteReceiptInfo} = require('../controllers/controller-receipt')
 const { isAuth } = require('../utils/authentication')
 
-router.post('/claims', createClaim)
-router.put('/claims', updateClaimEmployee)
-router.delete('/claims', removeClaim)
+router.post('/claims', isAuth, createClaim)
+router.put('/claims', isAuth, updateClaimEmployee)
+router.delete('/claims', isAuth, removeClaim)
 router.get('/claims',isAuth, getClaims)
 
-router.post('/receipts/find',findReceiptInfo)
-router.post('/receipts/add',addReceiptInfo)
-router.delete('/receipts', deleteReceiptInfo)
+router.post('/receipts/find', isAuth,findReceiptInfo)
+router.post('/receipts/add', isAuth,addReceiptInfo)
+router.delete('/receipts', isAuth,deleteReceiptInfo)
 
 module.exports = router
