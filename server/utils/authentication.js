@@ -5,8 +5,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me'
 
 const isAuth = (req, res, next) => {  
   const authorization = req.headers.authorization || '';
-  if (authorization && authorization.startsWith('Bearer ')) {
-    const token = authorization.slice(7).trim(); // Bearer XXXXXX
+  if (authorization) {
+    const token = authorization.trim();
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
       req.user = decoded;
