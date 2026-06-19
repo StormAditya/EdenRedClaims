@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use('/', loginRouter)
+app.use('/api', loginRouter)
 app.use('/api', globalRouter)
 app.use('/api/admin-dashboard', adminRouter);
 app.use('/api/employee-dashboard', employeeRouter);
