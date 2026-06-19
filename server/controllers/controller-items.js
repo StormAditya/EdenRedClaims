@@ -19,7 +19,7 @@ const createItem = async (req, res) => {
     }
 };
 
-const getAllItems = async(req, req) => {
+const getAllItems = async(req, res) => {
     try {
         const itemsData = await Items.findAll();
         return res.status(200).json({ success: true, data: itemsData });
