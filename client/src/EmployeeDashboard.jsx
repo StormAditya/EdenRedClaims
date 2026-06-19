@@ -14,6 +14,10 @@ export default function EmployeeDashboard({ user, onLogout }) {
         return found ? found.Category : "Unknown";
     };
 
+    const handleRaiseClaim = () => {
+      alert("Raise claim");
+    };
+
     return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
       
@@ -64,6 +68,11 @@ export default function EmployeeDashboard({ user, onLogout }) {
             <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full font-medium">
               {employeeClaims.length} Total Submissions
             </span>
+          </div>
+          <div className='flex justify-end mb-6'>
+            <button onClick={handleRaiseClaim} className='bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 hover:border-emerald-500/60 text-emerald-400 text-xs font-bold uppercase tracking-wide px-4 py-2.5 rounded-xl transition duration-200 cursor-pointer shadow-md shadow-emerald-950/50'>
+            + Raise Claim
+            </button>
           </div>
 
           <div className="overflow-x-auto">
