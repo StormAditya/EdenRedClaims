@@ -4,7 +4,7 @@ import axios from "axios";
 
 
 export default function Login({ onLogin }) {
-    const [username, setusername] = useState('');
+    const [email_id, setemail_id] = useState('');
     const [password, setpassword] = useState('');
     const [error, seterror] = useState('');
     
@@ -14,7 +14,7 @@ export default function Login({ onLogin }) {
 
         try{
             const response = await axios.post('http://localhost:5000/api/login', {
-                email_id: username,
+                email_id: email_id,
                 password: password
             })
             console.log(response);
@@ -26,7 +26,7 @@ export default function Login({ onLogin }) {
             console.log(data);
         }
         catch(err){
-            seterror("Incorrect username or password, please try again");
+            seterror("Incorrect email or password, please try again");
         }
         
     };
@@ -54,13 +54,13 @@ export default function Login({ onLogin }) {
                     <div>
                         <label
                         className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
-                            Username
+                            Email
                         </label>
                         <input
                             type='text'
                             required
-                            value={username}
-                            onChange={(e) => setusername(e.target.value)}
+                            value={email_id}
+                            onChange={(e) => setemail_id(e.target.value)}
                             className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
                         />
                     </div>
