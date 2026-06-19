@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Login from './Login';
 import EmployeeDashboard from './EmployeeDashboard';
 import { USERS } from "./mockData";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 export default function App(){
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [viewWorkspace, setviewWorkspace] = useState(false);
 

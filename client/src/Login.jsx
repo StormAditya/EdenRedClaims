@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { USERS } from "./mockData";
+import axios from "axios";
 
 
 export default function Login({ onLogin }) {
@@ -7,19 +9,26 @@ export default function Login({ onLogin }) {
     const [error, seterror] = useState('');
     
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const user = USERS.find(
-            (u) => u.username === username && u.password === password
-        );
-        if (user !== undefined) {
-            seterror('');
-            onLogin(user);
+        try{
+            const response = await axios.post('http://localhost:5000/api/login', {
+                email_id: username,
+                password: password
+            })
+            console.log(response);
+
+            const { token, userData } = response.data;
+
+            localStorage.setItem('token', token)
+            console.log(token);
+            console.log(userData);
         }
-        else{
+        catch(err){
             seterror("Incorrect username or password, please try again");
         }
+        
     };
 
     return (

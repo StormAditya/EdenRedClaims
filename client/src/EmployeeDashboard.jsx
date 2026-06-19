@@ -5,6 +5,46 @@ import { CLAIMS, STATUS, CATEGORIES } from './mockData';
 
 export default function EmployeeDashboard({ user, onLogout }) {
     
+  const [claims, setClaims] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  
+
+  const fetchClaims = async () => {
+    setLoading(true);
+    setErrorMessage('');
+    try{
+      const response = await axios.get('http://localhost:5000/api/employee-dashboard/claims', {headers: getAuthHeader()});
+      setClaims(response);
+      console.log(response);
+    }
+        
+    catch(err){
+      console.error(err);
+      setClaims([]);
+      setErrorMessage('Unable to fetch claims...');
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
+  const createClaim = async () => {
+
+  }
+
+  const updateClaims = async () => {
+
+  }
+
+  const removeClaim = async () => {
+
+  }
+
+  useEffect(() => {
+       fetchClaims();
+
+  }, []);
 
 
     const employeeClaims = CLAIMS.filter(claim => claim.userID === user.userID);
