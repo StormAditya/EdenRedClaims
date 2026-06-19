@@ -65,9 +65,9 @@ const loginUser = async (req, res) => {
 
     console.log(`User logged in: ${user.name} (ID: ${user.id})`);
     const payload = {
-      userId: user.id,
+      user_id: user.id,
       name: user.name,
-      email: user.email_id,
+      email_id: user.email_id,
       contact_number: user.contact_number,
       isAdmin: (user.user_type === 'admin') ? true : false,
     };

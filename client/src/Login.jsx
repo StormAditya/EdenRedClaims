@@ -1,24 +1,38 @@
 import React, { useState, useEffect } from "react";
-
+import axios from "axios";
 
 export default function Login({ onLogin }) {
-    const [username, setusername] = useState('');
+    const [email_id, setemail_id] = useState('');
     const [password, setpassword] = useState('');
     const [error, seterror] = useState('');
-    const [USERS, setUSERS] = useState([]);
     
-    const handleSubmit = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:5000/api/login', {
+                email_id:email_id,
+                password:password,
+            });
+            const payload = response.data;
+            const authToken = payload.token;
+            const userData = payload.data;
 
-        const user = USERS.find(
-            (u) => u.username === username && u.password === password
-        );
-        if (user !== undefined) {
-            seterror('');
-            onLogin(user);
-        }
-        else{
-            seterror("Incorrect username or password, please try again");
+            if (!authToken || !userData) {
+                throw new Error('Unexpected login response');
+            }
+
+            const normalizedUser = {
+                ...userData,
+                userID: userData.userID ?? userData.id,
+                role: userData.role ?? userData.user_type,
+                username: userData.username ?? userData.email_id,
+                email_id: userData.email_id ?? userData.username,
+            };
+
+            localStorage.setItem('authToken', authToken);
+            onLogin(normalizedUser);
+        } catch (err) {
+            seterror("Incorrect email or password, please try again");
         }
     };
 
@@ -41,17 +55,17 @@ export default function Login({ onLogin }) {
                         {error}
                     </div>
                 )}
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleLogin} className="space-y-6">
                     <div>
                         <label
                         className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
-                            Username
+                            Email
                         </label>
                         <input
                             type='text'
                             required
-                            value={username}
-                            onChange={(e) => setusername(e.target.value)}
+                            value={email_id}
+                            onChange={(e) => setemail_id(e.target.value)}
                             className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
                         />
                     </div>
