@@ -11,30 +11,12 @@ export default function App(){
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const [viewWorkspace, setviewWorkspace] = useState(false);
-
-  const handleLogout = () => {
-    setUser(null);
-    setviewWorkspace(false);
-  };
-
-  if (user === null){
-    return <Login onLogin={setUser}/>
-  }
-
-  if (viewWorkspace) {
-    if (user.role === 'admin') {
-      return <div className='min-h-screen bg-zinc-950text-white p-8'>Admin Dashboard Placeholder</div>;
-    }
-    return <EmployeeDashboard user={user} onLogout={handleLogout}/>;
-  }
-
   return (
     <Router>
       <Routes>
         <Route path='/login' element={<Login />} />
         <Route path='/employee-dashboard' element={<EmployeeDashboard />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path='/admin-dashboard' element={<AdminDashboard />} />
       </Routes>
     </Router>
   );
