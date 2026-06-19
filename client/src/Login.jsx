@@ -19,11 +19,11 @@ export default function Login({ onLogin }) {
             })
             console.log(response);
 
-            const { token, userData } = response.data;
+            const { token, data } = response.data;
 
             localStorage.setItem('token', token)
             console.log(token);
-            console.log(userData);
+            console.log(data);
         }
         catch(err){
             seterror("Incorrect username or password, please try again");
