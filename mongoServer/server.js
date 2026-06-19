@@ -9,7 +9,8 @@ const app = express();
 
 connection();
 
+const port = process.env.PORT;
 
-app.listen((port) => {
+app.listen(port, () => {
     console.log(`Server listening on port: ${port}`)
-})
+}) 
