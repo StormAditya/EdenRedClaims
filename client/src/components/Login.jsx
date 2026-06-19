@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -9,26 +9,40 @@ export default function Login({ onLogin }) {
     const [error, seterror] = useState('');
     
     const navigate = useNavigate();
+
+    const normalizeUser = (userData) => ({
+        userID: userData.userID ?? userData.id ?? userData.userId,
+        name: userData.name,
+        username: userData.username ?? userData.email_id ?? userData.email ?? email_id,
+        password: userData.password,
+        contact_no: userData.contact_no ?? userData.contact_number ?? '',
+        address: userData.address ?? '',
+        role: userData.role ?? userData.user_type ?? 'employee',
+        balance: Number(userData.balance ?? 0),
+        user_type: userData.user_type ?? userData.role ?? 'employee'
+    });
     
     const handleSubmit = async (e) => {
         e.preventDefault();
+        seterror('');
 
         try{
             const response = await axios.post('http://localhost:5000/api/login', {
                 email_id: email_id,
                 password: password
             })
-            console.log(response);
 
             const { token, data } = response.data;
 
-            localStorage.setItem('token', token)
-            // console.log(token);
-            // console.log(data);
+            const userData = normalizeUser(data);
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(userData));
 
-            const userData = data;
+            if (onLogin) {
+                onLogin(userData);
+            }
 
-            if(userData.user_type === 'admin'){
+            if(userData.role === 'admin'){
                 navigate("/admin-dashboard");
             }
             else navigate("/employee-dashboard");

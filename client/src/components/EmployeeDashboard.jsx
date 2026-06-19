@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios'
+import { getAuthHeader } from './auth';
 
 export default function EmployeeDashboard({ user, onLogout }) {
     
@@ -12,22 +13,21 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const fetchClaims = async () => {
     setLoading(true);
     setErrorMessage('');
-    try{
-      const response = await axios.get('http://localhost:5000/api/employee-dashboard/claims', {headers: getAuthHeader()});
-      setClaims(response);
-      console.log(response);
-    }
-        
-    catch(err){
+
+    try {
+      const response = await axios.get('http://localhost:5000/api/employee-dashboard/claims', {
+        headers: getAuthHeader(),
+      });
+
+      setClaims(Array.isArray(response.data?.data) ? response.data.data : []);
+    } catch (err) {
       console.error(err);
       setClaims([]);
-      setErrorMessage('Unable to fetch claims...');
-    }
-    finally{
+      setErrorMessage('Unable to fetch claims.');
+    } finally {
       setLoading(false);
     }
-  }
-
+  };
   const createClaim = async () => {
 
   }
@@ -45,17 +45,27 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
   }, []);
 
+    const normalizeClaim = (claim) => ({
+      claimID: claim.claimID ?? claim.claim_id ?? claim.id,
+      userID: claim.userID ?? claim.user_id,
+      categoryID: claim.categoryID ?? claim.category_id,
+      claim_amount: Number(claim.claim_amount ?? 0),
+      description: claim.description ?? '',
+      statusID: claim.statusID ?? claim.status_id,
+      submission_date: claim.submission_date ?? null,
+      validation_date: claim.validation_date ?? null,
+    });
 
-    const employeeClaims = CLAIMS.filter(claim => claim.userID === user.userID);
+    const employeeClaims = claims
+      .filter((claim) => (claim.userID ?? claim.user_id) === user.userID)
+      .map(normalizeClaim);
 
     const getStatusName = (statusID) => {
-        const found = STATUS.find(s => s.Status_ID === statusID);
-        return found ? found.Status : "Unknown";
+        return "Placeholder";
     };
 
     const getCategoryName = (categoryId) => {
-        const found = CATEGORIES.find(c => c.Category_ID === categoryId);
-        return found ? found.Category : "Unknown";
+        return "Placeholder";
     };
 
     return (
