@@ -13,9 +13,24 @@ export default function Login({ onLogin }) {
                 email_id:email_id,
                 password:password,
             });
-            const { authToken, userData } = response.data;
+            const payload = response.data;
+            const authToken = payload.authToken || payload.token;
+            const userData = payload.user || payload.data;
+
+            if (!authToken || !userData) {
+                throw new Error('Unexpected login response');
+            }
+
+            const normalizedUser = {
+                ...userData,
+                userID: userData.userID ?? userData.id,
+                role: userData.role ?? userData.user_type,
+                username: userData.username ?? userData.email_id,
+                email_id: userData.email_id ?? userData.username,
+            };
+
             localStorage.setItem('authToken', authToken);
-            onLogin(userData);
+            onLogin(normalizedUser);
         } catch (err) {
             seterror("Incorrect email or password, please try again");
         }
