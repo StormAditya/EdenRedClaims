@@ -31,16 +31,10 @@ export default function App(){
   }
 
   return (
-<<<<<<< HEAD
     <Router>
       <Routes>
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
     </Router>
-=======
-    <h1>
-      
-    </h1>
->>>>>>> 2b17828cec2de9eb1cece71e8cfdd03a365aedae
   );
 }
