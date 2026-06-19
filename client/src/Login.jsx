@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { USERS } from "./mockData";
+import React, { useState, useEffect } from "react";
+
 
 export default function Login({ onLogin }) {
     const [username, setusername] = useState('');
     const [password, setpassword] = useState('');
     const [error, seterror] = useState('');
-
+    const [USERS, setUSERS] = useState([]);
+    
     const handleSubmit = (e) => {
         e.preventDefault();
 
