@@ -39,6 +39,8 @@ export default function Login({ onLogin }) {
         
     };
 
+    const register = () => navigate('/register');
+
     return (
         <div className="min-h-screen bg-zinc-950 flex flex-col justify-center items-center px-4 font-sans">
 
@@ -58,7 +60,7 @@ export default function Login({ onLogin }) {
                         {error}
                     </div>
                 )}
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6 pb-3">
                     <div>
                         <label
                         className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
@@ -88,11 +90,17 @@ export default function Login({ onLogin }) {
                     </div>
                     <button
                         type="submit"
-                        className="w-full mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 hover:border-cyan-400 text-cyan-300 font-bold py-3 px-4 rounded-lg text-sm tracking-wide uppercase transition shadow-cyan-950/50"
+                        className="cursor-pointer w-full mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 hover:border-cyan-400 text-cyan-300 font-bold py-3 px-4 rounded-lg text-sm tracking-wide uppercase transition shadow-cyan-950/50"
                     >
-                        Authentication
+                        Login
                     </button>
                 </form>
+                <button
+                    type="button" onClick={register}
+                    className="w-full mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 hover:border-cyan-400 text-cyan-300 font-bold py-3 px-4 rounded-lg text-sm tracking-wide uppercase transition shadow-cyan-950/50 cursor-pointer"
+                >
+                    Register
+                </button>
             </div>
         </div>
     )

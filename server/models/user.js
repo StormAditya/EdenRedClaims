@@ -61,7 +61,7 @@ const User = sequelize.define('User', {
     },
     balance: {
         type: DataTypes.FLOAT,
-        allowNull: true,
+        allowNull: true, //update and set balance are remaining
     }
 }, {
     tableName: 'User',

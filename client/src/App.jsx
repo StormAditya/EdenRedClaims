@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import EmployeeDashboard from './components/EmployeeDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import Register from './components/Register'
 
 
 export default function App(){
@@ -14,6 +15,7 @@ export default function App(){
   return (
     <Router>
       <Routes>
+        <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
         <Route path='/employee-dashboard' element={<EmployeeDashboard />} />
         <Route path='/admin-dashboard' element={<AdminDashboard />} />
