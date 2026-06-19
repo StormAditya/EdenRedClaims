@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios'
 import { CLAIMS, STATUS, CATEGORIES } from './mockData';
+import {getAuthHeader} from '../utils/auth'
 
 axios.defaults.withCredentials = true;
 
@@ -15,8 +16,9 @@ export default function EmployeeDashboard({ user, onLogout }) {
     setLoading(true);
     setErrorMessage('');
     try{
-      const response = await axios.get('http://localhost:5000/api/employee-dashboard/claims');
+      const response = await axios.get('http://localhost:5000/api/employee-dashboard/claims', {headers: getAuthHeader()});
       setClaims(response);
+      console.log(response);
     }
         
     catch(err){
@@ -31,7 +33,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
   useEffect(() => {
        fetchClaims();
-       
+
   }, []);
 
 
