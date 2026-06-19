@@ -1,7 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios'
-import { CLAIMS, STATUS, CATEGORIES } from './mockData';
 
 export default function EmployeeDashboard({ user, onLogout }) {
     
