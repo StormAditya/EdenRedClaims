@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Login from './Login';
-import EmployeeDashboard from './EmployeeDashboard';
-import { USERS } from "./mockData";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Login from './components/Login';
+import EmployeeDashboard from './components/EmployeeDashboard';
 
 export default function App(){
   const [user, setUser] = useState(null);
@@ -28,8 +27,11 @@ export default function App(){
   }
 
   return (
-    <h1>
-      
-    </h1>
+    <Router>
+      <Routes>
+        <Route path='/' element={<Login />} />
+        <Route path='/employee-dashboard' element={<EmployeeDashboard />} />
+      </Routes>
+    </Router>
   );
 }
