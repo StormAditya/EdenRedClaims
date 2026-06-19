@@ -1,7 +1,9 @@
 const AdminDashboard = () => {
   return (
     <div>
-      {/* Your code here */}
+      <h1>
+        hallo admin
+      </h1>
     </div>
   );
 };

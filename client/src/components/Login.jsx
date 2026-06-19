@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Login({ onLogin }) {
@@ -7,7 +8,7 @@ export default function Login({ onLogin }) {
     const [password, setpassword] = useState('');
     const [error, seterror] = useState('');
     
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -21,8 +22,15 @@ export default function Login({ onLogin }) {
             const { token, data } = response.data;
 
             localStorage.setItem('token', token)
-            console.log(token);
-            console.log(data);
+            // console.log(token);
+            // console.log(data);
+
+            const userData = data;
+
+            if(userData.user_type === 'admin'){
+                navigate("/admin-dashboard");
+            }
+            else navigate("/employee-dashboard");
         }
         catch(err){
             seterror("Incorrect email or password, please try again");
