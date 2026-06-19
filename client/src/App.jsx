@@ -8,6 +8,8 @@ export default function App(){
 
   const [viewWorkspace, setviewWorkspace] = useState(false);
 
+  const userRole = user?.role ?? user?.user_type;
+
   const handleLogout = () => {
     setUser(null);
     setviewWorkspace(false);
@@ -18,8 +20,8 @@ export default function App(){
   }
 
   if (viewWorkspace) {
-    if (user.role === 'admin') {
-      return <div className='min-h-screen bg-zinc-950text-white p-8'>Admin Dashboard Placeholder</div>;
+    if (userRole === 'admin') {
+      return <div className='min-h-screen bg-zinc-950 text-white p-8'>Admin Dashboard Placeholder</div>;
     }
     return <EmployeeDashboard user={user} onLogout={handleLogout}/>;
   }
@@ -42,12 +44,12 @@ export default function App(){
             <span className='font-bold text-cyan-300'>Identity:</span> {user.name}
           </p>
           <p className='text-sm text-zinc-300'>
-            <span className='font-bold text-cyan-300'>Username:</span> {user.username}
+            <span className='font-bold text-cyan-300'>Username:</span> {user.name}
           </p>
           <p className='text-sm text-zinc-300'>
             <span className='font-bold text-cyan-300'>Assigned role:</span> {" "}
             <span className='uppercase text-xs font-extrabold tracking-wider bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700 text-zinc-200'>
-              {user.role}
+              {userRole}
             </span>
           </p>
         </div>
