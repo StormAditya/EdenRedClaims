@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import Login from './Login';
+import EmployeeDashboard from './EmployeeDashboard';
+import { USERS } from "./mockData";
+import { AdminDashboard } from './AdminDashboard';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import EmployeeDashboard from './components/EmployeeDashboard';
@@ -27,11 +31,16 @@ export default function App(){
   }
 
   return (
+<<<<<<< HEAD
     <Router>
       <Routes>
-        <Route path='/' element={<Login />} />
-        <Route path='/employee-dashboard' element={<EmployeeDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
     </Router>
+=======
+    <h1>
+      
+    </h1>
+>>>>>>> 2b17828cec2de9eb1cece71e8cfdd03a365aedae
   );
 }
