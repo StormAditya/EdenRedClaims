@@ -14,8 +14,8 @@ export default function Login({ onLogin }) {
                 password:password,
             });
             const payload = response.data;
-            const authToken = payload.authToken || payload.token;
-            const userData = payload.user || payload.data;
+            const authToken = payload.token;
+            const userData = payload.data;
 
             if (!authToken || !userData) {
                 throw new Error('Unexpected login response');
