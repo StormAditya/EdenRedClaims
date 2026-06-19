@@ -3,7 +3,7 @@ const router = express.Router()
 const { createClaim, updateClaimEmployee, removeClaim, getClaims } = require('../controllers/controller-claim')
 const { findReceiptInfo, addReceiptInfo, deleteReceiptInfo} = require('../controllers/controller-receipt')
 const { createItem, getAllItems, getItemsByReceipt, updateItem, removeItem } = require("../controllers/controller-items")
-
+const {isAuth} = require('../utils/authentication')
 router.post('/claims', isAuth, createClaim)
 router.put('/claims', isAuth, updateClaimEmployee)
 router.delete('/claims', isAuth, removeClaim)
