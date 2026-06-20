@@ -141,7 +141,7 @@ export default function Register({ onLogin }) {
                             type="submit"
                             className="w-full mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 hover:border-cyan-400 text-cyan-300 font-bold py-3 px-4 rounded-lg text-sm tracking-wide uppercase transition shadow-cyan-950/50"
                         >
-                            Authentication
+                            Register and Login
                         </button>
                         <button
                             type="button" onClick={handleBack}
