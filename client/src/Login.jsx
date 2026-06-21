@@ -13,6 +13,7 @@ export default function Login({ onLogin }) {
                 email_id:email_id,
                 password:password,
             });
+            
             const payload = response.data;
             const authToken = payload.token;
             const userData = payload.data;
