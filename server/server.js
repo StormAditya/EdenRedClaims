@@ -1,11 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const index = require('./config/index')
-const mongoose = require("mongoose");
-
-mongoose.connect("mongodb://localhost:27017/edenred")
-    .then(() => console.log("Mongodb connected successfully for image storage"))
-    .catch((err) => console.error("MongoDB connection error: ", err));
 
 const loginRouter = require('./routes/router-login');
 const adminRouter = require('./routes/router-admin')

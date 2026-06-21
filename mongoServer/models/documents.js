@@ -8,7 +8,8 @@ const DocumentSchema = new mongoose.Schema({
     },
     receipt_id: {
         type: String,
-        required: true
+        required: true,
+        index: true
     },
     document_file: {
         type: String,
