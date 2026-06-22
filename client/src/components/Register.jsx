@@ -9,6 +9,7 @@ export default function Register({ onLogin }) {
     const [contact_number, setContact_number] = useState('');
     const [address, setAddress] = useState('');
     const [name, setName] = useState('');
+    const [company, setCompany] = useState('');
 
     const normalizeUser = (userData) => ({
         userID: userData.userID ?? userData.id ?? userData.userId,
@@ -19,7 +20,8 @@ export default function Register({ onLogin }) {
         address: userData.address ?? '',
         role: userData.role ?? userData.user_type ?? 'employee',
         balance: Number(userData.balance ?? 0),
-        user_type: userData.user_type ?? userData.role ?? 'employee'
+        user_type: userData.user_type ?? userData.role ?? 'employee',
+        company: userData.company
     });
 
     const [error, seterror] = useState('');
@@ -42,7 +44,8 @@ export default function Register({ onLogin }) {
                 address: address,
                 contact_number: contact_number,
                 name: name,
-                user_type: 'employee'
+                user_type: 'employee',
+                company: company
             });
 
             navigate('/login');
@@ -127,6 +130,19 @@ export default function Register({ onLogin }) {
                             required
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
+                            className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+                        />
+                    </div>
+                    <div>
+                        <label 
+                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                            Company Name
+                        </label>
+                        <input
+                            type="text"
+                            required
+                            value={company}
+                            onChange={(e) => setCompany(e.target.value)}
                             className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
                         />
                     </div>

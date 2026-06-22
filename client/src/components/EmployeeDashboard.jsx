@@ -4,6 +4,8 @@ import axios from "axios";
 import { getAuthHeader } from "./auth";
 import Select from "react-select";
 import { customSelectStyles, options} from "../assets/selectstyle";
+import { useNavigate } from "react-router-dom";
+
 
 
 export default function EmployeeDashboard({ user, onLogout }) {
@@ -14,6 +16,8 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [categoryId, setCategoryId] = useState("");
   const [description, setDescription] = useState("");
   const [claimAmount, setClaimAmount] = useState("");
+
+  const navigate = useNavigate();
 
   const fetchClaims = async () => {
     setLoading(true);
@@ -149,6 +153,10 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
   const getCategoryName = (categoryId) => {
     return "Placeholder";
+  };
+
+  const handleEdit = () => {
+    navigate('/employee-dashboard/updateClaim');
   };
 
   return (
@@ -305,7 +313,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                                 src="/images/editIcon.svg"
                                 alt="Delete"
                                 className="w-5 h-5 cursor-pointer"
-                                onClick={() => removeClaim(claim.claimID)}
+                                onClick={() => handleEdit(claim.claimID)}
                               />
                             </div>
                         </div>

@@ -48,6 +48,10 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    company: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     contact_number: {
         type: DataTypes.BIGINT,
         allowNull: true,

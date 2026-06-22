@@ -6,7 +6,7 @@ require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me'
 const createUser = async (req, res) => {
     try{
-        const {name, password, user_type, balance, email_id, address, contact_number} = req.body
+        const {name, password, user_type, balance, email_id, address, contact_number, company} = req.body
         
         const hashedPassword = await encrypt(String(password));
         
@@ -29,7 +29,8 @@ const createUser = async (req, res) => {
                 email_id: email_id,
                 address: address,
                 contact_number: contact_number,
-                balance: balance
+                balance: balance,
+                company: company
                 
             })
             res.status(200).json({success:true, data: newUser})
