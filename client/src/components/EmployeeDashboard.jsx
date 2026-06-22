@@ -8,7 +8,9 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  
+  const [categoryId, setCategoryId] = useState('');
+  const [description, setDescription] = useState('');
+  const [claimAmount, setClaimAmount] = useState('');
 
   const fetchClaims = async () => {
     setLoading(true);
@@ -28,9 +30,34 @@ export default function EmployeeDashboard({ user, onLogout }) {
       setLoading(false);
     }
   };
-  const createClaim = async () => {
+  const addClaims = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
 
-  }
+    try {
+      const response = await axios.post('http://localhost:5000/api/employee-dashboard/claims', {
+        category_id: categoryId,
+        description: description,
+        claim_amount: claimAmount,
+      }, {
+        headers: getAuthHeader(),
+      });
+
+      if (response.data?.success) {
+        setCategoryId('');
+        setDescription('');
+        setClaimAmount('');
+        await fetchClaims();
+      }
+      
+    } catch (err) {
+      console.error(err);
+      setErrorMessage('Unable to add claims.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const updateClaims = async () => {
 
@@ -87,7 +114,19 @@ export default function EmployeeDashboard({ user, onLogout }) {
           Sign Out
         </button>
       </header>
-
+       <div className="max-w-7xl mx-auto">
+          <form onSubmit={addClaims} className="mb-6 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between">
+            <input type="text" name="category_id" placeholder="Category ID" required value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md" />
+            <input type="text" name="description" placeholder="Description" required value={description} onChange={(e) => setDescription(e.target.value)} className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md" />
+            <input type="number" name="claim_amount" placeholder="Claim Amount" required value={claimAmount} onChange={(e) => setClaimAmount(e.target.value)} className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md" />
+            <button
+              type="submit"
+              className="w-90 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+            >
+              Add Claim
+            </button>
+          </form>
+        </div>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         <div className="lg:col-span-1 bg-gradient-to-br from-blue-950/40 to-zinc-900/40 backdrop-blur-md border border-blue-500/20 rounded-2xl p-6 shadow-xl relative overflow-hidden group">

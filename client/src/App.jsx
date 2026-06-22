@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import Login from './components/Login';
 import EmployeeDashboard from './components/EmployeeDashboard';
 import AdminDashboard from './components/AdminDashboard';
-import Register from './components/Register'
-
+import Register from './components/Register';
 
 export default function App(){
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem('user');
-
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        return JSON.parse(storedUser);
       } catch (err) {
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        return null;
       }
     }
-  }, []);
+    return null;
+  });
 
   const handleLogin = (userData) => {
     setUser(userData);
@@ -36,16 +35,39 @@ export default function App(){
   return (
     <Router>
       <Routes>
-        <Route path='/login' element={<Login onLogin={handleLogin} />} />
+        <Route 
+          path='/login' 
+          element={
+            user ? (
+              <Navigate to={user.role === 'admin' ? '/admin-dashboard' : '/employee-dashboard'} replace />
+            ) : (
+              <Login onLogin={handleLogin} />
+            )
+          } 
+        />
+        
+        <Route path='/register' element={<Register />} />
+
         <Route
           path='/employee-dashboard'
-          element={user ? <EmployeeDashboard user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+          element={user && user.role !== 'admin' ? <EmployeeDashboard user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
+        
         <Route
           path='/admin-dashboard'
-          element={user ? <AdminDashboard user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+          element={user && user.role === 'admin' ? <AdminDashboard user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
-        <Route path='*' element={<Navigate to='/login' replace />} />
+
+        <Route 
+          path='*' 
+          element={
+            user ? (
+              <Navigate to={user.role === 'admin' ? '/admin-dashboard' : '/employee-dashboard'} replace />
+            ) : (
+              <Navigate to='/login' replace />
+            )
+          } 
+        />
       </Routes>
     </Router>
   );
