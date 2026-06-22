@@ -6,7 +6,7 @@ const { createItem, getAllItems, getItemsByReceipt, updateItem, removeItem } = r
 const {isAuth} = require('../utils/authentication')
 router.post('/claims', isAuth, createClaim)
 router.patch('/claims', isAuth, updateClaimEmployee)
-router.delete('/claims',  removeClaim)
+router.delete('/claims', isAuth, removeClaim)
 router.get('/claims',isAuth, getClaims)
 
 router.post('/receipts/find',findReceiptInfo)

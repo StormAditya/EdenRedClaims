@@ -3,71 +3,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { getAuthHeader } from "./auth";
 import Select from "react-select";
+import { customSelectStyles, options} from "../assets/selectstyle";
 
-const options = [
-  { value: "1", label: "Travel" },
-  { value: "2", label: "Food" },
-  { value: "3", label: "Medical" },
-];
-const customSelectStyles = {
-  control: (provided, state) => ({
-    ...provided,
-    backgroundColor: "rgba(23, 37, 84, 0.3)", 
-    borderColor: "rgba(59,130,246,0.2)",
-    borderRadius: "0.5rem",
-    minHeight: "52px",
-    boxShadow: "none",
-    zIndex: 9999,
-    "&:hover": {
-      borderColor: "rgba(34,211,238,0.5)",
-    },
-  }),
 
-  menu: (provided) => ({
-    ...provided,
-    backgroundColor: "#18181b", 
-    border: "1px solid rgba(59,130,246,0.2)",
-    borderRadius: "0.5rem",
-    overflow: "hidden",
-    zIndex: 9999,
-  }),
-
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isFocused ? "rgba(34,211,238,0.15)" : "#18181b",
-    color: "#f4f4f5",
-    cursor: "pointer",
-    zIndex: 9999,
-  }),
-
-  singleValue: (provided) => ({
-    ...provided,
-    color: "#f4f4f5",
-    zIndex: 9999,
-  }),
-
-  placeholder: (provided) => ({
-    ...provided,
-    color: "#71717a", 
-  }),
-
-  input: (provided) => ({
-    ...provided,
-    color: "#f4f4f5",
-    zIndex: 9999,
-  }),
-
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    color: "#22d3ee",
-    zIndex: 9999,
-  }),
-
-  indicatorSeparator: () => ({
-    display: "none",
-    zIndex: 9999,
-  }),
-};
 export default function EmployeeDashboard({ user, onLogout }) {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -78,7 +16,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [claimAmount, setClaimAmount] = useState("");
 
   const fetchClaims = async () => {
-    event.preventDefault();
     setLoading(true);
     setErrorMessage("");
 
@@ -90,7 +27,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
         },
       );
 
-      setClaims(Array.isArray(response.data.data) ? response.data.data : []);
+      setClaims(Array.isArray(response.data?.data) ? response.data.data : []);
     } catch (err) {
       console.error(err);
       setClaims([]);
@@ -150,7 +87,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
         },
       );
 
-      if (response.data.success) {
+      if (response.data?.success) {
         setAlterClaimId(null);
         setCategoryId("");
         setDescription("");
@@ -313,7 +250,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
                   <th className="pb-3 font-medium">Description</th>
                   <th className="pb-3 font-medium">Amount</th>
                   <th className="pb-3 font-medium text-right">Status</th>
-                  
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/50 text-sm">

@@ -10,6 +10,17 @@ export default function Register({ onLogin }) {
     const [address, setAddress] = useState('');
     const [name, setName] = useState('');
 
+    const normalizeUser = (userData) => ({
+        userID: userData.userID ?? userData.id ?? userData.userId,
+        name: userData.name,
+        username: userData.username ?? userData.email_id ?? userData.email ?? email_id,
+        password: userData.password,
+        contact_no: userData.contact_no ?? userData.contact_number ?? '',
+        address: userData.address ?? '',
+        role: userData.role ?? userData.user_type ?? 'employee',
+        balance: Number(userData.balance ?? 0),
+        user_type: userData.user_type ?? userData.role ?? 'employee'
+    });
 
     const [error, seterror] = useState('');
     
@@ -32,21 +43,9 @@ export default function Register({ onLogin }) {
                 contact_number: contact_number,
                 name: name,
                 user_type: 'employee'
-            })
+            });
 
-            const { token, data } = response.data;
-
-            const userData = data;
-            localStorage.setItem('token', token);
-
-            if (onLogin) {
-                onLogin(userData);
-            }
-
-            if(userData.role === 'admin'){
-                navigate("/admin-dashboard");
-            }
-            else navigate("/employee-dashboard");
+            navigate('/login');
         }
         catch(err){
             seterror(
