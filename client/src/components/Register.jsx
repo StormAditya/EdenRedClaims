@@ -15,8 +15,14 @@ export default function Register({ onLogin }) {
     
     const navigate = useNavigate();
     
-    const handleSubmit = async (e) => {
+    const handleRegister = async (e) => {
+        seterror('');
         e.preventDefault();
+
+        if(!email_id || !address || !contact_number || !name || !password){
+            seterror("All required fields must be filled.");
+            return;
+        }
 
         try{
             const response = await axios.post('http://localhost:5000/api/register', {
@@ -27,23 +33,26 @@ export default function Register({ onLogin }) {
                 name: name,
                 user_type: 'employee'
             })
-            console.log(response);
 
             const { token, data } = response.data;
 
-            localStorage.setItem('token', token)
-            // console.log(token);
-            // console.log(data);
-
             const userData = data;
+            localStorage.setItem('token', token);
 
-            if(userData.user_type === 'admin'){
+            if (onLogin) {
+                onLogin(userData);
+            }
+
+            if(userData.role === 'admin'){
                 navigate("/admin-dashboard");
             }
             else navigate("/employee-dashboard");
         }
         catch(err){
-            seterror("Incorrect email or password, please try again");
+            seterror(
+                err.response?.data?.message ||
+                "Registration failed. Please try again."
+            );
         }
         
     };
@@ -69,7 +78,7 @@ export default function Register({ onLogin }) {
                         {error}
                     </div>
                 )}
-                <form onSubmit={handleSubmit} className="space-y-3">
+                <form className="space-y-3">
                     <div >
                         <label
                         className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
@@ -104,7 +113,7 @@ export default function Register({ onLogin }) {
                         <input
                             type='text'
                             required
-                            value={email_id}
+                            value={contact_number}
                             onChange={(e) => setContact_number(e.target.value)}
                             className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
                         />
@@ -117,7 +126,7 @@ export default function Register({ onLogin }) {
                         <input
                             type='text'
                             required
-                            value={email_id}
+                            value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
                         />
@@ -136,16 +145,16 @@ export default function Register({ onLogin }) {
                             className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
                         />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 justify-items-end">
                         <button
-                            type="submit"
+                            type="button" onClick={handleRegister}
                             className="w-full mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 hover:border-cyan-400 text-cyan-300 font-bold py-3 px-4 rounded-lg text-sm tracking-wide uppercase transition shadow-cyan-950/50"
                         >
-                            Register and Login
+                            Login
                         </button>
                         <button
                             type="button" onClick={handleBack}
-                            className="w-3/5 mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 hover:border-cyan-400 text-cyan-300 font-bold py-3 px-4 rounded-lg text-sm tracking-wide uppercase transition shadow-cyan-950/50"
+                            className="w-full mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 hover:border-cyan-400 text-cyan-300 font-bold py-3 px-4 rounded-lg text-sm tracking-wide uppercase transition shadow-cyan-950/50"
                         >
                             Back
                         </button>
