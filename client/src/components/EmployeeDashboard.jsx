@@ -243,13 +243,23 @@ export default function EmployeeDashboard({ user, onLogout }) {
                           ${statusName === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : ''}
                           ${statusName === 'Rejected' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : ''}
                         `}>
-                          {statusName}
+                          {statusName}  
                         </span>
                       </td>
-                      <div>
-                        <button></button>
-                        <button></button>
-                      </div>
+                      <td className="py-4 text-right">
+                        <div className="bg-red-500 w-6 h-6 justify-center items-center rounded-md">
+                          <img 
+                          src="/images/deleteIcon.png"
+                          alt="Delete"
+                          className="w-5 h-5 cursor-pointer "
+                          onClick={() => {
+                            setAlterClaimId(claim.claim_id);
+                            removeClaim();
+                          }}
+                        />
+                        </div>
+                        
+                      </td>
                     </tr>
                   );
                 })}
