@@ -14,6 +14,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [claimAmount, setClaimAmount] = useState('');
 
   const fetchClaims = async () => {
+    event.preventDefault();
     setLoading(true);
     setErrorMessage('');
 
@@ -22,7 +23,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
         headers: getAuthHeader(),
       });
 
-      setClaims(Array.isArray(response.data?.data) ? response.data.data : []);
+      setClaims(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (err) {
       console.error(err);
       setClaims([]);
@@ -45,7 +46,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
         headers: getAuthHeader(),
       });
 
-      if (response.data?.success) {
+      if (response.data.success) {
         setCategoryId('');
         setDescription('');
         setClaimAmount('');
@@ -75,7 +76,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
         headers: getAuthHeader(),
       });
 
-      if (response.data?.success) {
+      if (response.data.success) {
         setAlterClaimId(null);
         setCategoryId('');
         setDescription('');
@@ -100,7 +101,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
       }, {
         headers: getAuthHeader(),
       });
-      if (response.data?.success) {
+      if (response.data.success) {
         setAlterClaimId('');
         await fetchClaims();
       }
@@ -213,6 +214,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                   <th className="pb-3 font-medium">Description</th>
                   <th className="pb-3 font-medium">Amount</th>
                   <th className="pb-3 font-medium text-right">Status</th>
+                  
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/50 text-sm">
@@ -244,6 +246,10 @@ export default function EmployeeDashboard({ user, onLogout }) {
                           {statusName}
                         </span>
                       </td>
+                      <div>
+                        <button></button>
+                        <button></button>
+                      </div>
                     </tr>
                   );
                 })}
