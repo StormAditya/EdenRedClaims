@@ -49,6 +49,31 @@ const getClaims = async (req, res) => {
     }
 }
 
+const getOneClaim = async (req, res) => {
+    try{
+        const { claimId } = req.params;
+        console.log("claimId:", claimId);
+        if (!claimId) {
+            return res.status(400).json({ success: false, msg: 'ClaimID not found' });
+        }
+
+        const claimsData = await claims.findOne({
+            where: {
+                id: claimId
+            }
+        }) 
+
+        if (!claimsData) {
+            return res.status(404).json({success: false, msg: 'Claim not found'});
+        }
+        return res.status(200).json({success:true, data: claimsData})   
+    }
+    catch(err){
+        console.error(err)
+        res.status(500).json({success:false, msg:"Error fetching claims"})  
+    }
+}
+
 
 const updateClaimEmployee = async (req, res) => {
     try{
@@ -129,5 +154,6 @@ module.exports = {
     getAllClaims,
     updateClaimAdmin,
     updateClaimEmployee,
-    removeClaim
+    removeClaim,
+    getOneClaim
 }

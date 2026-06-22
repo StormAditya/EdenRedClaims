@@ -70,7 +70,7 @@ export default function App(){
           } 
         />
 
-        <Route path='/employee-dashboard/updateClaim' 
+        <Route path='/employee-dashboard/updateClaim/:claimID' 
           element={user && user.role !== 'admin' ? <ClaimUpdate user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
       </Routes>

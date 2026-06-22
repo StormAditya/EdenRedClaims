@@ -72,39 +72,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
     }
   };
 
-  const updateClaims = async () => {
-    event.preventDefault();
-    setLoading(true);
-    setErrorMessage("");
-
-    try {
-      const response = await axios.patch(
-        "http://localhost:5000/api/employee-dashboard/claims",
-        {
-          claim_id: alterClaimId,
-          category_id: categoryId,
-          description: description,
-          claim_amount: claimAmount,
-        },
-        {
-          headers: getAuthHeader(),
-        },
-      );
-
-      if (response.data?.success) {
-        setAlterClaimId(null);
-        setCategoryId("");
-        setDescription("");
-        setClaimAmount("");
-        await fetchClaims();
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMessage("Unable to update claims.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  
   const removeClaim = async (claimIdToDelete) => {
     setLoading(true);
     setErrorMessage("");
@@ -155,8 +123,8 @@ export default function EmployeeDashboard({ user, onLogout }) {
     return "Placeholder";
   };
 
-  const handleEdit = () => {
-    navigate('/employee-dashboard/updateClaim');
+  const handleEdit = (claimIDToUpdate) => {
+    navigate(`/employee-dashboard/updateClaim/${claimIDToUpdate}`);
   };
 
   return (
@@ -301,7 +269,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                         <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
                             <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
                               <img
-                                src="/images/trashicon.svg"
+                                src="/public/images/trashIcon.svg"
                                 alt="Delete"
                                 className="w-5 h-5 cursor-pointer"
                                 onClick={() => removeClaim(claim.claimID)}
@@ -309,7 +277,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                             </div>
                             <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
                               <img
-                                src="/images/editIcon.svg"
+                                src="/public/images/editIcon.svg"
                                 alt="Delete"
                                 className="w-5 h-5 cursor-pointer"
                                 onClick={() => handleEdit(claim.claimID)}
