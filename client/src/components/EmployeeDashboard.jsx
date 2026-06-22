@@ -290,14 +290,25 @@ export default function EmployeeDashboard({ user, onLogout }) {
                         </span>
                       </td>
                       <td className="py-4 text-right">
-                        <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
-                          <img
-                            src="/images/deleteIcon.png"
-                            alt="Delete"
-                            className="w-5 h-5 cursor-pointer"
-                            onClick={() => removeClaim(claim.claimID)}
-                          />
+                        <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
+                            <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
+                              <img
+                                src="/images/trashicon.svg"
+                                alt="Delete"
+                                className="w-5 h-5 cursor-pointer"
+                                onClick={() => removeClaim(claim.claimID)}
+                              />
+                            </div>
+                            <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
+                              <img
+                                src="/images/editIcon.svg"
+                                alt="Delete"
+                                className="w-5 h-5 cursor-pointer"
+                                onClick={() => removeClaim(claim.claimID)}
+                              />
+                            </div>
                         </div>
+                        
                       </td>
                     </tr>
                   );
@@ -314,5 +325,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
         </div>
       </div>
     </div>
+    
   );
 }
