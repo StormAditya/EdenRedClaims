@@ -242,14 +242,15 @@ export default function EmployeeDashboard({ user, onLogout }) {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-center border-collapse">
               <thead>
                 <tr className="border-b border-zinc-800 text-zinc-400 text-xs uppercase tracking-wider font-semibold">
                   <th className="pb-3 font-medium">Claim ID</th>
                   <th className="pb-3 font-medium">Category</th>
                   <th className="pb-3 font-medium">Description</th>
                   <th className="pb-3 font-medium">Amount</th>
-                  <th className="pb-3 font-medium text-right">Status</th>
+                  <th className="pb-3 font-medium">Status</th>
+
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/50 text-sm">
@@ -278,7 +279,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                       <td className="py-4 font-bold text-white">
                         Rs.{claim.claim_amount.toFixed(2)}
                       </td>
-                      <td className="py-4 text-right">
+                      <td className="py-4">
                         <span
                           className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide
                           ${statusName === "Pending" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : ""}
@@ -290,14 +291,25 @@ export default function EmployeeDashboard({ user, onLogout }) {
                         </span>
                       </td>
                       <td className="py-4 text-right">
-                        <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
-                          <img
-                            src="/images/deleteIcon.png"
-                            alt="Delete"
-                            className="w-5 h-5 cursor-pointer"
-                            onClick={() => removeClaim(claim.claimID)}
-                          />
+                        <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
+                            <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
+                              <img
+                                src="/images/trashicon.svg"
+                                alt="Delete"
+                                className="w-5 h-5 cursor-pointer"
+                                onClick={() => removeClaim(claim.claimID)}
+                              />
+                            </div>
+                            <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
+                              <img
+                                src="/images/editIcon.svg"
+                                alt="Delete"
+                                className="w-5 h-5 cursor-pointer"
+                                onClick={() => removeClaim(claim.claimID)}
+                              />
+                            </div>
                         </div>
+                        
                       </td>
                     </tr>
                   );
@@ -314,5 +326,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
         </div>
       </div>
     </div>
+    
   );
 }
