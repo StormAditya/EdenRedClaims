@@ -258,7 +258,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
                   <th className="pb-3 font-medium">Description</th>
                   <th className="pb-3 font-medium">Amount</th>
                   <th className="pb-3 font-medium">Status</th>
-
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/50 text-sm">
