@@ -8,6 +8,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [alterClaimId, setAlterClaimId] = useState(null);
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
   const [claimAmount, setClaimAmount] = useState('');
@@ -60,11 +61,55 @@ export default function EmployeeDashboard({ user, onLogout }) {
   };
 
   const updateClaims = async () => {
+     event.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
 
-  }
+    try {
+      const response = await axios.patch('http://localhost:5000/api/employee-dashboard/claims', {
+        claim_id: alterClaimId,
+        category_id: categoryId,
+        description: description,
+        claim_amount: claimAmount,
+      }, {
+        headers: getAuthHeader(),
+      });
 
+      if (response.data?.success) {
+        setAlterClaimId(null);
+        setCategoryId('');
+        setDescription('');
+        setClaimAmount('');
+        await fetchClaims();
+      }
+      
+    } catch (err) {
+      console.error(err);
+      setErrorMessage('Unable to update claims.');
+    } finally {
+      setLoading(false);
+    }
+  };
   const removeClaim = async () => {
-
+    event.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+    try{
+      const response = await axios.delete('http://localhost:5000/api/employee-dashboard/claims', {
+        claim_id: alterClaimId,
+      }, {
+        headers: getAuthHeader(),
+      });
+      if (response.data?.success) {
+        setAlterClaimId('');
+        await fetchClaims();
+      }
+    }catch (err) {
+      console.error(err);
+      setErrorMessage('Unable to delete claims.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

@@ -5,7 +5,7 @@ const { findReceiptInfo, addReceiptInfo, deleteReceiptInfo} = require('../contro
 const { createItem, getAllItems, getItemsByReceipt, updateItem, removeItem } = require("../controllers/controller-items")
 const {isAuth} = require('../utils/authentication')
 router.post('/claims', isAuth, createClaim)
-router.put('/claims', isAuth, updateClaimEmployee)
+router.patch('/claims', isAuth, updateClaimEmployee)
 router.delete('/claims', isAuth, removeClaim)
 router.get('/claims',isAuth, getClaims)
 
