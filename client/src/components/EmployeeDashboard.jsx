@@ -242,14 +242,14 @@ export default function EmployeeDashboard({ user, onLogout }) {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-center border-collapse">
               <thead>
                 <tr className="border-b border-zinc-800 text-zinc-400 text-xs uppercase tracking-wider font-semibold">
                   <th className="pb-3 font-medium">Claim ID</th>
                   <th className="pb-3 font-medium">Category</th>
                   <th className="pb-3 font-medium">Description</th>
                   <th className="pb-3 font-medium">Amount</th>
-                  <th className="pb-3 font-medium text-right">Status</th>
+                  <th className="pb-3 font-medium">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/50 text-sm">
@@ -278,7 +278,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                       <td className="py-4 font-bold text-white">
                         Rs.{claim.claim_amount.toFixed(2)}
                       </td>
-                      <td className="py-4 text-right">
+                      <td className="py-4">
                         <span
                           className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide
                           ${statusName === "Pending" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : ""}
