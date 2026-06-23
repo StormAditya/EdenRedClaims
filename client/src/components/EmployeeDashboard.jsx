@@ -25,7 +25,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/employee-dashboard/claims",
+        "http://localhost:5050/api/employee-dashboard/claims",
         {
           headers: getAuthHeader(),
         },
@@ -46,7 +46,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
     setErrorMessage("");
     try {
       const response = await axios.delete(
-        "http://localhost:5000/api/employee-dashboard/claims",
+        "http://localhost:5050/api/employee-dashboard/claims",
         {
           headers: getAuthHeader(),
           data: { claim_id: claimIdToDelete },

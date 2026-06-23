@@ -28,7 +28,7 @@ export default function Login({ onLogin }) {
         seterror('');
 
         try{
-            const response = await axios.post('http://localhost:5000/api/login', {
+            const response = await axios.post('http://localhost:5050/api/login', {
                 email_id: email_id,
                 password: password
             })

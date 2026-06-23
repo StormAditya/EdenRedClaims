@@ -38,7 +38,7 @@ export default function Register({ onLogin }) {
         }
 
         try{
-            const response = await axios.post('http://localhost:5000/api/register', {
+            const response = await axios.post('http://localhost:5050/api/register', {
                 email_id: email_id,
                 password: password,
                 address: address,
