@@ -18,7 +18,6 @@ const AdminDashboard = ({ user, onLogout }) => {
   const [contactNo, setContactNo] = useState();
   const [role, setRole] = useState('');
   const [balance, setBalance] = useState();
-  const [delUser, setDelUser] = useState();
 
   const fetchUser = async () => {
     setLoading(true);
@@ -44,15 +43,15 @@ const AdminDashboard = ({ user, onLogout }) => {
     }
   }
 
-  const removeUser = async () => {
+  const removeUser = async (userToDelete) => {
     setLoading(true);
     setErrorMessage("");
     try {
       const response = await axios.delete(
-        "http://localhost:5000/api/admin-dashboard/claims",
+        "http://localhost:5000/api/admin-dashboard/users",
         {
           headers: getAuthHeader(),
-          data: { user_id: delUser },
+          data: { user_id: userToDelete },
         },
       );
 
@@ -160,7 +159,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                               src="/public/images/trashIcon.svg"
                               alt="Delete"
                               className="w-5 h-5 cursor-pointer"
-                              //onClick={() => removeClaim(claim.claimID)}
+                              onClick={() => removeUser(user.user_id)}
                             />
                           </div>
                           <div className="bg-yellow-300 w-6 h-6 flex justify-center items-center rounded-md">

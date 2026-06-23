@@ -104,7 +104,7 @@ const updateUser = async (req, res) => {
     try {
         const { name, password, user_type, balance, email_id, address, contact_number } = req.body
 
-        const [updatedRows] = await user.update(
+        const [updatedRows] = await User.update(
             {
                 name,
                 password,
@@ -131,7 +131,7 @@ const removeUser = async (req, res) => {
     const {id} = req.body;
     
     try{
-        const remove = await user.destroy({
+        const remove = await User.destroy({
                 where: {
                     id : id
                 }
