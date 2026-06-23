@@ -182,6 +182,27 @@ const updateUserRole = async (req, res) => {
   }
 };
 
+const updateUserPassword = async (req, res) => {
+  try {
+    const { id, password } = req.body;
+    const hashedPassword = await encrypt(String(password));
+
+    const [updatedRows] = await User.update(
+      { password: hashedPassword },
+      { where: { id } }
+    );
+
+    if (updatedRows === 0) {
+      return res.status(404).json({ success: false, msg: 'User not found' });
+    }
+
+    return res.status(200).json({ success: true, msg: 'User password updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, msg: 'Error updating user password', error: err.message });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -189,5 +210,6 @@ module.exports = {
   updateUser,
   removeUser,
   updateUserBalance,
-  updateUserRole
+  updateUserRole,
+  updateUserPassword
 }
