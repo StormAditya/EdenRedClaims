@@ -95,7 +95,8 @@ export default function EmployeeDashboard({ user, onLogout }) {
     navigate(`/employee-dashboard/updateClaim/${claimIDToUpdate}`);
   }
 
-  const handleAdd = () => {navigate('/employee-dashboard/addClaim');
+  const handleAdd = () => {
+    navigate('/employee-dashboard/addClaim');
   }
 
   return (
@@ -117,11 +118,10 @@ export default function EmployeeDashboard({ user, onLogout }) {
           Sign Out
         </button>
       </header>
-      
+
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-1 bg-gradient-to-br from-blue-950/40 to-zinc-900/40 backdrop-blur-md border border-blue-500/20 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl" />
-
           <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">
             Available Limit
           </h2>
@@ -145,9 +145,9 @@ export default function EmployeeDashboard({ user, onLogout }) {
               Claims History
             </h2>
             <div className="flex flex-row gap-3">
-              <button 
-              onClick={handleAdd}
-              className="w-9 h-8 inline-flex items-center justify-center rounded-lg border text-center border-cyan-400/40 bg-cyan-400 text-lg font-bold uppercase tracking-wide text-gray-900 transition hover:border-cyan-400 hover:bg-cyan-500/50 hover:cursor-pointer"
+              <button
+                onClick={handleAdd}
+                className="p-0 w-9 h-8 inline-flex items-center justify-center rounded-lg border text-center border-cyan-400/40 bg-cyan-400 text-lg font-bold uppercase tracking-wide text-gray-900 transition hover:border-cyan-400 hover:bg-cyan-500/50 hover:cursor-pointer"
               >
                 +
               </button>
@@ -155,7 +155,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                 {employeeClaims.length} Total Submissions
               </span>
             </div>
-            
+
           </div>
 
           <div className="overflow-x-auto">
