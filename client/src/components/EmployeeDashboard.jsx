@@ -1,9 +1,10 @@
 import React from "react";
-import { useState, useEffect } from "react";
 import axios from "axios";
-import { getAuthHeader } from "./auth";
 import Select from "react-select";
-import { customSelectStyles, options} from "../assets/selectstyle";
+
+import { getAuthHeader } from "./auth";
+import { useState, useEffect } from "react";
+import { customSelectStyles, options } from "../assets/selectstyle";
 import { useNavigate } from "react-router-dom";
 
 
@@ -72,7 +73,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
     }
   };
 
-  
+
   const removeClaim = async (claimIdToDelete) => {
     setLoading(true);
     setErrorMessage("");
@@ -127,6 +128,9 @@ export default function EmployeeDashboard({ user, onLogout }) {
     navigate(`/employee-dashboard/updateClaim/${claimIDToUpdate}`);
   };
 
+  const handleAdd = () => {navigate('/employee-dashboard/addClaim');
+  };
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
       <header className="max-w-7xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
@@ -151,39 +155,62 @@ export default function EmployeeDashboard({ user, onLogout }) {
           onSubmit={addClaims}
           className="mb-6 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
         >
-          <Select
-            options={options}
-            styles={customSelectStyles}
-            value={options.find((option) => option.value === categoryId)}
-            onChange={(selectedOption) => setCategoryId(selectedOption.value)}
-            placeholder="Select Category"
-            menuPortalTarget={document.body}
-            className="w-full"
-          />
-          <input
-            type="text"
-            name="description"
-            placeholder="Description"
-            required
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-          />
-          <input
-            type="number"
-            name="claim_amount"
-            placeholder="Claim Amount"
-            required
-            value={claimAmount}
-            onChange={(e) => setClaimAmount(e.target.value)}
-            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-          />
-          <button
-            type="submit"
-            className="w-90 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
-          >
-            Add Claim
-          </button>
+          <div id="addingDetailsDiv" className="flex flex-col gap-3 w-full">
+            <div id="claimDiv" className="flex flex-row gap-3 w-full pb-2">
+              <Select
+                options={options}
+                styles={customSelectStyles}
+                value={options.find((option) => option.value === categoryId)}
+                onChange={(selectedOption) => setCategoryId(selectedOption.value)}
+                placeholder="Select Category"
+                menuPortalTarget={document.body}
+                className="w-full"
+              />
+
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                required
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+              />
+              <input
+                type="number"
+                name="claim_amount"
+                placeholder="Claim Amount"
+                required
+                value={claimAmount}
+                onChange={(e) => setClaimAmount(e.target.value)}
+                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+              />
+              <button
+                type="submit"
+                className="w-90 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+              >
+                Add Claim
+              </button>
+            </div>
+            <div id="receiptDiv" className="flex flex-row gap-3 w-full">
+              <input type="file"
+                placeholder="Upload"
+                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+              >
+                
+              </input>
+              <input
+                type="date"
+                name="date"
+                placeholder="Receipt Date"
+                required
+
+                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+              />
+            </div>
+          </div>
+
+
         </form>
       </div>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -212,9 +239,18 @@ export default function EmployeeDashboard({ user, onLogout }) {
             <h2 className="text-lg font-bold text-white tracking-tight">
               Claims History
             </h2>
-            <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full font-medium">
-              {employeeClaims.length} Total Submissions
-            </span>
+            <div className="flex flex-row gap-3">
+              <button 
+              onClick={handleAdd}
+              className="w-9 h-8 inline-flex items-center justify-center rounded-lg border text-center border-cyan-400/40 bg-cyan-400 text-lg font-bold uppercase tracking-wide text-gray-900 transition hover:border-cyan-400 hover:bg-cyan-500/50 hover:cursor-pointer"
+              >
+                +
+              </button>
+              <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full inline-flex font-medium items-center justify-center h-8.5">
+                {employeeClaims.length} Total Submissions
+              </span>
+            </div>
+            
           </div>
 
           <div className="overflow-x-auto">
@@ -267,24 +303,24 @@ export default function EmployeeDashboard({ user, onLogout }) {
                       </td>
                       <td className="py-4 text-right">
                         <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
-                            <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
-                              <img
-                                src="/public/images/trashIcon.svg"
-                                alt="Delete"
-                                className="w-5 h-5 cursor-pointer"
-                                onClick={() => removeClaim(claim.claimID)}
-                              />
-                            </div>
-                            <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
-                              <img
-                                src="/public/images/editIcon.svg"
-                                alt="Delete"
-                                className="w-5 h-5 cursor-pointer"
-                                onClick={() => handleEdit(claim.claimID)}
-                              />
-                            </div>
+                          <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
+                            <img
+                              src="/public/images/trashIcon.svg"
+                              alt="Delete"
+                              className="w-5 h-5 cursor-pointer"
+                              onClick={() => removeClaim(claim.claimID)}
+                            />
+                          </div>
+                          <div className="bg-yellow-300 w-6 h-6 flex justify-center items-center rounded-md">
+                            <img
+                              src="/public/images/editIcon.svg"
+                              alt="Delete"
+                              className="w-5 h-5 cursor-pointer"
+                              onClick={() => handleEdit(claim.claimID)}
+                            />
+                          </div>
                         </div>
-                        
+
                       </td>
                     </tr>
                   );
@@ -301,6 +337,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
         </div>
       </div>
     </div>
-    
+
   );
 }
