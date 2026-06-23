@@ -143,11 +143,50 @@ const removeUser = async (req, res) => {
     }
     
 }
+const updateUserBalance = async (req, res) => {
+  try {
+    const { id, balance } = req.body;
+
+    const [updatedRows] = await User.update(
+      { balance },
+      { where: { id } }
+    );
+
+    if (updatedRows === 0) {
+      return res.status(404).json({ success: false, msg: 'User not found' });
+    }
+
+    return res.status(200).json({ success: true, msg: 'User balance updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, msg: 'Error updating user balance', error: err.message });
+  }
+};
+const updateUserRole = async (req, res) => {
+  try {
+    const { id, user_type } = req.body;
+    const [updatedRows] = await user.update(
+      { user_type },
+      { where: { id } }
+    );
+
+    if (updatedRows === 0) {
+      return res.status(404).json({ success: false, msg: 'User not found' });
+    }
+
+    return res.status(200).json({ success: true, msg: 'User role updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, msg: 'Error updating user role', error: err.message });
+  }
+};
 
 module.exports = {
   createUser,
   loginUser,
   getUser,
   updateUser,
-  removeUser
+  removeUser,
+  updateUserBalance,
+  updateUserRole
 }
