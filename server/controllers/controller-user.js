@@ -99,6 +99,24 @@ const getUser = async (req, res) => {
   }
     
 }
+const getUserById = async (req, res) => {
+  const {id} = req.params;
+  try{
+    const user = await User.findOne({
+      where: {
+        id : id
+      }
+    })
+    if(!user){
+      return res.status(404).json({success: false, msg: "User not found"})
+    }
+    res.status(200).json({success: true, data: user})
+  }
+  catch(err){
+    console.error(err)
+    res.status(500).json({success: false, msg: "Server Error"})
+  }
+}
 
 const updateUser = async (req, res) => {
     try {
@@ -211,5 +229,6 @@ module.exports = {
   removeUser,
   updateUserBalance,
   updateUserRole,
-  updateUserPassword
+  updateUserPassword,
+  getUserById
 }
