@@ -53,6 +53,7 @@ const AdminDashboard = ({ user, onLogout }) => {
           headers: getAuthHeader(),
           data: { user_id: userToDelete },
         },
+        
       );
 
       if (response.data?.success) {
