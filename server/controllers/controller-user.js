@@ -184,7 +184,7 @@ const updateUserBalance = async (req, res) => {
 const updateUserRole = async (req, res) => {
   try {
     const { id, user_type } = req.body;
-    const [updatedRows] = await user.update(
+    const [updatedRows] = await User.update(
       { user_type },
       { where: { id } }
     );

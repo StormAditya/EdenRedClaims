@@ -36,8 +36,6 @@ const ClaimUpdate = () => {
       setCategoryId(data.category_id);
       setDescription(data.description);
       setClaimAmount(data.claim_amount);
-      console.log(categoryId, description, claimAmount);
-
     }
     catch (err) {
       console.error(err);

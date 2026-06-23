@@ -74,8 +74,8 @@ const AdminDashboard = ({ user, onLogout }) => {
 
   const navigate = useNavigate();
 
-  const handleEdit = () => {
-    navigate('')
+  const handleEdit = (userToUpdate) => {
+    navigate(`/admin-dashboard/updateUser/${userToUpdate}`);
   }
 
   return (
@@ -173,7 +173,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                               src="/public/images/editIcon.svg"
                               alt="Delete"
                               className="w-5 h-5 cursor-pointer"
-                              //onClick={() => handleEdit(claim.claimID)}
+                              onClick={() => handleEdit(u.id)}
                             />
                           </div>
                         </div>
