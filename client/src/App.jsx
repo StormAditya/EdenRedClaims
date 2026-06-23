@@ -8,6 +8,7 @@ import Register from './components/Register';
 import ClaimUpdate from './components/ClaimUpdate'
 import AddClaim from './components/AddClaim';
 import UserUpdate from './components/UserUpdate';
+import AdminClaims from './components/AdminClaims';
 
 export default function App(){
   const [user, setUser] = useState(() => {
@@ -84,6 +85,9 @@ export default function App(){
           element={user && user.role === 'admin' ? <UserUpdate user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
         
+        <Route path='/admin-dashboard/claims'
+          element={user && user.role === 'admin' ? <AdminClaims user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+        />
       </Routes>
     </Router>
   );

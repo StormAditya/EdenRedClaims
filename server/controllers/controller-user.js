@@ -120,16 +120,14 @@ const getUserById = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const { name, password, user_type, balance, email_id, address, contact_number } = req.body
-
+        const { name, password, email_id, address, contact_number } = req.body
+        const hashedPassword = await encrypt(String(password));
         const [updatedRows] = await User.update(
             {
                 name,
-                password,
-                user_type,
+                password: hashedPassword,
                 address,
                 contact_number,
-                balance
             },
             { where: { id: req.user.userId } }
         )
