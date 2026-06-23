@@ -104,6 +104,7 @@ const updateClaimEmployee = async (req, res) => {
 
 const updateClaimAdmin = async (req, res) => {
     try{
+        
         const { claim_id, status_id } = req.body
 
         const [updatedRows] = await claims.update(

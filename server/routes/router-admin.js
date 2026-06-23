@@ -6,7 +6,7 @@ const { addCategory, removeCategory } = require('../controllers/controller-categ
 const  {isAdmin, isAuth} = require('../utils/authentication')
 
 router.get('/claims', isAuth, isAdmin, getAllClaims)
-router.patch('/claims', updateClaimAdmin)
+router.patch('/claims',isAuth, isAdmin, updateClaimAdmin)
 
 router.get('/users',isAuth,isAdmin, getUser)
 router.get('/users/:id', isAuth, isAdmin, getUserById)
