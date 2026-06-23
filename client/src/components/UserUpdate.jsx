@@ -23,7 +23,7 @@ const UserUpdate = () => {
         setLoading(true);
         setErrorMessage("");
         try {
-            const response = await axios.get(`http://localhost:5000/api/admin-dashboard/users/${userid}`, {
+            const response = await axios.get(`http://5050/api/admin-dashboard/users/${userid}`, {
                 headers: getAuthHeader()
             });
 
@@ -54,7 +54,7 @@ const UserUpdate = () => {
 
         try {
             const response = await axios.patch(
-                "http://localhost:5000/api/admin-dashboard/users/balance",
+                "http://5050/api/admin-dashboard/users/balance",
                 {
                     id: userid,
                     balance: balance,
@@ -84,7 +84,7 @@ const UserUpdate = () => {
         setErrorMessage("");
         
         try{
-            const response = await axios.patch("http://localhost:5000/api/admin-dashboard/users/role",
+            const response = await axios.patch("http://5050/api/admin-dashboard/users/role",
                 {
                     id: userid,
                     user_type: role

@@ -29,7 +29,7 @@ const ClaimUpdate = () => {
     setLoading(true);
     setErrorMessage("");
     try {
-      const response = await axios.get(`http://localhost:5000/api/employee-dashboard/claims/${claimID}`);
+      const response = await axios.get(`http://5050/api/employee-dashboard/claims/${claimID}`);
 
       const data = response.data.data;
       setClaim(data);
@@ -64,7 +64,7 @@ const ClaimUpdate = () => {
 
     try {
       const response = await axios.patch(
-        "http://localhost:5000/api/employee-dashboard/claims",
+        "http://5050/api/employee-dashboard/claims",
         {
           claim_id: claimID,
           category_id: categoryId,

@@ -27,7 +27,7 @@ const AddClaim = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/api/employee-dashboard/claims",
+                "http://localhost:5050/api/employee-dashboard/claims",
                 {
                     category_id: categoryId,
                     description: description,

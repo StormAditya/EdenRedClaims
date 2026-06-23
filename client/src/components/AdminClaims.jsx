@@ -19,7 +19,7 @@ const AdminClaims = ({ user, onLogout }) => {
     setErrorMessage("");
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/admin-dashboard/users",
+        "http://localhost:5050/api/admin-dashboard/users",
         {
           headers: getAuthHeader(),
         },
@@ -39,7 +39,7 @@ const AdminClaims = ({ user, onLogout }) => {
     setErrorMessage("");
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/admin-dashboard/claims",
+        "http://localhost:5050/api/admin-dashboard/claims",
         {
           headers: getAuthHeader(),
         },
@@ -58,7 +58,7 @@ const AdminClaims = ({ user, onLogout }) => {
   const handleStatusUpdate = async (claimId, newStatus) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/admin-dashboard/claims/`,
+        `http://localhost:5050/api/admin-dashboard/claims/`,
         {
           claim_id: claimId,
           status_id: newStatus,
@@ -78,7 +78,7 @@ const AdminClaims = ({ user, onLogout }) => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/category');
+      const response = await axios.get('http://5050/api/category');
       setCategories(Array.isArray(response.data?.data) ? response.data.data : []);
     } catch (err) {
       console.error(err);

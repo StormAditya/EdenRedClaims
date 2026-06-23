@@ -25,7 +25,7 @@ const AdminDashboard = ({ user, onLogout }) => {
 
     try{
       const response = await axios.get(
-        "http://localhost:5000/api/admin-dashboard/users",
+        "http://5050/api/admin-dashboard/users",
         {
           headers: getAuthHeader()
         }
@@ -48,7 +48,7 @@ const AdminDashboard = ({ user, onLogout }) => {
     setErrorMessage("");
     try {
       const response = await axios.delete(
-        "http://localhost:5000/api/admin-dashboard/users",
+        "http://5050/api/admin-dashboard/users",
         {
           headers: getAuthHeader(),
           data: { id: userToDelete },
