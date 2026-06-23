@@ -13,7 +13,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [alterClaimId, setAlterClaimId] = useState(null);
   const [categoryId, setCategoryId] = useState("");
   const [description, setDescription] = useState("");
   const [claimAmount, setClaimAmount] = useState("");
@@ -40,39 +39,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
     } finally {
       setLoading(false);
     }
-  };
-  const addClaims = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setErrorMessage("");
-
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/employee-dashboard/claims",
-        {
-          category_id: categoryId,
-          description: description,
-          claim_amount: claimAmount,
-        },
-        {
-          headers: getAuthHeader(),
-        },
-      );
-
-      if (response.data?.success) {
-        setCategoryId("");
-        setDescription("");
-        setClaimAmount("");
-        await fetchClaims();
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMessage("Unable to add claims.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  }
 
   const removeClaim = async (claimIdToDelete) => {
     setLoading(true);
@@ -95,7 +62,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     fetchClaims();
@@ -118,18 +85,18 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
   const getStatusName = (statusID) => {
     return "Placeholder";
-  };
+  }
 
   const getCategoryName = (categoryId) => {
     return "Placeholder";
-  };
+  }
 
   const handleEdit = (claimIDToUpdate) => {
     navigate(`/employee-dashboard/updateClaim/${claimIDToUpdate}`);
-  };
+  }
 
   const handleAdd = () => {navigate('/employee-dashboard/addClaim');
-  };
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
@@ -150,69 +117,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
           Sign Out
         </button>
       </header>
-      <div className="max-w-7xl mx-auto z-999999">
-        <form
-          onSubmit={addClaims}
-          className="mb-6 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
-        >
-          <div id="addingDetailsDiv" className="flex flex-col gap-3 w-full">
-            <div id="claimDiv" className="flex flex-row gap-3 w-full pb-2">
-              <Select
-                options={options}
-                styles={customSelectStyles}
-                value={options.find((option) => option.value === categoryId)}
-                onChange={(selectedOption) => setCategoryId(selectedOption.value)}
-                placeholder="Select Category"
-                menuPortalTarget={document.body}
-                className="w-full"
-              />
-
-              <input
-                type="text"
-                name="description"
-                placeholder="Description"
-                required
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-              />
-              <input
-                type="number"
-                name="claim_amount"
-                placeholder="Claim Amount"
-                required
-                value={claimAmount}
-                onChange={(e) => setClaimAmount(e.target.value)}
-                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-              />
-              <button
-                type="submit"
-                className="w-90 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
-              >
-                Add Claim
-              </button>
-            </div>
-            <div id="receiptDiv" className="flex flex-row gap-3 w-full">
-              <input type="file"
-                placeholder="Upload"
-                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-              >
-                
-              </input>
-              <input
-                type="date"
-                name="date"
-                placeholder="Receipt Date"
-                required
-
-                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-              />
-            </div>
-          </div>
-
-
-        </form>
-      </div>
+      
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-1 bg-gradient-to-br from-blue-950/40 to-zinc-900/40 backdrop-blur-md border border-blue-500/20 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl" />

@@ -97,15 +97,21 @@ const ClaimUpdate = () => {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
-      <div
-        className="mb-5 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-3"
-      >
+      <header className="max-w-7xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
-            <h1 className="text-2xl font-black tracking-tight text-white">
-              Update Claim: {claimID}
-            </h1>
-          </div>
-      </div>
+          <h1 className="text-2xl font-black tracking-tight text-white">
+            Update Claim: <span className="text-cyan-400">{claimID}</span>
+          </h1>
+
+        </div>
+        <button
+          onClick={handleBack}
+          className="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 text-xs font-bold tracking-wider uppercase border border-zinc-800 rounded-lg transition"
+        >
+          Back
+        </button>
+      </header>
+
       <form
         className="mb-10 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
       >
@@ -157,7 +163,7 @@ const ClaimUpdate = () => {
                 name="date"
                 placeholder="Claim Amount"
                 required
-                
+
                 className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
               />
             </div>
