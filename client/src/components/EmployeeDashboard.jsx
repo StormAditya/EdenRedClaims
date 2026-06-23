@@ -1,19 +1,23 @@
 import React from "react";
-import { useState, useEffect } from "react";
 import axios from "axios";
-import { getAuthHeader } from "./auth";
 import Select from "react-select";
-import { customSelectStyles, options} from "../assets/selectstyle";
+
+import { getAuthHeader } from "./auth";
+import { useState, useEffect } from "react";
+import { customSelectStyles, options } from "../assets/selectstyle";
+import { useNavigate } from "react-router-dom";
+
 
 
 export default function EmployeeDashboard({ user, onLogout }) {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [alterClaimId, setAlterClaimId] = useState(null);
   const [categoryId, setCategoryId] = useState("");
   const [description, setDescription] = useState("");
   const [claimAmount, setClaimAmount] = useState("");
+
+  const navigate = useNavigate();
 
   const fetchClaims = async () => {
     setLoading(true);
@@ -35,72 +39,8 @@ export default function EmployeeDashboard({ user, onLogout }) {
     } finally {
       setLoading(false);
     }
-  };
-  const addClaims = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setErrorMessage("");
+  }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/employee-dashboard/claims",
-        {
-          category_id: categoryId,
-          description: description,
-          claim_amount: claimAmount,
-        },
-        {
-          headers: getAuthHeader(),
-        },
-      );
-
-      if (response.data?.success) {
-        setCategoryId("");
-        setDescription("");
-        setClaimAmount("");
-        await fetchClaims();
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMessage("Unable to add claims.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateClaims = async () => {
-    event.preventDefault();
-    setLoading(true);
-    setErrorMessage("");
-
-    try {
-      const response = await axios.patch(
-        "http://localhost:5000/api/employee-dashboard/claims",
-        {
-          claim_id: alterClaimId,
-          category_id: categoryId,
-          description: description,
-          claim_amount: claimAmount,
-        },
-        {
-          headers: getAuthHeader(),
-        },
-      );
-
-      if (response.data?.success) {
-        setAlterClaimId(null);
-        setCategoryId("");
-        setDescription("");
-        setClaimAmount("");
-        await fetchClaims();
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMessage("Unable to update claims.");
-    } finally {
-      setLoading(false);
-    }
-  };
   const removeClaim = async (claimIdToDelete) => {
     setLoading(true);
     setErrorMessage("");
@@ -122,7 +62,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     fetchClaims();
@@ -145,11 +85,18 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
   const getStatusName = (statusID) => {
     return "Placeholder";
-  };
+  }
 
   const getCategoryName = (categoryId) => {
     return "Placeholder";
-  };
+  }
+
+  const handleEdit = (claimIDToUpdate) => {
+    navigate(`/employee-dashboard/updateClaim/${claimIDToUpdate}`);
+  }
+
+  const handleAdd = () => {navigate('/employee-dashboard/addClaim');
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
@@ -170,46 +117,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
           Sign Out
         </button>
       </header>
-      <div className="max-w-7xl mx-auto z-999999">
-        <form
-          onSubmit={addClaims}
-          className="mb-6 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
-        >
-          <Select
-            options={options}
-            styles={customSelectStyles}
-            value={options.find((option) => option.value === categoryId)}
-            onChange={(selectedOption) => setCategoryId(selectedOption.value)}
-            placeholder="Select Category"
-            menuPortalTarget={document.body}
-            className="w-full"
-          />
-          <input
-            type="text"
-            name="description"
-            placeholder="Description"
-            required
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-          />
-          <input
-            type="number"
-            name="claim_amount"
-            placeholder="Claim Amount"
-            required
-            value={claimAmount}
-            onChange={(e) => setClaimAmount(e.target.value)}
-            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-          />
-          <button
-            type="submit"
-            className="w-90 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
-          >
-            Add Claim
-          </button>
-        </form>
-      </div>
+      
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-1 bg-gradient-to-br from-blue-950/40 to-zinc-900/40 backdrop-blur-md border border-blue-500/20 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl" />
@@ -236,9 +144,18 @@ export default function EmployeeDashboard({ user, onLogout }) {
             <h2 className="text-lg font-bold text-white tracking-tight">
               Claims History
             </h2>
-            <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full font-medium">
-              {employeeClaims.length} Total Submissions
-            </span>
+            <div className="flex flex-row gap-3">
+              <button 
+              onClick={handleAdd}
+              className="w-9 h-8 inline-flex items-center justify-center rounded-lg border text-center border-cyan-400/40 bg-cyan-400 text-lg font-bold uppercase tracking-wide text-gray-900 transition hover:border-cyan-400 hover:bg-cyan-500/50 hover:cursor-pointer"
+              >
+                +
+              </button>
+              <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full inline-flex font-medium items-center justify-center h-8.5">
+                {employeeClaims.length} Total Submissions
+              </span>
+            </div>
+            
           </div>
 
           <div className="overflow-x-auto">
@@ -291,24 +208,24 @@ export default function EmployeeDashboard({ user, onLogout }) {
                       </td>
                       <td className="py-4 text-right">
                         <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
-                            <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
-                              <img
-                                src="/images/trashicon.svg"
-                                alt="Delete"
-                                className="w-5 h-5 cursor-pointer"
-                                onClick={() => removeClaim(claim.claimID)}
-                              />
-                            </div>
-                            <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
-                              <img
-                                src="/images/editIcon.svg"
-                                alt="Delete"
-                                className="w-5 h-5 cursor-pointer"
-                                onClick={() => removeClaim(claim.claimID)}
-                              />
-                            </div>
+                          <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
+                            <img
+                              src="/public/images/trashIcon.svg"
+                              alt="Delete"
+                              className="w-5 h-5 cursor-pointer"
+                              onClick={() => removeClaim(claim.claimID)}
+                            />
+                          </div>
+                          <div className="bg-yellow-300 w-6 h-6 flex justify-center items-center rounded-md">
+                            <img
+                              src="/public/images/editIcon.svg"
+                              alt="Delete"
+                              className="w-5 h-5 cursor-pointer"
+                              onClick={() => handleEdit(claim.claimID)}
+                            />
+                          </div>
                         </div>
-                        
+
                       </td>
                     </tr>
                   );
@@ -325,6 +242,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
         </div>
       </div>
     </div>
-    
+
   );
 }

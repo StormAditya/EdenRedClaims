@@ -6,6 +6,7 @@ import EmployeeDashboard from './components/EmployeeDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import Register from './components/Register';
 import ClaimUpdate from './components/ClaimUpdate'
+import AddClaim from './components/AddClaim';
 
 export default function App(){
   const [user, setUser] = useState(() => {
@@ -70,8 +71,12 @@ export default function App(){
           } 
         />
 
-        <Route path='/admin-dashboard/updateClaim' 
+        <Route path='/employee-dashboard/updateClaim/:claimID' 
           element={user && user.role !== 'admin' ? <ClaimUpdate user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+        />
+
+        <Route path='/employee-dashboard/addClaim'
+          element={user && user.role !== 'admin' ? <AddClaim user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
       </Routes>
     </Router>

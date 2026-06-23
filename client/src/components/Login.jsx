@@ -19,7 +19,8 @@ export default function Login({ onLogin }) {
         address: userData.address ?? '',
         role: userData.role ?? userData.user_type ?? 'employee',
         balance: Number(userData.balance ?? 0),
-        user_type: userData.user_type ?? userData.role ?? 'employee'
+        user_type: userData.user_type ?? userData.role ?? 'employee',
+        company: userData.company
     });
     
     const handleSubmit = async (e) => {
