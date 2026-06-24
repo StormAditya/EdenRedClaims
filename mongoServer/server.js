@@ -6,18 +6,19 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const cron = require('node-cron');
+const {connection} = require('./db');
+
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 const Receipt = require('./models/Receipt');
+
 const { processBatchQueue } = require('./ProcessBatchQueue');
 app.use(cors());
 app.use(express.json());
 
-
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB successfully...'))
-  .catch(err => console.error('MongoDB database connection error:', err));
+connection();
 
 // Configure local disk upload path strings
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
@@ -40,18 +41,23 @@ let secondsRemaining = TOTAL_CYCLE_SECONDS;
 
 
 // Global 10-second ticker interval
-setInterval(() => {
-  secondsRemaining -= 10;
-  if (secondsRemaining <= 0) {
-    processBatchQueue();
-    secondsRemaining = TOTAL_CYCLE_SECONDS;
-  } else {
-    const minutes = Math.floor(secondsRemaining / 60);
-    const seconds = secondsRemaining % 60;
-    const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    console.log(`⏰ Time until next local GPU sweep: [ ${timeString} ] (${secondsRemaining}s remaining)`);
-  }
-}, 10000);
+// setInterval(() => {
+//   secondsRemaining -= 10;
+//   if (secondsRemaining <= 0) {
+//     processBatchQueue();
+//     secondsRemaining = TOTAL_CYCLE_SECONDS;
+//   } else {
+//     const minutes = Math.floor(secondsRemaining / 60);
+//     const seconds = secondsRemaining % 60;
+//     const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+//     console.log(`⏰ Time until next local GPU sweep: [ ${timeString} ] (${secondsRemaining}s remaining)`);
+//   }
+// }, 10000);
+
+cron.schedule('*/2 * * * *', () => {
+  console.log('running every 2 minutes');
+  processBatchQueue();
+});
 
 // ==========================================================
 // HTTP SERVICE ROUTER PATHS
@@ -75,7 +81,5 @@ app.get('/api/receipts/history', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Offline Direct Vision hub active on port ${PORT}`);
-  console.log(`Connected to MongoDB successfully...`);
-  console.log(`⏳ Live countdown active. Running sweeps every 1:00 minute.\n`);
+  console.log('server on...')
 });
