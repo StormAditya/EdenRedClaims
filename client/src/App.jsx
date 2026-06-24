@@ -5,10 +5,11 @@ import Login from './components/Login';
 import EmployeeDashboard from './components/EmployeeDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import Register from './components/Register';
-import ClaimUpdate from './components/ClaimUpdate'
-import AddClaim from './components/AddClaim';
-import UserUpdate from './components/UserUpdate';
-import AdminClaims from './components/AdminClaims';
+import ClaimUpdate from './components/Employee/ClaimUpdate'
+import AddClaim from './components/Employee/AddClaim';
+import UserUpdate from './components/Admin/UserUpdate';
+import AdminClaims from './components/Admin/AdminClaims';
+import AdminUsers from './components/Admin/AdminUsers';
 
 export default function App(){
   const [user, setUser] = useState(() => {
@@ -83,6 +84,10 @@ export default function App(){
 
         <Route path='/admin-dashboard/updateUser/:userid'
           element={user && user.role === 'admin' ? <UserUpdate user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+        />
+
+        <Route path='/admin-dashboard/users'
+          element={user && user.role === 'admin' ? <AdminUsers user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
         
         <Route path='/admin-dashboard/claims'

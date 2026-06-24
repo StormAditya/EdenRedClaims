@@ -2,9 +2,9 @@ import React from "react";
 import axios from "axios";
 import Select from "react-select";
 
-import { getAuthHeader } from "./auth";
+import { getAuthHeader } from "../auth";
 import { useState, useEffect } from "react";
-import { customSelectStyles, options } from "../assets/selectstyle";
+import { customSelectStyles, options } from "../../assets/selectstyle";
 import { useNavigate } from "react-router-dom";
 
 const AdminClaims = ({ user, onLogout }) => {

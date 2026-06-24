@@ -2,14 +2,14 @@ import React from "react";
 import axios from "axios";
 import Select from "react-select";
 
-import { getAuthHeader } from "./auth";
+import { getAuthHeader } from "../auth";
 import { useState, useEffect } from "react";
-import { customSelectStyles, options } from "../assets/selectstyle";
+import { customSelectStyles, options } from "../../assets/selectstyle";
 import { useNavigate } from "react-router-dom";
 
 
 
-const AdminDashboard = ({ user, onLogout }) => {
+const AdminUsers = ({ user, onLogout }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -196,4 +196,4 @@ const AdminDashboard = ({ user, onLogout }) => {
   );
 };
 
-export default AdminDashboard;
+export default AdminUsers;
