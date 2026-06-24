@@ -22,13 +22,13 @@ const AddClaim = () => {
     const navigate = useNavigate();
     const handleBack = () => navigate('/employee-dashboard');
 
-    // Helper utility to read file and convert to a Base64 string
+    
     const convertToBase64 = (fileObj) => {
         return new Promise((resolve, reject) => {
             const fileReader = new FileReader();
             fileReader.readAsDataURL(fileObj);
             fileReader.onload = () => {
-                resolve(fileReader.result); // Returns the standard Base64 string representation
+                resolve(fileReader.result); 
             };
             fileReader.onerror = (error) => {
                 reject(error);
@@ -42,7 +42,7 @@ const AddClaim = () => {
         setErrorMessage("");
 
         try {
-            // 1. Post to the claims API first
+            
             const response = await axios.post(
                 "http://localhost:5050/api/employee-dashboard/claims",
                 {
@@ -64,25 +64,25 @@ const AddClaim = () => {
                 throw new Error("Failed to retrieve claim ID from server.");
             }
 
-            // 3. Process the file conversion if a receipt image is selected
+            
             let base64File = "";
             if (file) {
                 base64File = await convertToBase64(file);
             }
 
-            // 4. Post directly to your receipts API using exact Schema field matches
+            
             const receiptResponse = await axios.post(
-                "http://localhost:5120/api/receipts",
+                "http://localhost:5001/api/receipts",
                 {
-                    imageBuffer: base64File,        // Matches your String property schema
-                    claim_id: Number(claimId),      // Forces configuration as a Number type matching the schema
+                    imageBuffer: base64File,        
+                    claim_id: Number(claimId),      
                 },
                 {
                     headers: getAuthHeader(),
                 }
             );
 
-            // 5. Reset component state values on complete success
+            
             if (response.data?.success || receiptResponse.status === 200) {
                 setCategoryId("");
                 setDescription("");
@@ -90,7 +90,7 @@ const AddClaim = () => {
                 setDate("");
                 setFile(null);
                 
-                // Triggers parent re-fetch if it passes down as a scope dependency 
+                
                 if (typeof fetchClaims === "function") await fetchClaims();
                 handleBack();
             }
