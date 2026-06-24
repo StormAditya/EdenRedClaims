@@ -55,11 +55,9 @@ const AddClaim = () => {
                 },
             );
 
-            // 2. Extract the newly created claim ID from the backend response
-            // Adjust response mapping here if your server nests the ID differently (e.g., response.data.id)
+            console.log("Claim added successfully:", response.data);
             const claimId = response.data.data.id; 
-            
-
+            console.log("Claim ID received from server:", claimId);
             if (!claimId) {
                 throw new Error("Failed to retrieve claim ID from server.");
             }
