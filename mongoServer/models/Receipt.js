@@ -12,3 +12,5 @@ const ReceiptSchema = new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now }
 });
 const Receipt = mongoose.model('Receipt', ReceiptSchema);
+
+module.exports = Receipt;
