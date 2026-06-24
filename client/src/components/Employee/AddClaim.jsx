@@ -19,6 +19,22 @@ const AddClaim = () => {
     const [file, setFile] = useState(null);
     const [date, setDate] = useState("");
 
+    const navigate = useNavigate();
+    const handleBack = () => navigate('/employee-dashboard');
+
+    // Helper utility to read file and convert to a Base64 string
+    const convertToBase64 = (fileObj) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(fileObj);
+            fileReader.onload = () => {
+                resolve(fileReader.result); // Returns the standard Base64 string representation
+            };
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
 
     const addClaims = async (event) => {
         event.preventDefault();
@@ -26,6 +42,7 @@ const AddClaim = () => {
         setErrorMessage("");
 
         try {
+            // 1. Post to the claims API first
             const response = await axios.post(
                 "http://localhost:5050/api/employee-dashboard/claims",
                 {
@@ -38,24 +55,51 @@ const AddClaim = () => {
                 },
             );
 
-            if (response.data?.success) {
+            // 2. Extract the newly created claim ID from the backend response
+            // Adjust response mapping here if your server nests the ID differently (e.g., response.data.id)
+            const claimId = response.data?.claim?._id || response.data?._id; 
+
+            if (!claimId) {
+                throw new Error("Failed to retrieve claim ID from server.");
+            }
+
+            // 3. Process the file conversion if a receipt image is selected
+            let base64File = "";
+            if (file) {
+                base64File = await convertToBase64(file);
+            }
+
+            // 4. Post directly to your receipts API using exact Schema field matches
+            const receiptResponse = await axios.post(
+                "http://localhost:5120/api/receipts",
+                {
+                    imageBuffer: base64File,        // Matches your String property schema
+                    claim_id: Number(claimId),      // Forces configuration as a Number type matching the schema
+                },
+                {
+                    headers: getAuthHeader(),
+                }
+            );
+
+            // 5. Reset component state values on complete success
+            if (response.data?.success || receiptResponse.status === 200) {
                 setCategoryId("");
                 setDescription("");
                 setClaimAmount("");
-                await fetchClaims();
+                setDate("");
+                setFile(null);
+                
+                // Triggers parent re-fetch if it passes down as a scope dependency 
+                if (typeof fetchClaims === "function") await fetchClaims();
+                handleBack();
             }
         } catch (err) {
             console.error(err);
-            setErrorMessage("Unable to add claims.");
+            setErrorMessage(err.message || "Unable to complete adding claim and uploading receipt.");
         } finally {
             setLoading(false);
-            handleBack();
         }
     };
-
-    const navigate = useNavigate();
-    const handleBack = () => navigate('/employee-dashboard')
-
 
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
@@ -64,7 +108,6 @@ const AddClaim = () => {
                     <h1 className="text-2xl font-black tracking-tight text-white">
                         Add Claim
                     </h1>
-
                 </div>
                 <button
                     onClick={handleBack}
@@ -73,6 +116,13 @@ const AddClaim = () => {
                     Back
                 </button>
             </header>
+
+            {errorMessage && (
+                <div className="max-w-7xl mx-auto mb-4 p-3 bg-red-950/50 border border-red-500/40 text-red-200 rounded-lg">
+                    {errorMessage}
+                </div>
+            )}
+
             <form
                 onSubmit={addClaims}
                 className="mb-6 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
@@ -97,9 +147,9 @@ const AddClaim = () => {
                             <input
                                 type="date"
                                 name="date"
-                                placeholder="Claim Amount"
                                 required
-
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
                                 className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
                             />
                         </div>
@@ -116,6 +166,7 @@ const AddClaim = () => {
                             />
                         </div>
                     </div>
+                    
                     <div className="w-full flex flex-row gap-5">
                         <div className="flex flex-col gap-3 w-full">
                             <label>Description</label>
@@ -131,23 +182,26 @@ const AddClaim = () => {
                         </div>
                         <div className="flex flex-col gap-3 w-80">
                             <label>Add Receipt</label>
-                            <input type="file"
-                                placeholder="Upload"
-                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                            >
-                            </input>
+                            <input 
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setFile(e.target.files[0])}
+                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md file:mr-4 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 file:cursor-pointer"
+                            />
                         </div>
-
                     </div>
+                    
                     <div className="flex flex-row gap-5 w-half">
                         <button
-                            type="button" onClick={addClaims}
-                            className="w-30 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+                            type="submit"
+                            disabled={loading}
+                            className="w-30 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Add
+                            {loading ? "Adding..." : "Add"}
                         </button>
                         <button
-                            type="button" onClick={handleBack}
+                            type="button" 
+                            onClick={handleBack}
                             className="w-30 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
                         >
                             Back
@@ -156,12 +210,7 @@ const AddClaim = () => {
                 </div>
             </form>
         </div>
-
-
     );
 };
 
 export default AddClaim;
-
-
-
