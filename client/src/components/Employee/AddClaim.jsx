@@ -56,8 +56,8 @@ const AddClaim = () => {
             );
 
             console.log("Claim added successfully:", response.data);
-            const claimId = response.data.id; 
-
+            const claimId = response.data.data.id; 
+            console.log("Claim ID received from server:", claimId);
             if (!claimId) {
                 throw new Error("Failed to retrieve claim ID from server.");
             }
