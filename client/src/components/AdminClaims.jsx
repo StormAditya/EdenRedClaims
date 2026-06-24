@@ -78,7 +78,7 @@ const AdminClaims = ({ user, onLogout }) => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://5050/api/category');
+      const response = await axios.get('http://localhost:5050/api/category');
       setCategories(Array.isArray(response.data?.data) ? response.data.data : []);
     } catch (err) {
       console.error(err);
