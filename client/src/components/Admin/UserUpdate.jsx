@@ -113,13 +113,10 @@ const UserUpdate = () => {
         fetchUser();
     }, []);
 
-    /* useEffect(() => {
-      console.log("claim updated:", claim);
-    }, [claim]);
-    */
+    
     const navigate = useNavigate();
 
-    const handleBack = () => navigate('/admin-dashboard')
+    const handleBack = () => navigate('/admin-dashboard/users')
 
 
 

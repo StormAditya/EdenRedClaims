@@ -32,7 +32,7 @@ const createReceipt = async (req, res) => {
 
 const getReceipt = async (req, res) => {
     try{    
-        const {id} = req.body;
+        const {id} = req.params;
 
         const response = await Receipt.findOne({ claim_id: Number(id)});
 
@@ -48,4 +48,47 @@ const getReceipt = async (req, res) => {
     }
 }
 
-module.exports = { createReceipt, getReceipt };
+const deleteReceipt = async (req, res) => {
+    try{
+        const {id} = req.body;
+
+        const response = await Receipt.findOneAndDelete(
+            { claim_id: Number(id)}, 
+        );
+
+        if(!response){
+            return res.status(404).json({success: false, msg: 'Receipt not found'});
+        }
+
+        return res.status(200).json({success: true, data: response});
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({success: false, msg: 'Server Error to update receipt...'})
+    }
+}
+
+const updateReceipt = async (req, res) => {
+    try{
+        const {id, imageBuffer} = req.body;
+
+        const response = await Receipt.findOneAndReplace(
+            { claim_id: Number(id)}, 
+            { imageBuffer: imageBuffer}
+        );
+
+        if(!response){
+            return res.status(404).json({success: false, msg: 'Receipt not found'});
+        }
+
+        return res.status(200).json({success: true, data: response});
+
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({success: false, msg: 'Server Error to update receipt...'})
+    }
+}
+
+module.exports = { createReceipt, getReceipt, updateReceipt, deleteReceipt };

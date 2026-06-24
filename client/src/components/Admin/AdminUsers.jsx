@@ -23,7 +23,7 @@ const AdminUsers = ({ user, onLogout }) => {
     setLoading(true);
     setErrorMessage('');
 
-    try{
+    try {
       const response = await axios.get(
         "http://localhost:5050/api/admin-dashboard/users",
         {
@@ -33,12 +33,12 @@ const AdminUsers = ({ user, onLogout }) => {
 
       setUsers(Array.isArray(response.data?.data) ? response.data.data : []);
     }
-    catch(err){
+    catch (err) {
       console.error(err);
       setErrorMessage("Unable to fetch Users.")
       setUsers([]);
     }
-    finally{
+    finally {
       setLoading(false);
     }
   }
@@ -99,99 +99,111 @@ const AdminUsers = ({ user, onLogout }) => {
       </header>
 
       <div className="lg:col-span-2 bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-white tracking-tight">
-              Users
-            </h2>
-            <div className="flex flex-row gap-3">
-              
-              <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full inline-flex font-medium items-center justify-center h-8.5">
-                {users.length} Total Users
-              </span>
-            </div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-bold text-white tracking-tight">
+            Users
+          </h2>
+          <div className="flex flex-row gap-3">
 
+            <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full inline-flex font-medium items-center justify-center h-8.5">
+              {users.length} Total Users
+            </span>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-center border-collapse">
-              <thead>
-                <tr className="border-b border-zinc-800 text-zinc-400 text-xs uppercase tracking-wider font-semibold">
-                  <th className="pb-3 font-medium">User ID</th>
-                  <th className="pb-3 font-medium">Name</th>
-                  <th className="pb-3 font-medium">Email ID</th>
-                  <th className="pb-3 font-medium">Balance</th>
-                  <th className="pb-3 font-medium">Role</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-800/50 text-sm">
-                {users.map((u) => {
-                  return (
-                    <tr
-                      key={u.user_id}
-                      className="group hover:bg-zinc-900/20 transition-colors"
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-center border-collapse">
+            <thead>
+              <tr className="border-b border-zinc-800 text-zinc-400 text-xs uppercase tracking-wider font-semibold">
+                <th className="pb-3 font-medium">User ID</th>
+                <th className="pb-3 font-medium">Name</th>
+                <th className="pb-3 font-medium">Email ID</th>
+                <th className="pb-3 font-medium">Balance</th>
+                <th className="pb-3 font-medium">Role</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-800/50 text-sm">
+              {users.map((u) => {
+
+                return (
+                  <tr
+                    key={u.user_id}
+                    className="group hover:bg-zinc-900/20 transition-colors"
+                  >
+                    <td className="py-4 font-mono font-medium text-zinc-400">
+                      {u.id}
+                    </td>
+                    <td
+                      className="py-4 text-zinc-400 max-w-xs truncate pr-4"
+                      title={u.name}
                     >
-                      <td className="py-4 font-mono font-medium text-zinc-400">
-                        {u.id}
-                      </td>
-                      <td
-                        className="py-4 text-zinc-400 max-w-xs truncate pr-4"
-                        title={u.name}
-                      >
-                        {u.name}
-                      </td>
-                      <td
-                        className="py-4 text-zinc-400 max-w-xs truncate pr-4"
-                        title={u.email_id}
-                      >
-                        {u.email_id}
-                      </td>
-                      <td className="py-4 font-bold text-white">
-                        Rs.{(u.balance === null) ? 0 : u.balance.toFixed(2)}
-                      </td>
-                      <td className="py-4">
-                        <span
-                          className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide
+                      {u.name}
+                    </td>
+                    <td
+                      className="py-4 text-zinc-400 max-w-xs truncate pr-4"
+                      title={u.email_id}
+                    >
+                      {u.email_id}
+                    </td>
+                    <td className="py-4 font-bold text-white">
+                      Rs.{(u.balance === null) ? 0 : u.balance.toFixed(2)}
+                    </td>
+                    <td className="py-4">
+                      <span
+                        className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide
                           ${u.user_type === "employee" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : ""}
                           ${u.user_type === "admin" ? "bg-red-500/10 text-red-400 border border-red-500/20" : ""}
                         `}
-                        >
-                          {u.user_type}
-                        </span>
-                      </td>
-                      <td className="py-4 text-right">
-                        <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
-                          <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
-                            <img
-                              src="/public/images/trashIcon.svg"
-                              alt="Delete"
-                              className="w-5 h-5 cursor-pointer"
-                              onClick={() => removeUser(u.id)}
-                            />
-                          </div>
-                          <div className="bg-yellow-300 w-6 h-6 flex justify-center items-center rounded-md">
-                            <img
-                              src="/public/images/editIcon.svg"
-                              alt="Delete"
-                              className="w-5 h-5 cursor-pointer"
-                              onClick={() => handleEdit(u.id)}
-                            />
-                          </div>
-                        </div>
-                      </td>
-                      
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      >
+                        {u.user_type}
+                      </span>
+                    </td>
+                    <td className="py-4 text-right">
+                      <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
+                        <div className={`w-6 h-6 flex justify-center items-center rounded-md 
+                          ${user.userID === u.id
+                            ? "bg-gray-500 cursor-not-allowed pointer-events-none"
+                            : "bg-red-500 cursor-pointer"
+                          }`}
+                          onClick={() => {
+                              removeUser(u.id);
+                          }}>
+                          <img
+                            src="/public/images/trashIcon.svg"
+                            alt="Delete"
+                            className="w-5 h-5"
 
-            {users.length === 0 && (
-              <div className="text-center py-12 text-zinc-500 text-sm">
-                No users exist...
-              </div>
-            )}
-          </div>
+                          />
+                        </div>
+                        <div className={`w-6 h-6 flex justify-center items-center rounded-md
+                          ${user.userID === u.id
+                            ? "bg-gray-500 cursor-not-allowed pointer-events-none"
+                            : "bg-yellow-500 cursor-pointer"
+                          }`}>
+                          <img
+                            src="/public/images/editIcon.svg"
+                            alt="Delete"
+                            className="w-5 h-5 cursor-pointer"
+                            onClick={() => handleEdit(u.id)}
+                          />
+                        </div>
+                      </div>
+                    </td>
+
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          {users.length === 0 && (
+            <div className="text-center py-12 text-zinc-500 text-sm">
+              No users exist...
+            </div>
+          )}
         </div>
+      </div>
     </div>
   );
 };
