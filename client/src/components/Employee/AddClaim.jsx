@@ -34,7 +34,7 @@ const AddClaim = () => {
                 reject(error);
             };
         });
-    };
+    }
 
     const addClaims = async (event) => {
         event.preventDefault();
@@ -57,7 +57,8 @@ const AddClaim = () => {
 
             // 2. Extract the newly created claim ID from the backend response
             // Adjust response mapping here if your server nests the ID differently (e.g., response.data.id)
-            const claimId = response.data?.claim?._id || response.data?._id; 
+            const claimId = response.data.data.id; 
+            
 
             if (!claimId) {
                 throw new Error("Failed to retrieve claim ID from server.");
@@ -99,7 +100,7 @@ const AddClaim = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }
 
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">

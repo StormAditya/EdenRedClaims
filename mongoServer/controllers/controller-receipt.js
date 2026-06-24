@@ -4,10 +4,12 @@ const addReceipt = async (req, res) => {
     try{
         const { imageBuffer, claim_id } = req.body;
         
-        const newReceipt = await receipt.create({
-            imageBuffer: imageBuffer,
-            claim_id: claim_id
+        const newReceipt = new receipt({
+            imageBuffer,
+            claim_id: Number(claim_id)
         });
+
+        await newReceipt.save();
 
         return res.status(200).json({success: true, data: newReceipt});
     }
