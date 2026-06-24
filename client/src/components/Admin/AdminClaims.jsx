@@ -6,13 +6,15 @@ import { getAuthHeader } from "../auth";
 import { useState, useEffect } from "react";
 import { customSelectStyles, options } from "../../assets/selectstyle";
 import { useNavigate } from "react-router-dom";
+import { set } from "mongoose";
 
 const AdminClaims = ({ user, onLogout }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [claims, setClaims] = useState([]);
-  const [categories, setCategories] = useState([]); // Fixed: renamed to plural for consistency
+  const [categories, setCategories] = useState([]);
+  const [receipt, setReceipt] = useState('');
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -53,6 +55,28 @@ const AdminClaims = ({ user, onLogout }) => {
       setLoading(false);
     }
   };
+
+  const fetchReceipt = async (idToFetch) => {
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      const response = await axios.get(
+        "http://localhost:5001/api/receipts",
+        {
+          id: idToFetch
+        }
+      );
+
+      setReceipt(response);
+      
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Unable to fetch receipt...");
+      setReceipt('');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // Handler for approving or rejecting a claim
   const handleStatusUpdate = async (claimId, newStatus) => {
@@ -201,10 +225,14 @@ const AdminClaims = ({ user, onLogout }) => {
                   </td>
                   <td className="py-3">
                     <button
+                      onClick={fetchReceipt(claim.id)}
                       className="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
                     >
                       View Receipt
                     </button>
+                  </td>
+                  <td>
+                    <img src={receipt.imageBuffer}></img>
                   </td>
                 </tr>
               ))}

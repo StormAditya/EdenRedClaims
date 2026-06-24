@@ -1,11 +1,9 @@
 const Receipt = require('../models/Receipt');
 
-// Controller function for POST /api/receipts
 const createReceipt = async (req, res) => {
     try {
         const { imageBuffer, claim_id } = req.body;
 
-        // Validation check
         if (!imageBuffer || !claim_id) {
             return res.status(400).json({ 
                 success: false, 
@@ -13,9 +11,8 @@ const createReceipt = async (req, res) => {
             });
         }
 
-        // Create new document instance
         const newReceipt = new Receipt({
-            imageBuffer, // Stores the Base64 string directly
+            imageBuffer, 
             claim_id: Number(claim_id)
         });
 
@@ -29,8 +26,26 @@ const createReceipt = async (req, res) => {
 
     } catch (error) {
         console.error("Receipt Save Error:", error);
-        return res.status(500).json({ success: false, message: "Server error saving receipt." });
+        return res.status(500).json({ success: false, message: "Server error saving receipt..." });
     }
 };
 
-module.exports = { createReceipt };
+const getReceipt = async (req, res) => {
+    try{    
+        const {id} = req.body;
+
+        const response = await Receipt.findOne({ claim_id: Number(id)});
+
+        if(!response){
+            return res.status(404).json({success: false, msg: 'Receipt not found'});
+        }
+
+        return res.status(200).json({success: true, data: response});
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({success: false, message: "Server Error to fetch..."})
+    }
+}
+
+module.exports = { createReceipt, getReceipt };
