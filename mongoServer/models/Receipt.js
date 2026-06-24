@@ -1,0 +1,14 @@
+const mongoose = require("mongoose");
+
+const ReceiptSchema = new mongoose.Schema({
+  totalAmount: { type: Number, default: 0.0 },
+  date: { type: Date },
+  items: [{
+    name: { type: String, required: true },
+    price: { type: Number, required: true }
+  }],
+  imageBuffer: { type: String }, 
+  claim_id: { type: Number, required: true },
+  uploadedAt: { type: Date, default: Date.now }
+});
+const Receipt = mongoose.model('Receipt', ReceiptSchema);

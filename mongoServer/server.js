@@ -1,7 +1,12 @@
-const mongoose = require('mongoose');
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const {connection} = require('./db')
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+
 
 require('dotenv').config();
 
