@@ -4,8 +4,8 @@ const ReceiptSchema = new mongoose.Schema({
   totalAmount: { type: Number, default: 0.0 },
   date: { type: Date },
   items: [{
-    name: { type: String, required: true },
-    price: { type: Number, required: true }
+    name: { type: String, required: false },
+    price: { type: Number, required: false }
   }],
   imageBuffer: { type: String }, 
   claim_id: { type: Number, required: true },
