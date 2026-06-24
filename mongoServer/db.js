@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const uri = process.env.MONGO_URI;
+const uri = "mongodb://localhost:27017/receiptsDB";
 
 const connection = async () => {
     try{

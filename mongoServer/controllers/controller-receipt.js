@@ -47,6 +47,22 @@ const getReceipt = async (req, res) => {
         res.status(500).json({success: false, message: "Server Error to fetch..."})
     }
 }
+const getAllReceipts = async (req, res) => {
+    try {    
+        const receipts = await Receipt.find({});
+
+        if (receipts.length === 0) {
+            return res.status(404).json({ success: false, msg: 'No receipts found' });
+        }
+
+        return res.status(200).json({ success: true, data: receipts });
+    }
+    catch (err) {
+        console.error(err);
+
+        return res.status(500).json({ success: false, msg: "Server Error to fetch..." });
+    }
+}
 
 const deleteReceipt = async (req, res) => {
     try{
@@ -91,4 +107,4 @@ const updateReceipt = async (req, res) => {
     }
 }
 
-module.exports = { createReceipt, getReceipt, updateReceipt, deleteReceipt };
+module.exports = { createReceipt, getReceipt, updateReceipt, deleteReceipt, getAllReceipts };

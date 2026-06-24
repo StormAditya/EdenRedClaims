@@ -5,7 +5,6 @@ const {connection} = require('./db');
 const receiptRouter = require('./routes/router-receipt')
 const PORT = process.env.PORT || 5001;
 
-
 const app = express();
 
 connection();
@@ -15,7 +14,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 
 app.use('/', receiptRouter);
-
+require('./receiptWorker');
 app.listen(PORT, () => {
   console.log('server on...')
 });
