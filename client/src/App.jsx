@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
 import Login from './components/Login';
 import EmployeeDashboard from './components/EmployeeDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import Register from './components/Register';
 import ClaimUpdate from './components/Employee/ClaimUpdate'
-import AdminHome from './components/Admin/AdminHome';
 import AddClaim from './components/Employee/AddClaim';
 import UserUpdate from './components/Admin/UserUpdate';
 import AdminClaims from './components/Admin/AdminClaims';
@@ -57,6 +57,11 @@ export default function App(){
           path='/employee-dashboard'
           element={user && user.role !== 'admin' ? <EmployeeDashboard user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
+        
+        <Route
+          path='/admin-dashboard'
+          element={user && user.role === 'admin' ? <AdminDashboard user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+        />
 
         <Route 
           path='*' 
@@ -77,15 +82,17 @@ export default function App(){
           element={user && user.role !== 'admin' ? <AddClaim user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
 
-        <Route
-          path='/admin-dashboard'
-          element={user && user.role === 'admin' ? <AdminDashboard user={user} onLogout={handleLogout} /> : <Navigate to ='/login' replace />}
-          >
-            <Route index element={<AdminHome user={user} />} />
-            <Route path="users" element={<AdminUsers user={user} onLogout={handleLogout} />} />
-            <Route path="claims" element={<AdminClaims user={user} onLogout={handleLogout} />} />
-        </Route>
+        <Route path='/admin-dashboard/updateUser/:userid'
+          element={user && user.role === 'admin' ? <UserUpdate user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+        />
+
+        <Route path='/admin-dashboard/users'
+          element={user && user.role === 'admin' ? <AdminUsers user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+        />
         
+        <Route path='/admin-dashboard/claims'
+          element={user && user.role === 'admin' ? <AdminClaims user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+        />
       </Routes>
     </Router>
   );
