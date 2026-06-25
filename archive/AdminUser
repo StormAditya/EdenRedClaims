@@ -1,0 +1,36 @@
+==========================================================================================================================
+//DELETION BUTTON IN ADMIN-USERS:
+==========================================================================================================================
+<!-- <div className={`w-6 h-6 flex justify-center items-center rounded-md ${user.userID===u.id
+    ? "bg-gray-500 cursor-not-allowed pointer-events-none" : "bg-red-500 cursor-pointer" }`} onClick={()=> {
+    removeUser(u.id);
+    }}>
+    <img src="/public/images/trashIcon.svg" alt="Delete" className="w-5 h-5" />
+</div> -->
+
+const removeUser = async (userToDelete) => {
+    setLoading(true);
+    setErrorMessage("");
+    try {
+      const response = await axios.delete(
+        "http://localhost:5050/api/admin-dashboard/users",
+        {
+          headers: getAuthHeader(),
+          data: { id: userToDelete },
+        },
+
+      );
+
+      if (response.data?.success) {
+        await fetchClaims();
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Unable to delete user.");
+    } finally {
+      setLoading(false);
+      fetchUser();
+    }
+  }
+
+==========================================================================================================================

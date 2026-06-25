@@ -43,31 +43,6 @@ const AdminUsers = ({ user, onLogout }) => {
     }
   }
 
-  const removeUser = async (userToDelete) => {
-    setLoading(true);
-    setErrorMessage("");
-    try {
-      const response = await axios.delete(
-        "http://localhost:5050/api/admin-dashboard/users",
-        {
-          headers: getAuthHeader(),
-          data: { id: userToDelete },
-        },
-
-      );
-
-      if (response.data?.success) {
-        await fetchClaims();
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMessage("Unable to delete user.");
-    } finally {
-      setLoading(false);
-      fetchUser();
-    }
-  }
-
   useEffect(() => {
     fetchUser();
   }, []);
@@ -76,6 +51,10 @@ const AdminUsers = ({ user, onLogout }) => {
 
   const handleEdit = (userToUpdate) => {
     navigate(`/admin-dashboard/users/updateUser/${userToUpdate}`);
+  }
+
+  const handleCreate = () => {
+    navigate('/admin-dashboard/users/createUser');
   }
 
   return (
@@ -105,6 +84,7 @@ const AdminUsers = ({ user, onLogout }) => {
           </h2>
           <div className="flex flex-row gap-3">
             <button
+                onClick={handleCreate}
                 className="p-0 w-9 h-8 inline-flex items-center justify-center rounded-lg border text-center border-cyan-400/40 bg-cyan-400 text-lg font-bold uppercase tracking-wide text-gray-900 transition hover:border-cyan-400 hover:bg-cyan-500/50 hover:cursor-pointer"
               >
                 +
@@ -174,22 +154,7 @@ const AdminUsers = ({ user, onLogout }) => {
                       </span>
                     </td>
                     <td className="py-4 text-right">
-                      <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
-                        <div className={`w-6 h-6 flex justify-center items-center rounded-md 
-                          ${user.userID === u.id
-                            ? "bg-gray-500 cursor-not-allowed pointer-events-none"
-                            : "bg-red-500 cursor-pointer"
-                          }`}
-                          onClick={() => {
-                              removeUser(u.id);
-                          }}>
-                          <img
-                            src="/public/images/trashIcon.svg"
-                            alt="Delete"
-                            className="w-5 h-5"
-
-                          />
-                        </div>
+                      <div className="grid grid-cols-1 gap-1/6 justify-items-centre pl-2">
                         <div className={`w-6 h-6 flex justify-center items-center rounded-md
                           ${user.userID === u.id
                             ? "bg-gray-500 cursor-not-allowed pointer-events-none"
