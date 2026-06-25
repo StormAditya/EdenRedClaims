@@ -2,11 +2,12 @@ import EmployeeDashboard from "../EmployeeDashboard";
 import axios from 'axios';
 import Select from "react-select";
 
-import { getAuthHeader } from "../auth";
+import { getAuthHeader } from "../Utils/auth";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { customSelectStyles, options } from "../../assets/selectstyle";
+import { convertToBase64 } from "../Utils/conversionBase64";
 
 
 const AddClaim = () => {
@@ -17,24 +18,9 @@ const AddClaim = () => {
     const [description, setDescription] = useState("");
     const [claimAmount, setClaimAmount] = useState("");
     const [file, setFile] = useState(null);
-    const [date, setDate] = useState("");
 
     const navigate = useNavigate();
     const handleBack = () => navigate('/employee-dashboard');
-
-    
-    const convertToBase64 = (fileObj) => {
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(fileObj);
-            fileReader.onload = () => {
-                resolve(fileReader.result); 
-            };
-            fileReader.onerror = (error) => {
-                reject(error);
-            };
-        });
-    }
 
     const addClaims = async (event) => {
         event.preventDefault();
@@ -86,7 +72,6 @@ const AddClaim = () => {
                 setCategoryId("");
                 setDescription("");
                 setClaimAmount("");
-                setDate("");
                 setFile(null);
                 
                 
@@ -160,6 +145,7 @@ const AddClaim = () => {
                             <input 
                                 type="file"
                                 accept="image/*"
+                                required
                                 onChange={(e) => setFile(e.target.files[0])}
                                 className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md file:mr-4 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 file:cursor-pointer"
                             />

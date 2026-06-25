@@ -66,10 +66,9 @@ const getAllReceipts = async (req, res) => {
 
 const deleteReceipt = async (req, res) => {
     try{
-        const {id} = req.body;
-
+        const {claim_id} = req.body;
         const response = await Receipt.findOneAndDelete(
-            { claim_id: Number(id)}, 
+            { claim_id: Number(claim_id)}, 
         );
 
         if(!response){
@@ -81,17 +80,18 @@ const deleteReceipt = async (req, res) => {
     }
     catch(err){
         console.error(err);
-        res.status(500).json({success: false, msg: 'Server Error to update receipt...'})
+        res.status(500).json({success: false, msg: 'Server Error to delete receipt...'})
     }
 }
 
 const updateReceipt = async (req, res) => {
     try{
-        const {id, imageBuffer} = req.body;
+        const {claim_id, imageBuffer} = req.body;
 
-        const response = await Receipt.findOneAndReplace(
-            { claim_id: Number(id)}, 
-            { imageBuffer: imageBuffer}
+        const response = await Receipt.findOneAndUpdate(
+            { claim_id: Number(claim_id)}, 
+            { $set: {imageBuffer}},
+            { new: true }
         );
 
         if(!response){
