@@ -9,15 +9,18 @@ import { useNavigate } from "react-router-dom";
 import { customSelectStyles, userTypeOptions, statusTypeOptions } from "../../assets/roleSelectStyle";
 
 
-const UserUpdate = () => {
-    const { userid } = useParams();
-    const [name, setName] = useState('');
-    const [user, setUser] = useState(null);
+const AdminCreateUser = () => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [balance, setBalance] = useState(0);
+    
+    const [name, setName] = useState('');
     const [role, setRole] = useState('');
-    const [status, setStatus] = useState('');
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [contactNo, setContactNo] = useState('');
+    const [address, setAddress] = useState('');
+    const [company, setCompany] = useState('');
+
 
 
     const fetchUser = async () => {
@@ -274,7 +277,7 @@ const UserUpdate = () => {
     );
 };
 
-export default UserUpdate;
+export default AdminCreateUser;
 
 
 

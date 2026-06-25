@@ -75,7 +75,7 @@ const AdminUsers = ({ user, onLogout }) => {
   const navigate = useNavigate();
 
   const handleEdit = (userToUpdate) => {
-    navigate(`/admin-dashboard/updateUser/${userToUpdate}`);
+    navigate(`/admin-dashboard/users/updateUser/${userToUpdate}`);
   }
 
   return (
@@ -104,7 +104,11 @@ const AdminUsers = ({ user, onLogout }) => {
             Users
           </h2>
           <div className="flex flex-row gap-3">
-
+            <button
+                className="p-0 w-9 h-8 inline-flex items-center justify-center rounded-lg border text-center border-cyan-400/40 bg-cyan-400 text-lg font-bold uppercase tracking-wide text-gray-900 transition hover:border-cyan-400 hover:bg-cyan-500/50 hover:cursor-pointer"
+              >
+                +
+              </button>
             <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full inline-flex font-medium items-center justify-center h-8.5">
               {users.length} Total Users
             </span>
@@ -121,6 +125,7 @@ const AdminUsers = ({ user, onLogout }) => {
                 <th className="pb-3 font-medium">Email ID</th>
                 <th className="pb-3 font-medium">Balance</th>
                 <th className="pb-3 font-medium">Role</th>
+                <th className="pb-3 font-medium">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-800/50 text-sm">
@@ -157,6 +162,15 @@ const AdminUsers = ({ user, onLogout }) => {
                         `}
                       >
                         {u.user_type}
+                      </span>
+                    </td>
+                    <td className="py-4">
+                      <span
+                        className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide
+                          ${u.status === "active" ? "bg-lime-500/10 text-lime-400 border border-lime-500/20" : "bg-amber-500/10 text-amber-400 border border-amber-500/20"}
+                        `}
+                      >
+                        {u.status}
                       </span>
                     </td>
                     <td className="py-4 text-right">

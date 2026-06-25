@@ -57,3 +57,12 @@ export const userTypeOptions = [
   { value: "admin", label: "Admin" },
   { value: "employee", label: "Employee" },
 ];
+
+export const statusTypeOptions = [
+  {
+    value: 'active', label: "active"
+  },
+  {
+    value: 'disabled', label: 'disabled'
+  }
+];

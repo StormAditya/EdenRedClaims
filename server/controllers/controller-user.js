@@ -58,6 +58,10 @@ const loginUser = async (req, res) => {
       return res.status(400).json({success: false, msg: 'Invalid credentials'});
     }
 
+    if(user.status !== 'active'){
+      return res.status(403).json({success: true, msg: 'User is disabled'});
+    }
+
     const check = await validate(String(password), String(user.password));
 
     if (!check) {
@@ -143,6 +147,87 @@ const updateUser = async (req, res) => {
     }
 }
 
+const updateUserBalance = async (req, res) => {
+  try {
+    const { id, balance } = req.body;
+    
+    const [updatedRows] = await User.update(
+      { balance },
+      { where: { id } }
+    );
+    
+    if (updatedRows === 0) {
+      return res.status(404).json({ success: false, msg: 'User not found' });
+    }
+    
+    return res.status(200).json({ success: true, msg: 'User balance updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, msg: 'Error updating user balance', error: err.message });
+  }
+};
+
+const updateUserRole = async (req, res) => {
+  try {
+    const { id, user_type } = req.body;
+    const [updatedRows] = await User.update(
+      { user_type },
+      { where: { id } }
+    );
+    
+    if (updatedRows === 0) {
+      return res.status(404).json({ success: false, msg: 'User not found' });
+    }
+    
+    return res.status(200).json({ success: true, msg: 'User role updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, msg: 'Error updating user role', error: err.message });
+  }
+};
+
+const updateUserPassword = async (req, res) => {
+  try {
+    const { id, password } = req.body;
+    const hashedPassword = await encrypt(String(password));
+    
+    const [updatedRows] = await User.update(
+      { password: hashedPassword },
+      { where: { id } }
+    );
+    
+    if (updatedRows === 0) {
+      return res.status(404).json({ success: false, msg: 'User not found' });
+    }
+    
+    return res.status(200).json({ success: true, msg: 'User password updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, msg: 'Error updating user password', error: err.message });
+  }
+};
+
+const updateUserStatus = async (req, res) => {
+  try{
+    const { id, status } = req.body;
+    const [ updatedRows ] = await User.update(
+      { status }, {
+        where: { id }
+      }
+    );
+
+    if (updatedRows === 0) {
+      return res.status(404).json({ success: false, msg: 'User not found' });
+    }
+
+    return res.status(200).json({success: true, msg: 'User status updated successfully' })
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({success: false, msg: 'Server Error...'});
+  }
+}
+
 const removeUser = async (req, res) => {
     const {id} = req.body;
     
@@ -157,76 +242,18 @@ const removeUser = async (req, res) => {
     catch(err){
         console.error(err)
         res.status(500).json({success:false, msg:"User not found"})
-    }
-    
+    }  
 }
-const updateUserBalance = async (req, res) => {
-  try {
-    const { id, balance } = req.body;
-
-    const [updatedRows] = await User.update(
-      { balance },
-      { where: { id } }
-    );
-
-    if (updatedRows === 0) {
-      return res.status(404).json({ success: false, msg: 'User not found' });
-    }
-
-    return res.status(200).json({ success: true, msg: 'User balance updated successfully' });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ success: false, msg: 'Error updating user balance', error: err.message });
-  }
-};
-const updateUserRole = async (req, res) => {
-  try {
-    const { id, user_type } = req.body;
-    const [updatedRows] = await User.update(
-      { user_type },
-      { where: { id } }
-    );
-
-    if (updatedRows === 0) {
-      return res.status(404).json({ success: false, msg: 'User not found' });
-    }
-
-    return res.status(200).json({ success: true, msg: 'User role updated successfully' });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ success: false, msg: 'Error updating user role', error: err.message });
-  }
-};
-
-const updateUserPassword = async (req, res) => {
-  try {
-    const { id, password } = req.body;
-    const hashedPassword = await encrypt(String(password));
-
-    const [updatedRows] = await User.update(
-      { password: hashedPassword },
-      { where: { id } }
-    );
-
-    if (updatedRows === 0) {
-      return res.status(404).json({ success: false, msg: 'User not found' });
-    }
-
-    return res.status(200).json({ success: true, msg: 'User password updated successfully' });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ success: false, msg: 'Error updating user password', error: err.message });
-  }
-};
 
 module.exports = {
   createUser,
   loginUser,
   getUser,
+  getUserById,
   updateUser,
-  removeUser,
   updateUserBalance,
   updateUserRole,
   updateUserPassword,
-  getUserById
+  updateUserStatus,
+  removeUser
 }
