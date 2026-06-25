@@ -1,4 +1,72 @@
 const Receipt = require('../models/Receipt');
+const amountReceipt = async (req, res) => {
+  try {
+    const { imageBuffer } = req.body;
+    
+    if (!imageBuffer) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Missing imageBuffer." 
+      });
+    }
+
+    const cleanBase64 = imageBuffer.replace(/^data:image\/\w+;base64,/, "");
+
+    const url = 'http://127.0.0.1:11434/api/chat'; 
+
+    const payload = {
+      model: 'qwen2.5vl',
+      messages: [
+        {
+          role: 'user',
+          content: 'Analyze this receipt image and extract the total final amount paid.',
+          images: [cleanBase64]
+        }
+      ],
+      format: {
+        type: 'object',
+        properties: {
+          totalAmount: { 
+            type: 'number', 
+            description: 'The final grand total amount listed on the receipt' 
+          }
+        },
+        required: ['totalAmount']
+      },
+      options: { 
+        temperature: 0.0 
+      },
+      stream: false 
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama HTTP Server Error! Status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    const structuredData = JSON.parse(result.message.content);
+    return res.status(200).json({
+      success: true,
+      totalAmount: structuredData.totalAmount || 0.0
+    });
+
+  } catch (error) {
+    console.error("Error in amountReceipt extraction controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error during receipt amount extraction.",
+      error: error.message
+    });
+  }
+};
+
 
 const createReceipt = async (req, res) => {
     try {
@@ -107,4 +175,4 @@ const updateReceipt = async (req, res) => {
     }
 }
 
-module.exports = { createReceipt, getReceipt, updateReceipt, deleteReceipt, getAllReceipts };
+module.exports = { createReceipt, getReceipt, updateReceipt, deleteReceipt, getAllReceipts, amountReceipt };

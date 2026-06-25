@@ -24,7 +24,7 @@ const AdminHome = ({ user }) => {
                 "http://localhost:5050/api/admin-dashboard/users",
                 { headers: getAuthHeader() }
             );
-            const fetchedUsers = Array.isArray(userResponse.data?.data) ? usersResponse.data.data : [];
+            const fetchedUsers = Array.isArray(userResponse.data?.data) ? userResponse.data.data : [];
             const employeeCount = fetchedUsers.filter((u) => u.user_type === "employee").length;
             const adminCount = fetchedUsers.filter((u) => u.user_type === "admin").length;
             setUserStats([

@@ -14,7 +14,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 
 app.use('/', receiptRouter);
-require('./receiptWorker');
+
 app.listen(PORT, () => {
   console.log('server on...')
 });

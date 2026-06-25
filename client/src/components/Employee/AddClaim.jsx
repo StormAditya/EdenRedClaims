@@ -13,14 +13,43 @@ import { convertToBase64 } from "../Utils/conversionBase64";
 const AddClaim = () => {
     const [claim, setClaim] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [scanLoading, setScanLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [description, setDescription] = useState("");
-    const [claimAmount, setClaimAmount] = useState("");
+    const [claimAmount, setClaimAmount] = useState(1000);
     const [file, setFile] = useState(null);
 
     const navigate = useNavigate();
     const handleBack = () => navigate('/employee-dashboard');
+
+    const scanReceipt = async (e) => {
+        if (e) e.preventDefault();
+        if (!file) {
+            setErrorMessage("Please select a file first before scanning.");
+            return;
+        }
+        setScanLoading(true);
+        setErrorMessage("");
+        try {
+            const base64Data = await convertToBase64(file);
+            const response = await axios.post(
+                "http://localhost:5001/api/receipts/amount",
+                { imageBuffer: base64Data }
+            );
+            if (response.data && response.data.totalAmount !== undefined) {
+                setClaimAmount(response.data.totalAmount);
+            } else {
+                setErrorMessage("Could not parse amount from receipt response.");
+            }
+        } catch (err) {
+            console.error(err);
+            setErrorMessage("Failed to scan receipt.");
+        } finally {
+            setScanLoading(false);
+        }
+    };
+
 
     const addClaims = async (event) => {
         event.preventDefault();
@@ -172,16 +201,24 @@ const AddClaim = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-30 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? "Adding..." : "Add"}
                         </button>
                         <button
                             type="button" 
                             onClick={handleBack}
-                            className="w-30 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
                         >
                             Back
+                        </button>
+                        <button 
+                            type="button"
+                            disabled={loading}
+                            onClick={scanReceipt} 
+                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {scanLoading ? "Scanning..." : "Scan Receipt"}
                         </button>
                     </div>
                 </div>
