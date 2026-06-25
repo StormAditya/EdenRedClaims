@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function EmployeeDashboard({ user, onLogout }) {
   const [claims, setClaims] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -63,9 +65,43 @@ export default function EmployeeDashboard({ user, onLogout }) {
       setLoading(false);
     }
   }
+  const fetchStatuses = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5050/api/status"
+      );
+      setStatuses(Array.isArray(response.data?.data) ? response.data.data : []);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Unable to fetch statuses.");
+    }
+  };
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5050/api/category"
+      );
+      setCategories(Array.isArray(response.data?.data) ? response.data.data : []);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Unable to fetch categories.");
+    }
+  };
+
+  const getStatusName = (statusID) => {
+    const status = statuses.find((s) => s.id === statusID);
+    return status ? status.status_name : "Unknown";
+  }
+
+  const getCategoryName = (categoryId) => {
+    const category = categories.find((c) => c.id === categoryId);
+    return category ? category.category_name : "Unknown";
+  }
 
   useEffect(() => {
     fetchClaims();
+    fetchStatuses();
+    fetchCategories();
   }, []);
 
   const normalizeClaim = (claim) => ({
@@ -83,13 +119,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
     .filter((claim) => (claim.userID ?? claim.user_id) === user.userID)
     .map(normalizeClaim);
 
-  const getStatusName = (statusID) => {
-    return "Placeholder";
-  }
-
-  const getCategoryName = (categoryId) => {
-    return "Placeholder";
-  }
 
   const handleEdit = (claimIDToUpdate) => {
     navigate(`/employee-dashboard/updateClaim/${claimIDToUpdate}`);
@@ -198,9 +227,9 @@ export default function EmployeeDashboard({ user, onLogout }) {
                       <td className="py-4">
                         <span
                           className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide
-                          ${statusName === "Pending" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : ""}
-                          ${statusName === "Approved" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : ""}
-                          ${statusName === "Rejected" ? "bg-red-500/10 text-red-400 border border-red-500/20" : ""}
+                          ${claim.statusID === 1 ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : ""}
+                          ${claim.statusID === 2 ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : ""}
+                          ${claim.statusID === 3 ? "bg-red-500/10 text-red-400 border border-red-500/20" : ""}
                         `}
                         >
                           {statusName}
