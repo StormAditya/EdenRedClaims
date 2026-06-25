@@ -10,6 +10,7 @@ import AddClaim from './components/Employee/AddClaim';
 import UserUpdate from './components/Admin/UserUpdate';
 import AdminClaims from './components/Admin/AdminClaims';
 import AdminUsers from './components/Admin/AdminUsers';
+import AdminHome from './components/Admin/AdminHome';
 
 export default function App(){
   const [user, setUser] = useState(() => {
@@ -58,11 +59,6 @@ export default function App(){
           element={user && user.role !== 'admin' ? <EmployeeDashboard user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
         
-        <Route
-          path='/admin-dashboard'
-          element={user && user.role === 'admin' ? <AdminDashboard user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
-        />
-
         <Route 
           path='*' 
           element={
@@ -82,6 +78,11 @@ export default function App(){
           element={user && user.role !== 'admin' ? <AddClaim user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
 
+        <Route 
+          path='/admin-dashboard'
+          element={user && user.role === 'admin' ? <AdminHome user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
+        />
+
         <Route path='/admin-dashboard/updateUser/:userid'
           element={user && user.role === 'admin' ? <UserUpdate user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
@@ -93,6 +94,7 @@ export default function App(){
         <Route path='/admin-dashboard/claims'
           element={user && user.role === 'admin' ? <AdminClaims user={user} onLogout={handleLogout} /> : <Navigate to='/login' replace />}
         />
+
       </Routes>
     </Router>
   );
