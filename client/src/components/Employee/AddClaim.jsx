@@ -129,7 +129,7 @@ const AddClaim = () => {
             >
                 <div id="addDetails" className="w-full flex flex-col gap-10 p-1">
                     <div className="w-full flex flex-row gap-5">
-                        <div id="categoryDiv" className="flex flex-col gap-3 w-full">
+                        <div id="categoryDiv" className="flex flex-col gap-3 w-150">
                             <label>Category</label>
                             <Select
                                 options={options}
@@ -142,18 +142,8 @@ const AddClaim = () => {
                             />
                         </div>
 
-                        <div id="descriptDiv" className="flex flex-col gap-3 w-full">
-                            <label>Receipt Date</label>
-                            <input
-                                type="date"
-                                name="date"
-                                required
-                                value={date}
-                                onChange={(e) => setDate(e.target.value)}
-                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                            />
-                        </div>
-                        <div id="amountDiv" className="flex flex-col gap-3 w-full">
+                        
+                        <div id="amountDiv" className="flex flex-col gap-3 w-130">
                             <label>Claim Amount</label>
                             <input
                                 type="number"
@@ -163,6 +153,15 @@ const AddClaim = () => {
                                 value={claimAmount}
                                 onChange={(e) => setClaimAmount(e.target.value)}
                                 className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-3 w-80">
+                            <label>Add Receipt</label>
+                            <input 
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setFile(e.target.files[0])}
+                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md file:mr-4 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 file:cursor-pointer"
                             />
                         </div>
                     </div>
@@ -180,15 +179,7 @@ const AddClaim = () => {
                                 className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
                             />
                         </div>
-                        <div className="flex flex-col gap-3 w-80">
-                            <label>Add Receipt</label>
-                            <input 
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => setFile(e.target.files[0])}
-                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md file:mr-4 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 file:cursor-pointer"
-                            />
-                        </div>
+                        
                     </div>
                     
                     <div className="flex flex-row gap-5 w-half">
