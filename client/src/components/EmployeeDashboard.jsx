@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import Select from "react-select";
 
-import { getAuthHeader } from "./auth";
+import { getAuthHeader } from './Utils/auth';
 import { useState, useEffect } from "react";
 import { customSelectStyles, options } from "../assets/selectstyle";
 import { useNavigate } from "react-router-dom";
@@ -52,13 +52,23 @@ export default function EmployeeDashboard({ user, onLogout }) {
           data: { claim_id: claimIdToDelete },
         },
       );
+      console.log(claimIdToDelete)
+      const receiptResponse = await axios.delete(
+        "http://localhost:5001/api/receipts",
+        {
+          data: {claim_id: Number(claimIdToDelete)}
+        }
+      )
 
-      if (response.data?.success) {
+      if (response.data?.success && receiptResponse.status === 200) {
         await fetchClaims();
+      }
+      else{
+        throw new Error("Unable to delete...")
       }
     } catch (err) {
       console.error(err);
-      setErrorMessage("Unable to delete claims.");
+      setErrorMessage("Unable to delete claims...");
     } finally {
       setLoading(false);
     }

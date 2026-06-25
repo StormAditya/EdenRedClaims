@@ -2,7 +2,7 @@ import EmployeeDashboard from "../EmployeeDashboard";
 import axios from 'axios';
 import Select from "react-select";
 
-import { getAuthHeader } from "../auth";
+import { getAuthHeader } from "../Utils/auth";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
