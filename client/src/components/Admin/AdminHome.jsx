@@ -67,7 +67,7 @@ const AdminHome = ({ user }) => {
     };
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
-            <div className="max-w-7xl mx-auto mb-8 border-b border-zinc-800 pb-5">
+            <div className="max-w-11/12 mx-auto mx-auto mb-8 border-b border-zinc-800 pb-5">
                 <h1 className="text-2xl font-black tracking-tight text-white">
                     System Overview Dashboard
                 </h1>
@@ -76,7 +76,7 @@ const AdminHome = ({ user }) => {
                     <span className="text-cyan-400 font-medium">{user?.name}</span>
                 </p>
             </div>
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-11/12 mx-auto">
                 {errorMessage && (
                     <p className="text-red-500 mb-6 text-sm bg-red-500/10 border border-red-500/20 px-4 py-2 rounded-xl">
                         {errorMessage}
