@@ -59,7 +59,7 @@ const AdminUsers = ({ user, onLogout }) => {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
-      <header className="max-w-7xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
+      <header className="max-w-11/12 mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-white">
             Admin Portal
@@ -77,7 +77,7 @@ const AdminUsers = ({ user, onLogout }) => {
         </button>
       </header>
 
-      <div className="lg:col-span-2 bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl">
+      <div className="max-w-11/12 mx-auto lg:col-span-2 bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-bold text-white tracking-tight">
             Users

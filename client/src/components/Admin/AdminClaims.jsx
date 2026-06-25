@@ -14,6 +14,8 @@ const AdminClaims = ({ user, onLogout }) => {
   const [claims, setClaims] = useState([]);
   const [categories, setCategories] = useState([]);
   const [receipt, setReceipt] = useState('');
+  
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -69,8 +71,7 @@ const AdminClaims = ({ user, onLogout }) => {
       );
 
       setReceipt(response.data.data.imageBuffer);
-      
-      console.log(receipt);
+      setIsDialogOpen(true); 
 
     } catch (err) {
       console.error(err);
@@ -81,7 +82,6 @@ const AdminClaims = ({ user, onLogout }) => {
     }
   }
 
-  // Handler for approving or rejecting a claim
   const handleStatusUpdate = async (claimId, newStatus) => {
     try {
       await axios.patch(
@@ -110,9 +110,9 @@ const AdminClaims = ({ user, onLogout }) => {
     } catch (err) {
       console.error(err);
       setErrorMessage("Unable to fetch categories.");
-      setCategories([]); // Fixed state setter call here
+      setCategories([]);
     }
-  }; // Fixed: Removed the stray duplicate closure syntax that was right below this line
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -121,8 +121,8 @@ const AdminClaims = ({ user, onLogout }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
-      <header className="max-w-7xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12 relative">
+      <header className="max-w-11/12 mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-white">
             Admin Portal
@@ -140,7 +140,7 @@ const AdminClaims = ({ user, onLogout }) => {
         </button>
       </header>
 
-      <div className="lg:col-span-2 bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl">
+      <div className="max-w-11/12 mx-auto lg:col-span-2 bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-bold text-white tracking-tight">
             Claims
@@ -151,7 +151,7 @@ const AdminClaims = ({ user, onLogout }) => {
         {errorMessage && (
           <p className="text-red-500 mb-4 text-sm">{errorMessage}</p>
         )}
-        {loading && (
+        {loading && !isDialogOpen && (
           <p className="text-cyan-500 mb-4 text-sm">
             Loading dashboard data...
           </p>
@@ -180,9 +180,8 @@ const AdminClaims = ({ user, onLogout }) => {
                 >
                   <td className="py-3">{claim.id}</td>
                   <td className="py-3">{users.find((user) => user.id === claim.user_id)?.name || 'Unknown'}</td>
-                  {/* Fixed array matching to match the renamed categories state */}
                   <td className="py-3">{categories.find((cat) => cat.id === claim.category_id)?.category_name || 'Unknown'}</td>
-                  <td className="py-3  max-w-xs truncate">
+                  <td className="py-3 max-w-xs truncate">
                     {claim.description}
                   </td>
                   <td className="py-3 font-semibold text-white">
@@ -240,6 +239,44 @@ const AdminClaims = ({ user, onLogout }) => {
           </table>
         </div>
       </div>
+
+      {isDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fadeIn">
+          <div className="bg-zinc-950 w-screen h-screen flex flex-col relative p-6">
+            
+
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
+              <div>
+                <h3 className="text-xl font-black text-white tracking-tight">
+                  Receipt Document Viewer
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  setReceipt('');
+                }}
+                className="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white px-4 py-2 text-xs font-bold uppercase tracking-wider border border-zinc-800 rounded-lg transition flex items-center gap-2"
+              >
+                <span>✕</span> Close Viewer
+              </button>
+            </div>
+
+
+            <div className="flex-1 overflow-auto flex items-center justify-center bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 shadow-inner">
+              {receipt ? (
+                <img
+                  src={receipt.startsWith('data:') ? receipt : `data:image/jpeg;base64,${receipt}`}
+                  alt="Claim Receipt"
+                  className="max-h-[75vh] max-w-full object-contain rounded-xl shadow-2xl border border-zinc-800"
+                />
+              ) : (
+                <p className="text-zinc-500 text-sm">No preview image available.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
