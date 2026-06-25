@@ -1,11 +1,153 @@
-const Receipt = require('./models/Receipt'); 
+const { Sequelize, DataTypes } = require('sequelize');
+const mongoose = require('mongoose');
+const cron = require('node-cron');
+
+// ==========================================
+// 1. DATABASE CONFIGURATION & INITIALIZATION
+// ==========================================
+
+const sequelize = new Sequelize('EdenClaim', 'postgres', 'AdityaDesai@12', {
+  host: '127.0.0.1',
+  dialect: 'postgres',
+  logging: false, 
+  pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
+});
+
+// --- User Model ---
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
+  name: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'Name is required' },
+      notNull: { msg: 'Name is required' }
+    }
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'Password is required' },
+      notNull: { msg: 'Password is required' }
+    }
+  },
+  email_id: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'email is required' },
+      notNull: { msg: 'email is required' }
+    }
+  }, 
+  address: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  company: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  contact_number: {
+    type: DataTypes.BIGINT,
+    allowNull: true,
+  },
+  user_type: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: { isAlpha: true }
+  },
+  balance: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  }
+}, {
+  tableName: 'User',
+  timestamps: true,
+  underscored: true
+});
+
+// --- Claims Model ---
+const Claims = sequelize.define('Claims', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
+  claim_amount: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'Claim amount is required' },
+      notNull: { msg: 'Claim amount is required' },
+      isFloat: true
+    }
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  submission_date: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+    validate: { isDate: true }
+  }, 
+  validation_date: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    validate: { isDate: true }
+  },
+  category_id: { type: DataTypes.INTEGER, allowNull: false },
+  user_id: { type: DataTypes.INTEGER, allowNull: false },
+  status_id: { type: DataTypes.INTEGER, allowNull: false },
+}, {
+  tableName: 'Claims',
+  timestamps: true,
+  underscored: true
+});
+
+// --- MongoDB Setup (Mongoose) ---
+const receiptSchema = new mongoose.Schema({
+  claim_id: Number,
+  totalAmount: Number,
+  date: Date,
+  imageBuffer: String,
+  items: [
+    {
+      name: String,
+      price: Number
+    }
+  ]
+});
+const Receipt = mongoose.models.Receipt || mongoose.model('Receipt', receiptSchema);
+
+
+// ==========================================
+// 2. CORE UTILITIES & SYSTEM CONSTANTS
+// ==========================================
+
+const STATUS_APPROVED = 2; 
+const STATUS_REJECTED = 3; 
+
+const getMonthDifference = (date1, date2) => {
+  return (date1.getFullYear() - date2.getFullYear()) * 12 + (date1.getMonth() - date2.getMonth());
+};
+
+
+// ==========================================
+// 3. OLLAMA VISION EXTRACTION
+// ==========================================
 
 const processReceiptWithQwen = async (base64Image) => {
   try {
-    
     const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, "");
-
-    
     const url = 'http://127.0.0.1:11434/api/chat'; 
 
     const payload = {
@@ -17,7 +159,6 @@ const processReceiptWithQwen = async (base64Image) => {
           images: [cleanBase64]
         }
       ],
-      
       format: {
         type: 'object',
         properties: {
@@ -37,9 +178,7 @@ const processReceiptWithQwen = async (base64Image) => {
         },
         required: ['totalAmount', 'date', 'items']
       },
-      options: { 
-        temperature: 0.0 
-      },
+      options: { temperature: 0.0 },
       stream: false 
     };
 
@@ -54,8 +193,6 @@ const processReceiptWithQwen = async (base64Image) => {
     }
 
     const result = await response.json();
-    
-    
     return JSON.parse(result.message.content);
 
   } catch (error) {
@@ -65,14 +202,22 @@ const processReceiptWithQwen = async (base64Image) => {
 };
 
 
-const BATCH_INTERVAL_MS = 2 * 60 * 1000; 
-let timeRemaining = BATCH_INTERVAL_MS;
+// ==========================================
+// 4. CROSS-DB BATCH PROCESSING ENGINE
+// ==========================================
+
+let isProcessing = false;
 
 const runBatchProcessing = async () => {
-  console.log(`\n[${new Date().toLocaleTimeString()}] 🚀 Starting batch processing for raw receipts...`);
+  if (isProcessing) {
+    console.log(`\n[${new Date().toLocaleTimeString()}] ⏳ Previous batch is still running. Skipping this cycle.`);
+    return;
+  }
+
+  isProcessing = true;
+  console.log(`\n[${new Date().toLocaleTimeString()}] 🚀 Cron Triggered: Starting cross-db validation...`);
 
   try {
-    
     const unprocessedReceipts = await Receipt.find({
       $or: [
         { items: { $exists: true, $size: 0 } },
@@ -83,61 +228,149 @@ const runBatchProcessing = async () => {
 
     if (unprocessedReceipts.length === 0) {
       console.log('✨ No new unprocessed receipts found in this cycle.');
+      isProcessing = false;
       return;
     }
 
     console.log(`📦 Found ${unprocessedReceipts.length} receipt(s) ready to process.`);
 
-    
     for (const receipt of unprocessedReceipts) {
       try {
-        console.log(`⏳ Querying Qwen2.5-VL for Claim ID: ${receipt.claim_id}...`);
-
+        console.log(`\n⏳ Querying Qwen2.5-VL for Claim ID: ${receipt.claim_id}...`);
         const structuredData = await processReceiptWithQwen(receipt.imageBuffer);
 
-        
         receipt.totalAmount = structuredData.totalAmount || 0.0;
-        
-        
+        let isDateInvalid = false;
+
         if (structuredData.date && !isNaN(Date.parse(structuredData.date))) {
           receipt.date = new Date(structuredData.date);
         } else {
-          receipt.date = new Date(); 
-          console.log(`⚠️ Invalid or missing date string ("${structuredData.date}") from AI for Claim ${receipt.claim_id}. Defaulted to today.`);
+          receipt.date = null; 
+          isDateInvalid = true;
+          console.log(`⚠️ Missing or corrupted date string from AI for Claim ${receipt.claim_id}. Marked for rejection.`);
         }
         
-        
         receipt.items = structuredData.items || [];
-
-        
         await receipt.save();
-        console.log(`✅ Successfully extracted & stored Claim ID: ${receipt.claim_id}`);
+        console.log(`✅ Stored AI extractions in MongoDB for Claim ID: ${receipt.claim_id}`);
+
+        const pgClaim = await Claims.findByPk(receipt.claim_id);
+
+        if (!pgClaim) {
+          console.log(`❌ Claim ID ${receipt.claim_id} not found in PostgreSQL. Skipping validation.`);
+          continue;
+        }
+
+        // Rule: If date is not found, reject the claim automatically
+        if (isDateInvalid) {
+          pgClaim.status_id = STATUS_REJECTED;
+          pgClaim.validation_date = new Date();
+          await pgClaim.save();
+          console.log(`🚫 Claim ${receipt.claim_id} REJECTED automatically due to missing receipt date.`);
+          continue; 
+        }
+
+        // Check foundational parameters (Amount match & Date window)
+        const pgAmount = parseFloat(pgClaim.claim_amount);
+        const mongoAmount = parseFloat(receipt.totalAmount);
+        
+        const submissionDate = new Date(pgClaim.submission_date);
+        const receiptDate = new Date(receipt.date);
+
+        const monthDiff = getMonthDifference(submissionDate, receiptDate);
+        const isWithinThreeMonths = monthDiff >= 0 && monthDiff <= 3;
+        const amountsMatch = Math.abs(pgAmount - mongoAmount) < 0.01;
+
+        console.log(`📊 Validation Metrics for Claim ${receipt.claim_id}:`);
+        console.log(`   - Postgres Amount: ${pgAmount} | Mongo Amount: ${mongoAmount} -> Match: ${amountsMatch}`);
+        console.log(`   - Submission Date: ${submissionDate.toISOString().split('T')[0]} | Receipt Date: ${receiptDate.toISOString().split('T')[0]} -> Valid Window: ${isWithinThreeMonths}`);
+
+        // Base criteria validation check
+        if (amountsMatch && isWithinThreeMonths) {
+          
+          // Fetch user data to verify balance availability
+          const user = await User.findByPk(pgClaim.user_id);
+
+          if (!user) {
+            console.log(`❌ User ID ${pgClaim.user_id} associated with claim ${receipt.claim_id} not found. Rejecting.`);
+            pgClaim.status_id = STATUS_REJECTED;
+          } else {
+            const currentBalance = user.balance || 0.0;
+
+            console.log(`💳 Balance Check for User ${user.name} (ID: ${user.id}):`);
+            console.log(`   - Current Balance: ${currentBalance} | Claim Cost: ${pgAmount}`);
+
+            // Rule: Deduct balance if sufficient funds are present
+            if (pgAmount <= currentBalance) {
+              // Using toFixed(2) parsed back to float to clear native JS floating-point issues
+              const updatedBalance = parseFloat((currentBalance - pgAmount).toFixed(2));
+              
+              user.balance = updatedBalance;
+              await user.save();
+              console.log(`   ✅ Sufficient balance. Deducted ${pgAmount}. New balance: ${updatedBalance}`);
+
+              pgClaim.status_id = STATUS_APPROVED;
+              console.log(`🎉 Claim ${receipt.claim_id} validated and APPROVED.`);
+            } else {
+              console.log(`   🚫 Insufficient balance. Claim cannot be approved.`);
+              pgClaim.status_id = STATUS_REJECTED;
+            }
+          }
+
+        } else {
+          pgClaim.status_id = STATUS_REJECTED;
+          console.log(`🚫 Claim ${receipt.claim_id} failed baseline metrics. Status set to REJECTED.`);
+        }
+
+        pgClaim.validation_date = new Date(); 
+        await pgClaim.save();
+        console.log(`💾 Successfully finalized database records for Claim ID: ${receipt.claim_id}`);
 
       } catch (singleError) {
         console.error(`❌ Failed to process individual Claim ID ${receipt.claim_id}:`, singleError.message);
       }
     }
 
-    console.log('🏁 Batch processing cycle completed.');
+    console.log('\n🏁 Batch processing cycle completed.');
 
   } catch (batchError) {
     console.error('💥 Critical error encountered during the batch execution pipeline:', batchError);
+  } finally {
+    isProcessing = false;
   }
 };
 
 
+// ==========================================
+// 5. CRON SCHEDULE & LIVE COUNTDOWN TIMER
+// ==========================================
+
+console.log('⏰ Initializing Cron Service...');
+
+cron.schedule('*/2 * * * *', () => {
+  runBatchProcessing();
+});
+
 runBatchProcessing();
 
-
 setInterval(() => {
-  timeRemaining -= 10000; 
+  if (isProcessing) return;
 
-  if (timeRemaining <= 0) {
-    timeRemaining = BATCH_INTERVAL_MS; 
-    runBatchProcessing();
-  } else {
-    const minutes = Math.floor(timeRemaining / 60000);
-    const seconds = ((timeRemaining % 60000) / 1000).toFixed(0);
-    console.log(`⏱️ Next batch processing in: ${minutes}m ${seconds.padStart(2, '0')}s`);
-  }
-}, 10000); 
+  const now = new Date();
+  const currentMinutes = now.getMinutes();
+  const currentSeconds = now.getSeconds();
+
+  const nextTargetMinute = currentMinutes + (2 - (currentMinutes % 2));
+  
+  const targetTime = new Date(now);
+  targetTime.setMinutes(nextTargetMinute);
+  targetTime.setSeconds(0);
+  targetTime.setMilliseconds(0);
+
+  const msRemaining = targetTime - now;
+
+  const displayMinutes = Math.floor(msRemaining / 60000);
+  const displaySeconds = Math.floor((msRemaining % 60000) / 1000);
+
+  console.log(`⏱️ Next batch processing in: ${displayMinutes}m ${displaySeconds.toString().padStart(2, '0')}s`);
+}, 10000);
