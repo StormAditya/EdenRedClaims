@@ -13,6 +13,7 @@ import { convertToBase64 } from "../Utils/conversionBase64";
 const AddClaim = () => {
     const [claim, setClaim] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [scanLoading, setScanLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [description, setDescription] = useState("");
@@ -28,7 +29,7 @@ const AddClaim = () => {
             setErrorMessage("Please select a file first before scanning.");
             return;
         }
-        setLoading(true);
+        setScanLoading(true);
         setErrorMessage("");
         try {
             const base64Data = await convertToBase64(file);
@@ -45,7 +46,7 @@ const AddClaim = () => {
             console.error(err);
             setErrorMessage("Failed to scan receipt.");
         } finally {
-            setLoading(false);
+            setScanLoading(false);
         }
     };
 
@@ -200,14 +201,14 @@ const AddClaim = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-30 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? "Adding..." : "Add"}
                         </button>
                         <button
                             type="button" 
                             onClick={handleBack}
-                            className="w-30 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
                         >
                             Back
                         </button>
@@ -215,9 +216,9 @@ const AddClaim = () => {
                             type="button"
                             disabled={loading}
                             onClick={scanReceipt} 
-                            className="w-30 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? "Scanning..." : "Scan Receipt"}
+                            {scanLoading ? "Scanning..." : "Scan Receipt"}
                         </button>
                     </div>
                 </div>
