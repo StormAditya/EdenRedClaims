@@ -1,12 +1,13 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const mongoose = require('mongoose');
 const cron = require('node-cron');
+require('dotenv').config();
 
 // ==========================================
 // 1. DATABASE CONFIGURATION & INITIALIZATION
 // ==========================================
 
-const sequelize = new Sequelize('EdenClaim', 'postgres', 'AdityaDesai@12', {
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: '127.0.0.1',
   dialect: 'postgres',
   logging: false, 
