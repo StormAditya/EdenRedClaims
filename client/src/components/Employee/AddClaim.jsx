@@ -19,6 +19,7 @@ const AddClaim = () => {
     const [description, setDescription] = useState("");
     const [claimAmount, setClaimAmount] = useState(1000);
     const [file, setFile] = useState(null);
+    const [fileScanned, setFileScanned] = useState(false);
 
     const navigate = useNavigate();
     const handleBack = () => navigate('/employee-dashboard');
@@ -39,6 +40,7 @@ const AddClaim = () => {
             );
             if (response.data && response.data.totalAmount !== undefined) {
                 setClaimAmount(response.data.totalAmount);
+                setFileScanned(true);
             } else {
                 setErrorMessage("Could not parse amount from receipt response.");
             }
@@ -57,7 +59,7 @@ const AddClaim = () => {
         setErrorMessage("");
 
         try {
-            
+
             const response = await axios.post(
                 "http://localhost:5050/api/employee-dashboard/claims",
                 {
@@ -71,39 +73,39 @@ const AddClaim = () => {
             );
 
             console.log("Claim added successfully:", response.data);
-            const claimId = response.data.data.id; 
+            const claimId = response.data.data.id;
             console.log("Claim ID received from server:", claimId);
-            
+
             if (!claimId) {
                 throw new Error("Failed to retrieve claim ID from server.");
             }
 
-            
+
             let base64File = "";
             if (file) {
                 base64File = await convertToBase64(file);
             }
 
-            
+
             const receiptResponse = await axios.post(
                 "http://localhost:5001/api/receipts",
                 {
-                    imageBuffer: base64File,        
-                    claim_id: Number(claimId),      
+                    imageBuffer: base64File,
+                    claim_id: Number(claimId),
                 },
                 {
                     headers: getAuthHeader(),
                 }
             );
 
-            
+
             if (response.data?.success || receiptResponse.status === 200) {
                 setCategoryId("");
                 setDescription("");
                 setClaimAmount("");
                 setFile(null);
-                
-                
+
+
                 if (typeof fetchClaims === "function") await fetchClaims();
                 handleBack();
             }
@@ -137,92 +139,117 @@ const AddClaim = () => {
                 </div>
             )}
 
-            <form
-                onSubmit={addClaims}
-                className="mb-6 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
-            >
-                <div id="addDetails" className="w-full flex flex-col gap-10 p-1">
-                    <div className="w-full flex flex-row gap-5">
-                        <div id="categoryDiv" className="flex flex-col gap-3 w-150">
-                            <label>Category</label>
-                            <Select
-                                options={options}
-                                styles={customSelectStyles}
-                                value={options.find((option) => option.value === categoryId)}
-                                onChange={(selectedOption) => setCategoryId(selectedOption.value)}
-                                placeholder="Select Category"
-                                menuPortalTarget={document.body}
-                                className="w-full"
-                            />
-                        </div>
+            {fileScanned && (
+                <div className="max-w-7xl mx-auto mb-4 p-3 bg-emerald-500 border-b-emerald-700 text-emerald-200 font-bold rounded-lg">
+                    File Scanned
+                </div>
+            )}
 
-                        
-                        <div id="amountDiv" className="flex flex-col gap-3 w-130">
-                            <label>Claim Amount</label>
-                            <input
-                                type="number"
-                                name="claim_amount"
-                                placeholder="Claim Amount"
-                                required
-                                value={claimAmount}
-                                onChange={(e) => setClaimAmount(e.target.value)}
-                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-3 w-80">
-                            <label>Add Receipt</label>
-                            <input 
-                                type="file"
-                                accept="image/*"
-                                required
-                                onChange={(e) => setFile(e.target.files[0])}
-                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md file:mr-4 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 file:cursor-pointer"
-                            />
-                        </div>
-                    </div>
-                    
-                    <div className="w-full flex flex-row gap-5">
-                        <div className="flex flex-col gap-3 w-full">
-                            <label>Description</label>
-                            <input
-                                type="text"
-                                name="description"
-                                placeholder="Description"
-                                required
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                            />
-                        </div>
-                        
-                    </div>
-                    
-                    <div className="flex flex-row gap-5 w-half">
+            <div
+                className="items-center mb-6 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
+            >
+                <div className="flex flex-col gap-3 w-full">
+                    {fileScanned !== true && (
+                        <label>Add Receipt</label>
+                    )}
+                    <div className="flex flex-row gap-5">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            required
+                            disabled={fileScanned}
+                            onChange={(e) => setFile(e.target.files[0])}
+                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md file:mr-4 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 file:cursor-pointer"
+                        />
                         <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? "Adding..." : "Add"}
-                        </button>
-                        <button
-                            type="button" 
-                            onClick={handleBack}
-                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
-                        >
-                            Back
-                        </button>
-                        <button 
                             type="button"
-                            disabled={loading}
-                            onClick={scanReceipt} 
-                            className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={loading || fileScanned}
+                            onClick={scanReceipt}
+                            className="w-1/3 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 
+                                        transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer
+                                        disabled:bg-gray-500 disabled:border-b-gray-800 disabled:text-gray-200 disabled:cursor-not-allowed disabled:hover:bg-gray-500/40
+                                        disabled:hover:border-gray-400/40"
                         >
                             {scanLoading ? "Scanning..." : "Scan Receipt"}
                         </button>
                     </div>
                 </div>
-            </form>
+
+            </div>
+
+            {fileScanned === true && (
+                <div
+                    className="mb-6 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
+                >
+                    <div id="addDetails" className="w-full flex flex-col gap-10 p-1">
+                        <div className="w-full flex flex-row gap-5">
+                            <div id="categoryDiv" className="flex flex-col gap-3 w-150">
+                                <label>Category</label>
+                                <Select
+                                    options={options}
+                                    styles={customSelectStyles}
+                                    value={options.find((option) => option.value === categoryId)}
+                                    onChange={(selectedOption) => setCategoryId(selectedOption.value)}
+                                    placeholder="Select Category"
+                                    menuPortalTarget={document.body}
+                                    className="w-full"
+                                />
+                            </div>
+
+
+                            <div id="amountDiv" className="flex flex-col gap-3 w-130">
+                                <label>Claim Amount</label>
+                                <input
+                                    type="number"
+                                    name="claim_amount"
+                                    placeholder="Claim Amount"
+                                    required
+                                    value={claimAmount}
+                                    onChange={(e) => setClaimAmount(e.target.value)}
+                                    className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                                />
+                            </div>
+
+                        </div>
+
+                        <div className="w-full flex flex-row gap-5">
+                            <div className="flex flex-col gap-3 w-full">
+                                <label>Description</label>
+                                <input
+                                    type="text"
+                                    name="description"
+                                    placeholder="Description"
+                                    required
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                                />
+                            </div>
+
+                        </div>
+
+                        <div className="flex flex-row gap-5 w-half">
+                            <button
+                                type="button"
+                                onClick={addClaims}
+                                disabled={loading}
+                                className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {loading ? "Adding..." : "Add"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleBack}
+                                className="w-35 inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+                            >
+                                Back
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };
