@@ -1,140 +1,15 @@
-const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = require('./config/postgres');
 const mongoose = require('mongoose');
 const cron = require('node-cron');
-
-const sequelize = new Sequelize('EdenClaim', 'postgres', 'AdityaDesai@12', {
-  host: '127.0.0.1',
-  dialect: 'postgres',
-  logging: false, 
-  pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
-});
-
-const User = sequelize.define('User', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-    allowNull: false,
-  },
-  name: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-    validate: {
-      notEmpty: { msg: 'Name is required' },
-      notNull: { msg: 'Name is required' }
-    }
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: { msg: 'Password is required' },
-      notNull: { msg: 'Password is required' }
-    }
-  },
-  email_id: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: { msg: 'email is required' },
-      notNull: { msg: 'email is required' }
-    }
-  }, 
-  address: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  company: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  contact_number: {
-    type: DataTypes.BIGINT,
-    allowNull: true,
-  },
-  user_type: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: { isAlpha: true }
-  },
-  balance: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  }
-}, {
-  tableName: 'User',
-  timestamps: true,
-  underscored: true
-});
-
-const Claims = sequelize.define('Claims', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-    allowNull: false,
-  },
-  claim_amount: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-    validate: {
-      notEmpty: { msg: 'Claim amount is required' },
-      notNull: { msg: 'Claim amount is required' },
-      isFloat: true
-    }
-  },
-  description: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  submission_date: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-    validate: { isDate: true }
-  }, 
-  validation_date: {
-    type: DataTypes.DATE,
-    allowNull: true,
-    validate: { isDate: true }
-  },
-  category_id: { type: DataTypes.INTEGER, allowNull: false },
-  user_id: { type: DataTypes.INTEGER, allowNull: false },
-  status_id: { type: DataTypes.INTEGER, allowNull: false },
-  approved_amount: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  },
-}, {
-  tableName: 'Claims',
-  timestamps: true,
-  underscored: true
-});
-
-const receiptSchema = new mongoose.Schema({
-  claim_id: Number,
-  totalAmount: Number,
-  date: Date,
-  imageBuffer: String,
-  items: [
-    {
-      name: String,
-      price: Number
-    }
-  ]
-});
-const Receipt = mongoose.models.Receipt || mongoose.model('Receipt', receiptSchema);
+const Receipt = require('./models/Receipt');
+const Claims = require('./models/Claims');
+const User = require('./models/User');
+const { getMonthDifference } = require('./utils/dateUtils');
 
 
 const STATUS_APPROVED = 2; 
 const STATUS_REJECTED = 3; 
 const STATUS_PARTIAL_APPROVED = 4; 
-
-const getMonthDifference = (date1, date2) => {
-  return (date1.getFullYear() - date2.getFullYear()) * 12 + (date1.getMonth() - date2.getMonth());
-};
-
-
 
 const processReceiptWithQwen = async (base64Image) => {
   try {
