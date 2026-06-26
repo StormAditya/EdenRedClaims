@@ -139,7 +139,7 @@ const Receipt = mongoose.models.Receipt || mongoose.model('Receipt', receiptSche
 
 const STATUS_APPROVED = 2; 
 const STATUS_REJECTED = 3; 
-const STATUS_PARTIAL_APPROVED = 4; // Added for partial approvals
+const STATUS_PARTIAL_APPROVED = 4; 
 
 const getMonthDifference = (date1, date2) => {
   return (date1.getFullYear() - date2.getFullYear()) * 12 + (date1.getMonth() - date2.getMonth());
@@ -275,7 +275,7 @@ const runBatchProcessing = async () => {
           continue; 
         }
 
-        // Check foundational parameters (Amount match & Date window)
+        // Extract transactional metrics
         const pgAmount = parseFloat(pgClaim.claim_amount);
         const mongoAmount = parseFloat(receipt.totalAmount);
         
@@ -284,14 +284,16 @@ const runBatchProcessing = async () => {
 
         const monthDiff = getMonthDifference(submissionDate, receiptDate);
         const isWithinThreeMonths = monthDiff >= 0 && monthDiff <= 3;
-        const amountsMatch = Math.abs(pgAmount - mongoAmount) < 0.01;
+        
+        // CHECK: Postgres claim amount must be less than or equal to Mongo receipt amount
+        const isAmountValid = pgAmount <= mongoAmount;
 
         console.log(`📊 Validation Metrics for Claim ${receipt.claim_id}:`);
-        console.log(`   - Postgres Amount: ${pgAmount} | Mongo Amount: ${mongoAmount} -> Match: ${amountsMatch}`);
+        console.log(`   - Postgres Claim: ${pgAmount} | Mongo Receipt: ${mongoAmount} -> Valid Framework: ${isAmountValid}`);
         console.log(`   - Submission Date: ${submissionDate.toISOString().split('T')[0]} | Receipt Date: ${receiptDate.toISOString().split('T')[0]} -> Valid Window: ${isWithinThreeMonths}`);
 
         // Base criteria validation check
-        if (amountsMatch && isWithinThreeMonths) {
+        if (isAmountValid && isWithinThreeMonths) {
           
           // Fetch user data to verify balance availability
           const user = await User.findByPk(pgClaim.user_id);
@@ -311,11 +313,11 @@ const runBatchProcessing = async () => {
               
               user.balance = updatedBalance;
               await user.save();
-              console.log(`   ✅ Sufficient balance. Deducted ${pgAmount}. New balance: ${updatedBalance}`);
+              console.log(`   ✅ Sufficient balance. Deducted claim amount ${pgAmount}. New balance: ${updatedBalance}`);
 
-              pgClaim.status_id = STATUS_APPROVED; // Status ID: 2
+              pgClaim.status_id = STATUS_APPROVED; 
               pgClaim.approved_amount = pgAmount; 
-              console.log(`🎉 Claim ${receipt.claim_id} validated and APPROVED for full amount: ${pgAmount}.`);
+              console.log(`🎉 Claim ${receipt.claim_id} validated and APPROVED for full claim amount: ${pgAmount}.`);
 
             // Rule 2: Partial approval if balance is > 0 but less than the claim amount
             } else if (currentBalance > 0 && currentBalance < pgAmount) {
@@ -325,14 +327,14 @@ const runBatchProcessing = async () => {
               await user.save();
               console.log(`   ⚠️ Partial Balance. Drained entire user balance of ${partialApprovedAmount}. New balance: 0.0`);
 
-              pgClaim.status_id = STATUS_PARTIAL_APPROVED; // Status ID: 4
+              pgClaim.status_id = STATUS_PARTIAL_APPROVED; 
               pgClaim.approved_amount = partialApprovedAmount;
               console.log(`🎉 Claim ${receipt.claim_id} PARTIALLY APPROVED for remaining balance: ${partialApprovedAmount}.`);
 
             // Rule 3: Insufficient/Zero balance
             } else {
               console.log(`   🚫 Insufficient balance (${currentBalance}). Claim cannot be approved.`);
-              pgClaim.status_id = STATUS_REJECTED; // Status ID: 3
+              pgClaim.status_id = STATUS_REJECTED; 
               pgClaim.approved_amount = 0.0;
             }
           }
