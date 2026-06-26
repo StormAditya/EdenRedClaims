@@ -6,8 +6,11 @@ import { getAuthHeader } from "../Utils/auth";
 import { useState, useEffect } from "react";
 import { customSelectStyles, options } from "../../assets/selectstyle";
 import { useNavigate } from "react-router-dom";
+import { Menu } from "lucide-react";
+import Sidebar from "./Sidebar";
 
 const AdminClaims = ({ user, onLogout }) => {
+  const [isSidebarVisible, setSidebarVisible] = useState(true);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -121,130 +124,153 @@ const AdminClaims = ({ user, onLogout }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12 relative">
-      <header className="max-w-11/12 mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-white">
-            Admin Portal
-          </h1>
-          <p className="text-sm text-zinc-400 mt-1">
-            Welcome back,{" "}
-            <span className="text-cyan-400 font-medium">{user?.name}</span>
-          </p>
-        </div>
-        <button
-          onClick={onLogout}
-          className="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 text-xs font-bold tracking-wider uppercase border border-zinc-800 rounded-lg transition"
-        >
-          Sign Out
-        </button>
-      </header>
+    <div className="flex flex-col md:flex-row min-h-screen bg-zinc-950 text-zinc-100 font-sans">
+      <Sidebar 
+        user={user} 
+        onLogout={onLogout} 
+        isSidebarVisible={isSidebarVisible} 
+        setSidebarVisible={setSidebarVisible} 
+      />
 
-      <div className="max-w-11/12 mx-auto lg:col-span-2 bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-bold text-white tracking-tight">
-            Claims
-          </h2>
-          <div className="flex flex-row gap-3"></div>
-        </div>
-
-        {errorMessage && (
-          <p className="text-red-500 mb-4 text-sm">{errorMessage}</p>
-        )}
-        {loading && !isDialogOpen && (
-          <p className="text-cyan-500 mb-4 text-sm">
-            Loading dashboard data...
-          </p>
+      <div className="flex-1 p-6 md:p-12 overflow-y-auto relative">
+        {!isSidebarVisible && (
+          <button
+            onClick={() => setSidebarVisible(true)}
+            className="hidden md:flex fixed top-6 left-6 z-40 text-zinc-400 hover:text-white p-2 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl transition"
+            title="Show Sidebar"
+          >
+            <Menu size={20} />
+          </button>
         )}
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-center border-collapse">
-            <thead>
-              <tr className="border-b border-zinc-800 text-zinc-400 text-xs uppercase tracking-wider font-semibold">
-                <th className="pb-3 font-medium">Claim ID</th>
-                <th className="pb-3 font-medium">User</th>
-                <th className="pb-3 font-medium">Category</th>
-                <th className="pb-3 font-medium">Description</th>
-                <th className="pb-3 font-medium">Amount</th>
-                <th className="pb-3 font-medium">Status</th>
-                <th className="pb-3 font-medium">Submission Date</th>
-                <th className="pb-3 font-medium">Actions</th>
-                <th className="pb-3 font-medium">Receipt</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-800/50 text-sm">
-              {claims.map((claim) => (
-                <tr
-                  key={claim.id}
-                  className="border-b border-zinc-800 hover:bg-zinc-900/20 transition"
-                >
-                  <td className="py-3">{claim.id}</td>
-                  <td className="py-3">{users.find((user) => user.id === claim.user_id)?.name || 'Unknown'}</td>
-                  <td className="py-3">{categories.find((cat) => cat.id === claim.category_id)?.category_name || 'Unknown'}</td>
-                  <td className="py-3 max-w-xs truncate">
-                    {claim.description}
-                  </td>
-                  <td className="py-3 font-semibold text-white">
-                    Rs. {claim.claim_amount}
-                  </td>
-                  <td className="py-3">
-                    <span
-                      className={`px-2 py-0.5 rounded text-xs font-medium ${
-                        claim.status_id === 2
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : claim.status_id === 3
-                            ? "bg-rose-500/10 text-rose-400"
-                            : "bg-amber-500/10 text-amber-400"
-                      }`}
+        <div className={`w-full transition-all duration-300 ${!isSidebarVisible ? "md:pl-12" : ""}`}>
+          <header className="w-full flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-white">
+                Admin Portal
+              </h1>
+              <p className="text-sm text-zinc-400 mt-1">
+                Welcome back,{" "}
+                <span className="text-cyan-400 font-medium">{user?.name}</span>
+              </p>
+            </div>
+          </header>
+
+          <div className="w-full bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-bold text-white tracking-tight">
+                Claims
+              </h2>
+              <div className="flex flex-row gap-3">
+                <span className="text-xs bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full inline-flex font-medium items-center justify-center h-8.5">
+                  {claims.length} Total Requests
+                </span>
+              </div>
+            </div>
+
+            {errorMessage && (
+              <p className="text-red-500 mb-4 text-sm">{errorMessage}</p>
+            )}
+            {loading && !isDialogOpen && (
+              <p className="text-cyan-500 mb-4 text-sm">
+                Loading dashboard data...
+              </p>
+            )}
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-center border-collapse">
+                <thead>
+                  <tr className="border-b border-zinc-800 text-zinc-400 text-xs uppercase tracking-wider font-semibold">
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Claim ID</th>
+                    <th className="pb-3 text-left whitespace-nowrap px-4 font-medium">User</th>
+                    <th className="pb-3 text-left whitespace-nowrap px-4 font-medium">Category</th>
+                    <th className="pb-3 text-left whitespace-nowrap px-4 font-medium">Description</th>
+                    <th className="pb-3 text-right whitespace-nowrap px-4 font-medium">Amount</th>
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Status</th>
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Submission Date</th>
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Actions</th>
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Receipt</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/50 text-sm">
+                  {claims.map((claim) => (
+                    <tr
+                      key={claim.id}
+                      className="border-b border-zinc-800 hover:bg-zinc-900/20 transition-colors"
                     >
-                      {claim.status_id === 1
-                        ? "Pending"
-                        : claim.status_id === 2
-                          ? "Approved"
-                          : "Rejected"}
-                    </span>
-                  </td>
-                  <td className="py-3 text-zinc-400">
-                    {claim.submission_date
-                      ? new Date(claim.submission_date).toLocaleDateString()
-                      : "N/A"}
-                  </td>
-                  <td className="py-3">
-                    <div className="flex justify-center items-center gap-2">
-                      <button
-                        onClick={() => handleStatusUpdate(claim.id, 2)}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleStatusUpdate(claim.id, 3)}
-                        className="bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <button
-                      onClick={() => fetchReceipt(claim.id)}
-                      className="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
-                    >
-                      View Receipt
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      <td className="py-4 px-4 text-center font-mono font-medium text-zinc-400">
+                        {claim.id}
+                      </td>
+                      <td className="py-4 px-4 text-left text-zinc-300 whitespace-nowrap">
+                        {users.find((user) => user.id === claim.user_id)?.name || 'Unknown'}
+                      </td>
+                      <td className="py-4 px-4 text-left text-zinc-400">
+                        {categories.find((cat) => cat.id === claim.category_id)?.category_name || 'Unknown'}
+                      </td>
+                      <td className="py-4 px-4 text-left max-w-xs truncate text-zinc-400" title={claim.description}>
+                        {claim.description}
+                      </td>
+                      <td className="py-4 px-4 text-right font-bold text-white whitespace-nowrap">
+                        Rs. {claim.claim_amount}
+                      </td>
+                      <td className="py-4 px-4 text-center whitespace-nowrap">
+                        <span
+                          className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide border ${
+                            claim.status_id === 2
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : claim.status_id === 3
+                                ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                                : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          }`}
+                        >
+                          {claim.status_id === 1
+                            ? "Pending"
+                            : claim.status_id === 2
+                              ? "Approved"
+                              : "Rejected"}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-center text-zinc-400 whitespace-nowrap">
+                        {claim.submission_date
+                          ? new Date(claim.submission_date).toLocaleDateString()
+                          : "N/A"}
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="flex justify-center items-center gap-2">
+                          <button
+                            onClick={() => handleStatusUpdate(claim.id, 2)}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleStatusUpdate(claim.id, 3)}
+                            className="bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <button
+                          onClick={() => fetchReceipt(claim.id)}
+                          className="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
+                        >
+                          View Receipt
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
 
       {isDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fadeIn">
           <div className="bg-zinc-950 w-screen h-screen flex flex-col relative p-6">
-            
-
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-zinc-800">
               <div>
                 <h3 className="text-xl font-black text-white tracking-tight">
@@ -261,7 +287,6 @@ const AdminClaims = ({ user, onLogout }) => {
                 <span>✕</span> Close Viewer
               </button>
             </div>
-
 
             <div className="flex-1 overflow-auto flex items-center justify-center bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-4 shadow-inner">
               {receipt ? (
