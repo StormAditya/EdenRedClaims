@@ -17,7 +17,7 @@ const AdminClaims = ({ user, onLogout }) => {
   const [claims, setClaims] = useState([]);
   const [categories, setCategories] = useState([]);
   const [receipt, setReceipt] = useState('');
-  
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchUsers = async () => {
@@ -64,7 +64,7 @@ const AdminClaims = ({ user, onLogout }) => {
     setLoading(true);
     setErrorMessage('');
     try {
-      if(!idToFetch){
+      if (!idToFetch) {
         setErrorMessage('Invalid claim_id');
         return;
       }
@@ -74,7 +74,7 @@ const AdminClaims = ({ user, onLogout }) => {
       );
 
       setReceipt(response.data.data.imageBuffer);
-      setIsDialogOpen(true); 
+      setIsDialogOpen(true);
 
     } catch (err) {
       console.error(err);
@@ -125,11 +125,11 @@ const AdminClaims = ({ user, onLogout }) => {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-zinc-950 text-zinc-100 font-sans">
-      <Sidebar 
-        user={user} 
-        onLogout={onLogout} 
-        isSidebarVisible={isSidebarVisible} 
-        setSidebarVisible={setSidebarVisible} 
+      <Sidebar
+        user={user}
+        onLogout={onLogout}
+        isSidebarVisible={isSidebarVisible}
+        setSidebarVisible={setSidebarVisible}
       />
 
       <div className="flex-1 p-6 md:p-12 overflow-y-auto relative">
@@ -215,13 +215,12 @@ const AdminClaims = ({ user, onLogout }) => {
                       </td>
                       <td className="py-4 px-4 text-center whitespace-nowrap">
                         <span
-                          className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide border ${
-                            claim.status_id === 2
+                          className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide border ${claim.status_id === 2
                               ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                               : claim.status_id === 3
                                 ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
                                 : "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                          }`}
+                            }`}
                         >
                           {claim.status_id === 1
                             ? "Pending"

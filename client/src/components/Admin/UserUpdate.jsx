@@ -187,6 +187,7 @@ const UserUpdate = () => {
                             <input
                                 type="number"
                                 name="balance"
+                                disabled={role === 'admin'}
                                 placeholder={balance === null ? 0 : balance}
                                 required
                                 value={balance !== null && balance !== undefined ? balance : ""}
