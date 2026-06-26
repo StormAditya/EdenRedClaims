@@ -14,7 +14,6 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
 });
 
-// --- User Model ---
 const User = sequelize.define('User', {
   id: {
     type: DataTypes.INTEGER,
@@ -73,7 +72,6 @@ const User = sequelize.define('User', {
   underscored: true
 });
 
-// --- Claims Model ---
 const Claims = sequelize.define('Claims', {
   id: {
     type: DataTypes.INTEGER,
@@ -118,7 +116,6 @@ const Claims = sequelize.define('Claims', {
   underscored: true
 });
 
-// --- MongoDB Setup (Mongoose) ---
 const receiptSchema = new mongoose.Schema({
   claim_id: Number,
   totalAmount: Number,
@@ -134,10 +131,6 @@ const receiptSchema = new mongoose.Schema({
 const Receipt = mongoose.models.Receipt || mongoose.model('Receipt', receiptSchema);
 
 
-// ==========================================
-// 2. CORE UTILITIES & SYSTEM CONSTANTS
-// ==========================================
-
 const STATUS_APPROVED = 2; 
 const STATUS_REJECTED = 3; 
 const STATUS_PARTIAL_APPROVED = 4; 
@@ -147,9 +140,6 @@ const getMonthDifference = (date1, date2) => {
 };
 
 
-// ==========================================
-// 3. OLLAMA VISION EXTRACTION
-// ==========================================
 
 const processReceiptWithQwen = async (base64Image) => {
   try {
@@ -195,33 +185,28 @@ const processReceiptWithQwen = async (base64Image) => {
     });
 
     if (!response.ok) {
-      throw new Error(`Ollama HTTP Server Error! Status: ${response.status}`);
+      throw new Error(`Ollama Server Error with Status: ${response.status}`);
     }
 
     const result = await response.json();
     return JSON.parse(result.message.content);
 
   } catch (error) {
-    console.error("HTTP Ollama extraction step failed:", error);
+    console.error("extraction failed:", error);
     throw error;
   }
 };
-
-
-// ==========================================
-// 4. CROSS-DB BATCH PROCESSING ENGINE
-// ==========================================
 
 let isProcessing = false;
 
 const runBatchProcessing = async () => {
   if (isProcessing) {
-    console.log(`\n[${new Date().toLocaleTimeString()}] ⏳ Previous batch is still running. Skipping this cycle.`);
+    console.log(`\n[${new Date().toLocaleTimeString()}] Skipping cycle.`);
     return;
   }
 
   isProcessing = true;
-  console.log(`\n[${new Date().toLocaleTimeString()}] 🚀 Cron Triggered: Starting cross-db validation...`);
+  console.log(`\n[${new Date().toLocaleTimeString()}] Cron Triggered...`);
 
   try {
     const unprocessedReceipts = await Receipt.find({
@@ -233,16 +218,16 @@ const runBatchProcessing = async () => {
     });
 
     if (unprocessedReceipts.length === 0) {
-      console.log('✨ No new unprocessed receipts found in this cycle.');
+      console.log('No new receipts found.');
       isProcessing = false;
       return;
     }
 
-    console.log(`📦 Found ${unprocessedReceipts.length} receipt(s) ready to process.`);
+    console.log(`Found ${unprocessedReceipts.length} receipt(s).`);
 
     for (const receipt of unprocessedReceipts) {
       try {
-        console.log(`\n⏳ Querying Qwen2.5-VL for Claim ID: ${receipt.claim_id}...`);
+        console.log(`\nQuerying Qwen2.5-VL for Claim ID: ${receipt.claim_id}...`);
         const structuredData = await processReceiptWithQwen(receipt.imageBuffer);
 
         receipt.totalAmount = structuredData.totalAmount || 0.0;
@@ -253,30 +238,28 @@ const runBatchProcessing = async () => {
         } else {
           receipt.date = null; 
           isDateInvalid = true;
-          console.log(`⚠️ Missing or corrupted date string from AI for Claim ${receipt.claim_id}. Marked for rejection.`);
+          console.log(` Invalid date string for Claim ${receipt.claim_id}. Rejected.`);
         }
         
         receipt.items = structuredData.items || [];
         await receipt.save();
-        console.log(`✅ Stored AI extractions in MongoDB for Claim ID: ${receipt.claim_id}`);
+        console.log(`Receipt data saved`);
 
         const pgClaim = await Claims.findByPk(receipt.claim_id);
 
         if (!pgClaim) {
-          console.log(`❌ Claim ID ${receipt.claim_id} not found in PostgreSQL. Skipping validation.`);
+          console.log(`Claim ID ${receipt.claim_id} not found in PostgreSQL.`);
           continue;
         }
 
-        // Rule: If date is not found, reject the claim automatically
         if (isDateInvalid) {
           pgClaim.status_id = STATUS_REJECTED;
           pgClaim.validation_date = new Date();
           await pgClaim.save();
-          console.log(`🚫 Claim ${receipt.claim_id} REJECTED automatically due to missing receipt date.`);
+          console.log(`Claim REJECTED  due to missing receipt date.`);
           continue; 
         }
 
-        // Extract transactional metrics
         const pgAmount = parseFloat(pgClaim.claim_amount);
         const mongoAmount = parseFloat(receipt.totalAmount);
         
@@ -286,55 +269,49 @@ const runBatchProcessing = async () => {
         const monthDiff = getMonthDifference(submissionDate, receiptDate);
         const isWithinThreeMonths = monthDiff >= 0 && monthDiff <= 3;
         
-        // CHECK: Postgres claim amount must be less than or equal to Mongo receipt amount
         const isAmountValid = pgAmount <= mongoAmount;
 
-        console.log(`📊 Validation Metrics for Claim ${receipt.claim_id}:`);
-        console.log(`   - Postgres Claim: ${pgAmount} | Mongo Receipt: ${mongoAmount} -> Valid Framework: ${isAmountValid}`);
+        console.log(`Validation Metrics for Claim ${receipt.claim_id}:`);
+        console.log(`   - Claim Amount: ${pgAmount} | Receipt Amount: ${mongoAmount} -> Validity: ${isAmountValid}`);
         console.log(`   - Submission Date: ${submissionDate.toISOString().split('T')[0]} | Receipt Date: ${receiptDate.toISOString().split('T')[0]} -> Valid Window: ${isWithinThreeMonths}`);
 
-        // Base criteria validation check
         if (isAmountValid && isWithinThreeMonths) {
-          
-          // Fetch user data to verify balance availability
+
           const user = await User.findByPk(pgClaim.user_id);
 
           if (!user) {
-            console.log(`❌ User ID ${pgClaim.user_id} associated with claim ${receipt.claim_id} not found. Rejecting.`);
+            console.log(`User not found. Rejected.`);
             pgClaim.status_id = STATUS_REJECTED;
           } else {
             const currentBalance = user.balance || 0.0;
 
-            console.log(`💳 Balance Check for User ${user.name} (ID: ${user.id}):`);
-            console.log(`   - Current Balance: ${currentBalance} | Claim Cost: ${pgAmount}`);
+            console.log(`Balance Check for User ${user.name} (ID: ${user.id}):`);
+            console.log(` - Current Balance: ${currentBalance} | Claim Cost: ${pgAmount}`);
 
-            // Rule 1: Full balance deduction if sufficient funds are present
             if (pgAmount <= currentBalance) {
               const updatedBalance = parseFloat((currentBalance - pgAmount).toFixed(2));
               
               user.balance = updatedBalance;
               await user.save();
-              console.log(`   ✅ Sufficient balance. Deducted claim amount ${pgAmount}. New balance: ${updatedBalance}`);
+              console.log(`Sufficient balance. ${pgAmount} transacted. New balance: ${updatedBalance}`);
 
               pgClaim.status_id = STATUS_APPROVED; 
               pgClaim.approved_amount = pgAmount; 
-              console.log(`🎉 Claim ${receipt.claim_id} validated and APPROVED for full claim amount: ${pgAmount}.`);
+              console.log(`Claim ${receipt.claim_id} fully APPROVED for: ${pgAmount}.`);
 
-            // Rule 2: Partial approval if balance is > 0 but less than the claim amount
             } else if (currentBalance > 0 && currentBalance < pgAmount) {
               const partialApprovedAmount = currentBalance;
               
-              user.balance = 0.0; // Entire balance drained
+              user.balance = 0.0; 
               await user.save();
-              console.log(`   ⚠️ Partial Balance. Drained entire user balance of ${partialApprovedAmount}. New balance: 0.0`);
+              console.log(` Partial Balance. New balance: 0.0`);
 
               pgClaim.status_id = STATUS_PARTIAL_APPROVED; 
               pgClaim.approved_amount = partialApprovedAmount;
-              console.log(`🎉 Claim ${receipt.claim_id} PARTIALLY APPROVED for remaining balance: ${partialApprovedAmount}.`);
+              console.log(`Claim ${receipt.claim_id} PARTIALLY APPROVED for amount: ${partialApprovedAmount}.`);
 
-            // Rule 3: Insufficient/Zero balance
             } else {
-              console.log(`   🚫 Insufficient balance (${currentBalance}). Claim cannot be approved.`);
+              console.log(`Insufficient balance (${currentBalance}). Claim REJECTED.`);
               pgClaim.status_id = STATUS_REJECTED; 
               pgClaim.approved_amount = 0.0;
             }
@@ -342,33 +319,29 @@ const runBatchProcessing = async () => {
 
         } else {
           pgClaim.status_id = STATUS_REJECTED;
-          console.log(`🚫 Claim ${receipt.claim_id} failed baseline metrics. Status set to REJECTED.`);
+          console.log(`Claim ${receipt.claim_id} failed validation. REJECTED.`);
         }
 
         pgClaim.validation_date = new Date(); 
         await pgClaim.save();
-        console.log(`💾 Successfully finalized database records for Claim ID: ${receipt.claim_id}`);
+        console.log(`data saved: ${receipt.claim_id}`);
 
       } catch (singleError) {
-        console.error(`❌ Failed to process individual Claim ID ${receipt.claim_id}:`, singleError.message);
+        console.error(`Failed to process for claimID ${receipt.claim_id}:`, singleError.message);
       }
     }
 
-    console.log('\n🏁 Batch processing cycle completed.');
+    console.log('\nProcessing completed.');
 
   } catch (batchError) {
-    console.error('💥 Critical error encountered during the batch execution pipeline:', batchError);
+    console.error('failed due to Error:', batchError);
   } finally {
     isProcessing = false;
   }
 };
 
 
-// ==========================================
-// 5. CRON SCHEDULE & LIVE COUNTDOWN TIMER
-// ==========================================
-
-console.log('⏰ Initializing Cron Service...');
+console.log('Initializing...');
 
 cron.schedule('*/2 * * * *', () => {
   runBatchProcessing();
@@ -395,5 +368,5 @@ setInterval(() => {
   const displayMinutes = Math.floor(msRemaining / 60000);
   const displaySeconds = Math.floor((msRemaining % 60000) / 1000);
 
-  console.log(`⏱️ Next batch processing in: ${displayMinutes}m ${displaySeconds.toString().padStart(2, '0')}s`);
+  console.log(`Next processing in: ${displayMinutes}m ${displaySeconds.toString().padStart(2, '0')}s`);
 }, 10000);
