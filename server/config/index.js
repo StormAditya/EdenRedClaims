@@ -28,7 +28,8 @@ sequelize.sync({ alter: true }).then(async () => {
         const statuses = [
             { id: 1, status_name: 'Pending' },
             { id: 2, status_name: 'Approved' },
-            { id: 3, status_name: 'Denied' }
+            { id: 3, status_name: 'Denied' },
+            { id: 4, status_name: 'Partially Approved' }
         ];
         for (const s of statuses) {
             await Status.findOrCreate({

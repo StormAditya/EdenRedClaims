@@ -107,6 +107,10 @@ const Claims = sequelize.define('Claims', {
   category_id: { type: DataTypes.INTEGER, allowNull: false },
   user_id: { type: DataTypes.INTEGER, allowNull: false },
   status_id: { type: DataTypes.INTEGER, allowNull: false },
+  approved_amount: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
 }, {
   tableName: 'Claims',
   timestamps: true,
@@ -135,6 +139,7 @@ const Receipt = mongoose.models.Receipt || mongoose.model('Receipt', receiptSche
 
 const STATUS_APPROVED = 2; 
 const STATUS_REJECTED = 3; 
+const STATUS_PARTIAL_APPROVED = 4; // Added for partial approvals
 
 const getMonthDifference = (date1, date2) => {
   return (date1.getFullYear() - date2.getFullYear()) * 12 + (date1.getMonth() - date2.getMonth());
@@ -300,20 +305,35 @@ const runBatchProcessing = async () => {
             console.log(`💳 Balance Check for User ${user.name} (ID: ${user.id}):`);
             console.log(`   - Current Balance: ${currentBalance} | Claim Cost: ${pgAmount}`);
 
-            // Rule: Deduct balance if sufficient funds are present
+            // Rule 1: Full balance deduction if sufficient funds are present
             if (pgAmount <= currentBalance) {
-              // Using toFixed(2) parsed back to float to clear native JS floating-point issues
               const updatedBalance = parseFloat((currentBalance - pgAmount).toFixed(2));
               
               user.balance = updatedBalance;
               await user.save();
               console.log(`   ✅ Sufficient balance. Deducted ${pgAmount}. New balance: ${updatedBalance}`);
 
-              pgClaim.status_id = STATUS_APPROVED;
-              console.log(`🎉 Claim ${receipt.claim_id} validated and APPROVED.`);
+              pgClaim.status_id = STATUS_APPROVED; // Status ID: 2
+              pgClaim.approved_amount = pgAmount; 
+              console.log(`🎉 Claim ${receipt.claim_id} validated and APPROVED for full amount: ${pgAmount}.`);
+
+            // Rule 2: Partial approval if balance is > 0 but less than the claim amount
+            } else if (currentBalance > 0 && currentBalance < pgAmount) {
+              const partialApprovedAmount = currentBalance;
+              
+              user.balance = 0.0; // Entire balance drained
+              await user.save();
+              console.log(`   ⚠️ Partial Balance. Drained entire user balance of ${partialApprovedAmount}. New balance: 0.0`);
+
+              pgClaim.status_id = STATUS_PARTIAL_APPROVED; // Status ID: 4
+              pgClaim.approved_amount = partialApprovedAmount;
+              console.log(`🎉 Claim ${receipt.claim_id} PARTIALLY APPROVED for remaining balance: ${partialApprovedAmount}.`);
+
+            // Rule 3: Insufficient/Zero balance
             } else {
-              console.log(`   🚫 Insufficient balance. Claim cannot be approved.`);
-              pgClaim.status_id = STATUS_REJECTED;
+              console.log(`   🚫 Insufficient balance (${currentBalance}). Claim cannot be approved.`);
+              pgClaim.status_id = STATUS_REJECTED; // Status ID: 3
+              pgClaim.approved_amount = 0.0;
             }
           }
 

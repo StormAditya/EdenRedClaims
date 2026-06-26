@@ -76,6 +76,10 @@ const Claims = sequelize.define('Claims', {
             }
         }
     },
+    approved_amount: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+    },
     
 
 }, {

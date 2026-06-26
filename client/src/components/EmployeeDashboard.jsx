@@ -123,6 +123,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
     statusID: claim.statusID ?? claim.status_id,
     submission_date: claim.submission_date ?? null,
     validation_date: claim.validation_date ?? null,
+    approved_amount: claim.approved_amount ?? null,
   });
 
   const employeeClaims = claims
@@ -206,6 +207,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                   <th className="pb-3 font-medium">Description</th>
                   <th className="pb-3 font-medium">Amount</th>
                   <th className="pb-3 font-medium">Status</th>
+                  <th className="pb-3 font-medium">Approved Amount</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/50 text-sm">
@@ -240,10 +242,15 @@ export default function EmployeeDashboard({ user, onLogout }) {
                           ${claim.statusID === 1 ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : ""}
                           ${claim.statusID === 2 ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : ""}
                           ${claim.statusID === 3 ? "bg-red-500/10 text-red-400 border border-red-500/20" : ""}
+                          ${claim.statusID === 4 ? "bg-yellow-500/10 text-orange-400 border border-orange-500/20" : ""}
+
                         `}
                         >
                           {statusName}
                         </span>
+                      </td>
+                      <td className="py-4 font-bold text-white">
+                        {claim.approved_amount !== null ? `Rs.${claim.approved_amount.toFixed(2)}` : "-"}
                       </td>
                       <td className="py-4 text-right">
                         <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
@@ -258,7 +265,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
                           <div className="bg-yellow-300 w-6 h-6 flex justify-center items-center rounded-md">
                             <img
                               src="/public/images/editIcon.svg"
-                              alt="Delete"
+                              alt="Edit"
                               className="w-5 h-5 cursor-pointer"
                               onClick={() => handleEdit(claim.claimID)}
                             />
