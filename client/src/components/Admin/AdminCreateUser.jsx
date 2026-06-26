@@ -9,157 +9,75 @@ import { useNavigate } from "react-router-dom";
 import { customSelectStyles, userTypeOptions, statusTypeOptions } from "../../assets/roleSelectStyle";
 
 
-const AdminCreateUser = () => {
+const AdminCreateUser = ({ user, onLogout }) => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    
+
     const [name, setName] = useState('');
     const [role, setRole] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [contactNo, setContactNo] = useState('');
     const [address, setAddress] = useState('');
-    const [company, setCompany] = useState('');
 
-
-
-    const fetchUser = async () => {
+    const createUser = async () => {
         setLoading(true);
-        setErrorMessage("");
+        setErrorMessage('');
+
+        let response = null;
+
         try {
-            const response = await axios.get(`http://localhost:5050/api/admin-dashboard/users/${userid}`, {
-                headers: getAuthHeader()
-            });
+            if (role !== 'employee') {
+                if (!email || !name || !password) {
+                    setErrorMessage("All required fields must be filled.");
+                    return;
+                }
 
-            const data = response.data.data;
-            setUser(data);
-            setName(data.name);
-            setBalance(data.balance);
-            setRole(data.user_type);
-            setStatus(data.status);
+                response = await axios.post('http://localhost:5050/api/register', {
+                    email_id: email,
+                    password: password,
+                    name: name,
+                    user_type: role,
+                    company: user.company
+                });
+            }
+            else {
+                if (!email || !address || !contactNo || !name || !password) {
+                    setErrorMessage("All required fields must be filled.");
+                    return;
+                }
 
+                response = await axios.post('http://localhost:5050/api/register', {
+                    email_id: email,
+                    password: password,
+                    address: address,
+                    contact_number: contactNo,
+                    name: name,
+                    user_type: 'employee',
+                    company: user.company
+                });
+
+                console.log(response);
+
+            }
+            if (response.data?.success) {
+                handleBack();
+            }
         }
+
         catch (err) {
             console.error(err);
-            setUser(null);
-            setName('');
-            setBalance(0);
-            setRole('');
-            setErrorMessage("Unable to fetch User.");
-        }
-        finally {
-            setLoading(false);
-        }
-    }
-
-    const updateBalance = async () => {
-        event.preventDefault();
-        setLoading(true);
-        setErrorMessage("");
-
-        try {
-            const response = await axios.patch(
-                "http://localhost:5050/api/admin-dashboard/users/balance",
-                {
-                    id: userid,
-                    balance: balance,
-                },
-                {
-                    headers: getAuthHeader(),
-                },
-            );
-            console.log('done')
-
-            if (response.data?.success) {
-                await fetchUser();
-                handleBack();
-            }
-        } catch (err) {
-            console.error(err);
-            setErrorMessage("Unable to update user Balance.");
-        } finally {
-            setLoading(false);
-            
-        }
-    }
-
-    const updateRole = async () => {
-        event.preventDefault();
-        setLoading(true);
-        setErrorMessage("");
-
-        try {
-            const response = await axios.patch("http://localhost:5050/api/admin-dashboard/users/role",
-                {
-                    id: userid,
-                    user_type: role
-                },
-                {
-                    headers: getAuthHeader()
-                }
-            );
-            console.log('done')
-
-            if (response.data?.success) {
-                setRole('');
-                await fetchUser();
-                handleBack();
-            }
-        }
-        catch (err) {
-            console.error(err);
-            setErrorMessage("Unable to update user role...");
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const updateStatus = async () => {
-        setLoading(true);
-        setErrorMessage("");
-
-        console.log('button called')
-
-        try {
-            const response = await axios.patch("http://localhost:5050/api/admin-dashboard/users/status", 
-                {
-                id: userid,
-                status: status
-                },
-                {
-                    headers: getAuthHeader()
-                }
-            );
-
-            if(response.data?.success){
-                setStatus('');
-                await fetchUser();
-                handleBack();
-            }
-
-        }
-        catch(err){
-            console.log(err);
-            setErrorMessage("Unable to update user Status...");
+            setErrorMessage("User creation failed. Please try again.");
         }
         finally{
             setLoading(false);
         }
+
     }
-
-    useEffect(() => {
-        fetchUser();
-    }, []);
-
-    useEffect(() => {
-        fetchUser();
-    }, [userid]);
-
 
     const navigate = useNavigate();
 
     const handleBack = () => {
-        console.log('navigation..')
         navigate('/admin-dashboard/users')
 
     }
@@ -169,12 +87,8 @@ const AdminCreateUser = () => {
             <header className="max-w-7xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
                 <div>
                     <h1 className="text-2xl font-black tracking-tight text-white pb-2">
-                        Update User: <span className="text-cyan-400">{userid}</span>
+                        Create User
                     </h1>
-                    <h1 className="text-2xl font-black tracking-tight text-cyan-400">
-                        {name}
-                    </h1>
-
                 </div>
                 <button
                     onClick={handleBack}
@@ -184,79 +98,149 @@ const AdminCreateUser = () => {
                 </button>
             </header>
 
-            <form
-                className="mb-10 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
+            <div id="userType"
+                className="mb-10 flex flex-col gap-6 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
             >
-                <div className="w-full flex flex-col gap-10 p-1">
+                {errorMessage && (
+                    <div className="mb-6 p-3 bg-red-950/50 border border-red-500/40 rounded-lg text-red-200 text-sm font-medium text-center backdrop-blur-sm">
+                        {errorMessage}
+                    </div>
+                )}
+                <div className="flex flex-col gap-4 w-full items-center">
+                    <h1 className="text-2xl font-black tracking-tight text-white pb-2">Role</h1>
+                    <Select
+                        required
+                        options={userTypeOptions}
+                        styles={customSelectStyles}
+                        placeholder="Select User Type"
+                        value={userTypeOptions.find((option) => option.value === role)}
+                        onChange={(selectedOption) => setRole(selectedOption.value)}
+                        placeholder="Select Role"
+                        menuPortalTarget={document.body}
+                        className="w-3/5"
+
+                    />
+                </div>
+            </div >
+
+            {(role === 'employee' || role === 'admin') && (
+            <div
+                id="generalData"
+                className="mb-10 flex flex-col gap-6 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+            >
+                <div className="w-full flex flex-row gap-5">
+                    <div id="nameDiv" className="flex flex-col gap-3 w-130">
+                        <label>Name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Max"
+                            required
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                        />
+                    </div>
+                    <div id="emailDiv" className="flex flex-col gap-3 w-130">
+                        <label>Email ID</label>
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Max@gmail.com"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                        />
+                    </div>
+                    <div id="passDiv" className="flex flex-col gap-3 w-130">
+                        <label>Password</label>
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="*******"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                        />
+                    </div>
+                </div>
+            </div >
+            )}
+
+            {role === "employee" && (
+            <div
+                id="employeeData"
+                className="mb-10 flex flex-col gap-6 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+            >
+                <div className="w-full flex flex-row gap-5">
+                    <div id="contactDiv" className="flex flex-col gap-3 w-130">
+                        <label>Contact Number</label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="9999999999"
+                            required
+                            value={contactNo}
+                            onChange={(e) => setContactNo(e.target.value)}
+                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                        />
+                    </div>
+                    <div id="addressDiv" className="flex flex-col gap-3 w-130">
+                        <label>Address</label>
+                        <input
+                            type="text"
+                            name="address"
+                            placeholder="9th Mulberry Street 11th Corner"
+                            required
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                        />
+                    </div>
+
+                </div>
+            </div >
+            )}
+            <div
+                id="buttonDiv"
+                className="mb-10 flex flex-row gap-6 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+            >
+                <div className="flex flex-row gap-5 w-full">
+                    <button
+                        type="button" onClick={createUser}
+                        className="w-full inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+                    >
+                        Create
+                    </button>
+                </div>
+                <div className="flex flex-row gap-5 w-full">
+                    <button
+                        type="button" onClick={handleBack}
+                        className="w-full inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+                    >
+                        Back
+                    </button>
+                </div>
+            </div >
+
+        </div >
+
+
+    );
+};
+
+
+{/* <div className="w-full flex flex-col gap-10 p-1">
                     <div className="w-full flex flex-row gap-5">
 
+
                         <div className="flex flex-col gap-4 w-full">
-                            <label>Balance</label>
-                            <input
-                                type="number"
-                                name="balance"
-                                placeholder={balance === null ? 0 : balance}
-                                required
-                                value={balance !== null && balance !== undefined ? balance : ""}
-                                onChange={(e) => setBalance(e.target.value)}
-                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                            />
-                            <div className="flex">
-                                <button
-                                    type="button"
-                                    onClick={updateBalance}
-                                    disabled={role === 'admin'}
-                                    className="w-full inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 
-                                        transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer
-                                        disabled:bg-red-500 disabled:border-b-amber-800 disabled:text-red-200 disabled:cursor-not-allowed disabled:hover:bg-red-500/40
-                                        disabled:hover:border-red-400/40"
-                                >
-                                    Update Balance
-                                </button>
-                            </div>
 
                         </div>
                         <div className="flex flex-col gap-4 w-full">
-                            <label>Role</label>
-                            <Select
-                                options={userTypeOptions}
-                                styles={customSelectStyles}
-                                placeholder="Select User Type"
-                                value={userTypeOptions.find((option) => option.value === role)}
-                                onChange={(selectedOption) => setRole(selectedOption.value)}
-                                placeholder="Select Role"
-                                menuPortalTarget={document.body}
-                                className="w-full"
-                            />
-                            <button
-                                type="button"
-                                className="w-full inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 
-                                    transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
-                                onClick={updateRole}
-                            >
-                                Update Role
-                            </button>
-                        </div>
-                        <div className="flex flex-col gap-4 w-full">
-                            <label>Status</label>
-                            <Select
-                                options={statusTypeOptions}
-                                styles={customSelectStyles}
-                                placeholder="Select User Type"
-                                value={statusTypeOptions.find((option) => option.value === status)}
-                                onChange={(selectedOption) => setStatus(selectedOption.value)}
-                                placeholder="Select Status"
-                                menuPortalTarget={document.body}
-                                className="w-full"
-                            />
-                            <button
-                                type="button"
-                                className="w-full inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 
-                                    transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
-                                onClick={updateStatus}
-                            >
-                                Update Status
-                            </button>
+
                         </div>
                     </div>
 
@@ -268,15 +252,7 @@ const AdminCreateUser = () => {
                             Back
                         </button>
                     </div>
-                </div>
-            </form >
-
-        </div >
-
-
-    );
-};
-
+                </div> */}
 export default AdminCreateUser;
 
 

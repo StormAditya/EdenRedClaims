@@ -50,7 +50,6 @@ const UserUpdate = () => {
     }
 
     const updateBalance = async () => {
-        event.preventDefault();
         setLoading(true);
         setErrorMessage("");
 
@@ -65,23 +64,22 @@ const UserUpdate = () => {
                     headers: getAuthHeader(),
                 },
             );
-            console.log('done')
 
             if (response.data?.success) {
                 await fetchUser();
                 handleBack();
+                console.log('success')
             }
         } catch (err) {
             console.error(err);
             setErrorMessage("Unable to update user Balance.");
         } finally {
             setLoading(false);
-            
+
         }
     }
 
     const updateRole = async () => {
-        event.preventDefault();
         setLoading(true);
         setErrorMessage("");
 
@@ -95,7 +93,7 @@ const UserUpdate = () => {
                     headers: getAuthHeader()
                 }
             );
-            console.log('done')
+
 
             if (response.data?.success) {
                 setRole('');
@@ -115,31 +113,29 @@ const UserUpdate = () => {
         setLoading(true);
         setErrorMessage("");
 
-        console.log('button called')
-
         try {
-            const response = await axios.patch("http://localhost:5050/api/admin-dashboard/users/status", 
+            const response = await axios.patch("http://localhost:5050/api/admin-dashboard/users/status",
                 {
-                id: userid,
-                status: status
+                    id: userid,
+                    status: status
                 },
                 {
                     headers: getAuthHeader()
                 }
             );
 
-            if(response.data?.success){
+            if (response.data?.success) {
                 setStatus('');
                 await fetchUser();
                 handleBack();
             }
 
         }
-        catch(err){
+        catch (err) {
             console.log(err);
             setErrorMessage("Unable to update user Status...");
         }
-        finally{
+        finally {
             setLoading(false);
         }
     }
@@ -156,7 +152,6 @@ const UserUpdate = () => {
     const navigate = useNavigate();
 
     const handleBack = () => {
-        console.log('navigation..')
         navigate('/admin-dashboard/users')
 
     }
@@ -181,7 +176,7 @@ const UserUpdate = () => {
                 </button>
             </header>
 
-            <form
+            <div
                 className="mb-10 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
             >
                 <div className="w-full flex flex-col gap-10 p-1">
@@ -266,7 +261,7 @@ const UserUpdate = () => {
                         </button>
                     </div>
                 </div>
-            </form >
+            </div >
 
         </div >
 
