@@ -170,7 +170,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
           </p>
 
           <div className="text-4xl font-black text-cyan-400 tracking-tight">
-            Rs.{Math.round(user.balance)}
+            Rs.{user.balance?.toFixed(2) ?? "0.00"}
           </div>
 
           <div className="mt-6 pt-4 border-t border-zinc-800/60 flex justify-between text-xs text-zinc-400">
