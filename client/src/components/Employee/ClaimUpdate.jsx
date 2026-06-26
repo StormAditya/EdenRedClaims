@@ -170,7 +170,7 @@ const ClaimUpdate = () => {
               />
             </div>
 
-            <div className="flex flex-col gap-3 w-3/5">
+            <div className="flex flex-col gap-3 w-full">
               <label>Update Receipt</label>
               <input
                 type="file"

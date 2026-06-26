@@ -87,7 +87,9 @@ const AdminHome = ({ user, onLogout }) => {
                 isSidebarVisible={isSidebarVisible} 
                 setSidebarVisible={setSidebarVisible} 
             />
+            
             <div className="flex-1 p-6 md:p-12 overflow-y-auto relative">
+                {/* Floating Menu Toggle Button when Sidebar is Hidden */}
                 {!isSidebarVisible && (
                     <button
                         onClick={() => setSidebarVisible(true)}
@@ -99,6 +101,7 @@ const AdminHome = ({ user, onLogout }) => {
                 )}
                 
                 <div className={`max-w-7xl mx-auto transition-all duration-300 ${!isSidebarVisible ? "md:pl-12" : ""}`}>
+                    {/* Header Layout */}
                     <div className="mb-8 border-b border-zinc-800 pb-5">
                         <h1 className="text-2xl font-black tracking-tight text-white">
                             System Overview Dashboard
@@ -110,6 +113,7 @@ const AdminHome = ({ user, onLogout }) => {
                     </div>
 
                     <div className="w-full">
+                        {/* Feedback Banners */}
                         {errorMessage && (
                             <p className="text-red-500 mb-6 text-sm bg-red-500/10 border border-red-500/20 px-4 py-2 rounded-xl">
                                 {errorMessage}
@@ -121,7 +125,9 @@ const AdminHome = ({ user, onLogout }) => {
                             </p>
                         )}
                         
+                        {/* Charts Grid */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* User Roles Chart Card */}
                             <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl flex flex-col items-center">
                                 <h2 className="text-base font-bold text-white tracking-tight mb-6 self-start">
                                     User role distribution
@@ -149,6 +155,7 @@ const AdminHome = ({ user, onLogout }) => {
                                 </div>
                             </div>
 
+                            {/* Claims Status Chart Card */}
                             <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 shadow-xl flex flex-col items-center">
                                 <h2 className="text-base font-bold text-white tracking-tight mb-6 self-start">
                                     Claims status graph

@@ -6,7 +6,7 @@ import { getAuthHeader } from "../Utils/auth";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { customSelectStyles, userTypeOptions } from "../../assets/roleSelectStyle";
+import { customSelectStyles, userTypeOptions, statusTypeOptions } from "../../assets/roleSelectStyle";
 
 
 const UserUpdate = () => {
@@ -17,6 +17,7 @@ const UserUpdate = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [balance, setBalance] = useState(0);
     const [role, setRole] = useState('');
+    const [status, setStatus] = useState('');
 
 
     const fetchUser = async () => {
@@ -32,6 +33,7 @@ const UserUpdate = () => {
             setName(data.name);
             setBalance(data.balance);
             setRole(data.user_type);
+            setStatus(data.status);
 
         }
         catch (err) {
@@ -48,7 +50,6 @@ const UserUpdate = () => {
     }
 
     const updateBalance = async () => {
-        event.preventDefault();
         setLoading(true);
         setErrorMessage("");
 
@@ -63,27 +64,26 @@ const UserUpdate = () => {
                     headers: getAuthHeader(),
                 },
             );
-            console.log('done')
 
             if (response.data?.success) {
-                setBalance(0);
-                await fetchClaims();
+                await fetchUser();
+                handleBack();
+                console.log('success')
             }
         } catch (err) {
             console.error(err);
             setErrorMessage("Unable to update user Balance.");
         } finally {
             setLoading(false);
-            handleBack();
+
         }
     }
 
     const updateRole = async () => {
-        event.preventDefault();
         setLoading(true);
         setErrorMessage("");
-        
-        try{
+
+        try {
             const response = await axios.patch("http://localhost:5050/api/admin-dashboard/users/role",
                 {
                     id: userid,
@@ -93,11 +93,12 @@ const UserUpdate = () => {
                     headers: getAuthHeader()
                 }
             );
-            console.log('done')
+
 
             if (response.data?.success) {
                 setRole('');
-                await fetchClaims();
+                await fetchUser();
+                handleBack();
             }
         }
         catch (err) {
@@ -105,7 +106,37 @@ const UserUpdate = () => {
             setErrorMessage("Unable to update user role...");
         } finally {
             setLoading(false);
-            handleBack();
+        }
+    }
+
+    const updateStatus = async () => {
+        setLoading(true);
+        setErrorMessage("");
+
+        try {
+            const response = await axios.patch("http://localhost:5050/api/admin-dashboard/users/status",
+                {
+                    id: userid,
+                    status: status
+                },
+                {
+                    headers: getAuthHeader()
+                }
+            );
+
+            if (response.data?.success) {
+                setStatus('');
+                await fetchUser();
+                handleBack();
+            }
+
+        }
+        catch (err) {
+            console.log(err);
+            setErrorMessage("Unable to update user Status...");
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -113,12 +144,17 @@ const UserUpdate = () => {
         fetchUser();
     }, []);
 
-    
+    useEffect(() => {
+        fetchUser();
+    }, [userid]);
+
+
     const navigate = useNavigate();
 
-    const handleBack = () => navigate('/admin-dashboard/users')
+    const handleBack = () => {
+        navigate('/admin-dashboard/users')
 
-
+    }
 
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
@@ -140,7 +176,7 @@ const UserUpdate = () => {
                 </button>
             </header>
 
-            <form
+            <div
                 className="mb-10 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"
             >
                 <div className="w-full flex flex-col gap-10 p-1">
@@ -185,12 +221,33 @@ const UserUpdate = () => {
                                 className="w-full"
                             />
                             <button
-                                    type="button"
-                                    className="w-full inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 
+                                type="button"
+                                className="w-full inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 
                                     transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
-                                    onClick={updateRole}
-                                >
-                                    Update Role
+                                onClick={updateRole}
+                            >
+                                Update Role
+                            </button>
+                        </div>
+                        <div className="flex flex-col gap-4 w-full">
+                            <label>Status</label>
+                            <Select
+                                options={statusTypeOptions}
+                                styles={customSelectStyles}
+                                placeholder="Select User Type"
+                                value={statusTypeOptions.find((option) => option.value === status)}
+                                onChange={(selectedOption) => setStatus(selectedOption.value)}
+                                placeholder="Select Status"
+                                menuPortalTarget={document.body}
+                                className="w-full"
+                            />
+                            <button
+                                type="button"
+                                className="w-full inline-flex items-center justify-center rounded-lg border border-cyan-400/40 bg-cyan-500/10 px-4 py-3 text-sm font-bold uppercase tracking-wide text-cyan-300 
+                                    transition hover:border-cyan-400 hover:bg-cyan-500/20 hover:cursor-pointer"
+                                onClick={updateStatus}
+                            >
+                                Update Status
                             </button>
                         </div>
                     </div>
@@ -204,7 +261,7 @@ const UserUpdate = () => {
                         </button>
                     </div>
                 </div>
-            </form >
+            </div >
 
         </div >
 
