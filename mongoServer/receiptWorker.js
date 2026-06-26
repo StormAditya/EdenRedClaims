@@ -6,6 +6,7 @@ const Claims = require('./models/Claims');
 const User = require('./models/User');
 const { getMonthDifference } = require('./utils/dateUtils');
 
+const BATCH_INTERVAL_MINUTES = 5;
 
 const STATUS_APPROVED = 2; 
 const STATUS_REJECTED = 3; 
@@ -213,7 +214,7 @@ const runBatchProcessing = async () => {
 
 console.log('Initializing...');
 
-cron.schedule('*/2 * * * *', () => {
+cron.schedule('*/4 * * * *', () => {
   runBatchProcessing();
 });
 
@@ -226,7 +227,7 @@ setInterval(() => {
   const currentMinutes = now.getMinutes();
   const currentSeconds = now.getSeconds();
 
-  const nextTargetMinute = currentMinutes + (2 - (currentMinutes % 2));
+  const nextTargetMinute = currentMinutes + (4 - (currentMinutes % 4));
   
   const targetTime = new Date(now);
   targetTime.setMinutes(nextTargetMinute);
