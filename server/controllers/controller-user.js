@@ -122,6 +122,26 @@ const getUserById = async (req, res) => {
   }
 }
 
+const getBalance = async (req, res) => {
+  try{
+    const { id } = req.params;
+    const balance = await User.findOne({
+      attributes: ['balance'],
+      where: { id: id }
+    })
+
+    if(!balance){
+      return res.status(404).json({success: false, msg: "Balance not retrieved"})
+    }
+    res.status(200).json({success: true, data: balance})
+
+  }
+  catch(err){
+    console.error(err);
+    res.status(500).json({success: false, msg: "Server Error to get balance"})
+  }
+}
+
 const updateUser = async (req, res) => {
     try {
         const { name, password, email_id, address, contact_number } = req.body
@@ -250,6 +270,7 @@ module.exports = {
   loginUser,
   getUser,
   getUserById,
+  getBalance,
   updateUser,
   updateUserBalance,
   updateUserRole,

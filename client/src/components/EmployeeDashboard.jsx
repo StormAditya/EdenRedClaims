@@ -18,6 +18,8 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [categoryId, setCategoryId] = useState("");
   const [description, setDescription] = useState("");
   const [claimAmount, setClaimAmount] = useState("");
+  const [approvedAmount, setApprovedAmount] = useState();
+  const [balance, setBalance] = useState();
 
   const navigate = useNavigate();
 
@@ -58,14 +60,14 @@ export default function EmployeeDashboard({ user, onLogout }) {
       const receiptResponse = await axios.delete(
         "http://localhost:5001/api/receipts",
         {
-          data: {claim_id: Number(claimIdToDelete)}
+          data: { claim_id: Number(claimIdToDelete) }
         }
       )
 
       if (response.data?.success && receiptResponse.status === 200) {
         await fetchClaims();
       }
-      else{
+      else {
         throw new Error("Unable to delete...")
       }
     } catch (err) {
@@ -86,6 +88,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
       setErrorMessage("Unable to fetch statuses.");
     }
   };
+
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
@@ -94,9 +97,23 @@ export default function EmployeeDashboard({ user, onLogout }) {
       setCategories(Array.isArray(response.data?.data) ? response.data.data : []);
     } catch (err) {
       console.error(err);
-      setErrorMessage("Unable to fetch categories.");
+      setErrorMessage("Unable to fetch categories...");
     }
   };
+
+  const fetchBalance = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5050/api/employee-dashboard/userBalance/${user.userID}`
+      );
+      setBalance(response.data?.data?.balance);
+
+    }
+    catch (err) {
+      console.error(err);
+      setErrorMessage("Unable to fetch balance...")
+    }
+  }
 
   const getStatusName = (statusID) => {
     const status = statuses.find((s) => s.id === statusID);
@@ -107,12 +124,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
     const category = categories.find((c) => c.id === categoryId);
     return category ? category.category_name : "Unknown";
   }
-
-  useEffect(() => {
-    fetchClaims();
-    fetchStatuses();
-    fetchCategories();
-  }, []);
 
   const normalizeClaim = (claim) => ({
     claimID: claim.claimID ?? claim.claim_id ?? claim.id,
@@ -138,6 +149,24 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const handleAdd = () => {
     navigate('/employee-dashboard/addClaim');
   }
+  useEffect(() => {
+    fetchClaims();
+    fetchStatuses();
+    fetchCategories();
+    fetchBalance();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await Promise.all([
+        fetchClaims(),
+        fetchBalance()
+      ]);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
@@ -170,7 +199,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
           </p>
 
           <div className="text-4xl font-black text-cyan-400 tracking-tight">
-            Rs. {Math.round(user.balance)}
+            Rs. {Math.round(balance)}
           </div>
 
           <div className="mt-6 pt-4 border-t border-zinc-800/60 flex justify-between text-xs text-zinc-400">
