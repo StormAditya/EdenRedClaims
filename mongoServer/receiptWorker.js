@@ -98,7 +98,7 @@ const runBatchProcessing = async () => {
 
     for (const receipt of unprocessedReceipts) {
       try {
-        console.log(`\nQuerying Qwen2.5-VL for Claim ID: ${receipt.claim_id}...`);
+        console.log(`\nQuerying Qwen2.5VL for Claim ID: ${receipt.claim_id}...`);
         const structuredData = await processReceiptWithQwen(receipt.imageBuffer);
 
         receipt.totalAmount = structuredData.totalAmount || 0.0;
@@ -127,7 +127,7 @@ const runBatchProcessing = async () => {
           pgClaim.status_id = STATUS_REJECTED;
           pgClaim.validation_date = new Date();
           await pgClaim.save();
-          console.log(`Claim REJECTED  due to missing receipt date.`);
+          console.log(`Claim REJECTED due to missing receipt date.`);
           continue; 
         }
 
@@ -143,8 +143,8 @@ const runBatchProcessing = async () => {
         const isAmountValid = pgAmount <= mongoAmount;
 
         console.log(`Validation Metrics for Claim ${receipt.claim_id}:`);
-        console.log(`   - Claim Amount: ${pgAmount} | Receipt Amount: ${mongoAmount} -> Validity: ${isAmountValid}`);
-        console.log(`   - Submission Date: ${submissionDate.toISOString().split('T')[0]} | Receipt Date: ${receiptDate.toISOString().split('T')[0]} -> Valid Window: ${isWithinThreeMonths}`);
+        console.log(`   - Claim Amount: ${pgAmount} | Receipt Amount: ${mongoAmount} Validity: ${isAmountValid}`);
+        console.log(`   - Submission Date: ${submissionDate.toISOString().split('T')[0]} Receipt Date: ${receiptDate.toISOString().split('T')[0]} Window: ${isWithinThreeMonths}`);
 
         if (isAmountValid && isWithinThreeMonths) {
 

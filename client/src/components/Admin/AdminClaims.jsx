@@ -213,7 +213,8 @@ const AdminClaims = ({ user, onLogout }) => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-zinc-950 text-zinc-100 font-sans">
+    
+    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
       <Sidebar
         user={user}
         onLogout={onLogout}
@@ -221,7 +222,8 @@ const AdminClaims = ({ user, onLogout }) => {
         setSidebarVisible={setSidebarVisible}
       />
 
-      <div className="flex-1 p-6 md:p-12 overflow-y-auto relative">
+     
+      <div className="flex-1 h-full p-6 md:p-12 overflow-y-auto relative">
         {!isSidebarVisible && (
           <button
             onClick={() => setSidebarVisible(true)}
@@ -236,7 +238,7 @@ const AdminClaims = ({ user, onLogout }) => {
           <header className="w-full flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
             <div>
               <h1 className="text-2xl font-black tracking-tight text-white">
-                Claims
+                Claims Management
               </h1>
               <p className="text-sm text-zinc-400 mt-1">
                 Welcome back,{" "}
@@ -271,10 +273,10 @@ const AdminClaims = ({ user, onLogout }) => {
                 <thead>
                   <tr className="border-b border-zinc-800 text-zinc-400 text-xs uppercase tracking-wider font-semibold">
                     <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Claim ID</th>
-                    <th className="pb-3 text-left whitespace-nowrap px-4 font-medium">User</th>
-                    <th className="pb-3 text-left whitespace-nowrap px-4 font-medium">Category</th>
-                    <th className="pb-3 text-left whitespace-nowrap px-4 font-medium">Description</th>
-                    <th className="pb-3 text-right whitespace-nowrap px-4 font-medium">Amount</th>
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">User</th>
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Category</th>
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Description</th>
+                    <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Amount</th>
                     <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Status</th>
                     <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Submission Date</th>
                     <th className="pb-3 text-center whitespace-nowrap px-4 font-medium">Actions</th>
@@ -290,16 +292,16 @@ const AdminClaims = ({ user, onLogout }) => {
                       <td className="py-4 px-4 text-center font-mono font-medium text-zinc-400">
                         {claim.id}
                       </td>
-                      <td className="py-4 px-4 text-left text-zinc-300 whitespace-nowrap">
+                      <td className="py-4 px-4 text-center text-zinc-300 whitespace-nowrap">
                         {users.find((user) => user.id === claim.user_id)?.name || 'Unknown'}
                       </td>
-                      <td className="py-4 px-4 text-left text-zinc-400">
+                      <td className="py-4 px-4 text-center text-zinc-400">
                         {categories.find((cat) => cat.id === claim.category_id)?.category_name || 'Unknown'}
                       </td>
-                      <td className="py-4 px-4 text-left max-w-xs truncate text-zinc-400" title={claim.description}>
+                      <td className="py-4 px-4 text-center max-w-xs truncate text-zinc-400" title={claim.description}>
                         {claim.description}
                       </td>
-                      <td className="py-4 px-4 text-right font-bold text-white whitespace-nowrap">
+                      <td className="py-4 px-4 text-center font-bold text-white whitespace-nowrap">
                         Rs. {claim.claim_amount}
                       </td>
                       <td className="py-4 px-4 text-center whitespace-nowrap">
@@ -324,25 +326,29 @@ const AdminClaims = ({ user, onLogout }) => {
                           : "N/A"}
                       </td>
                       <td className="py-4 px-4 text-center">
-                        <div className="flex justify-center items-center gap-2">
-                          <button
-                            onClick={() => handleStatusUpdate(claim.id, 2)}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleStatusUpdate(claim.id, 3)}
-                            className="bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
-                          >
-                            Reject
-                          </button>
+                        <div className="flex justify-center items-center gap-2 min-w-[150px]">
+                          {(claim.status_id === 1 || claim.status_id === 3) && (
+                            <button
+                              onClick={() => handleStatusUpdate(claim.id, 2)}
+                              className="px-3 py-1.5 text-xs font-semibold tracking-wide rounded-lg cursor-pointer bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white shadow-lg shadow-emerald-950/20 transition-all duration-200 ease-in-out active:scale-95"
+                            >
+                              Approve
+                            </button>
+                          )}
+                          {(claim.status_id === 1 || claim.status_id === 2) && (
+                            <button
+                              onClick={() => handleStatusUpdate(claim.id, 3)}
+                              className="px-3 py-1.5 text-xs font-semibold tracking-wide rounded-lg cursor-pointer bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white shadow-lg shadow-rose-950/20 transition-all duration-200 ease-in-out active:scale-95"
+                            >
+                              Reject
+                            </button>
+                          )}
                         </div>
                       </td>
                       <td className="py-4 px-4 text-center">
                         <button
                           onClick={() => fetchReceipt(claim.id)}
-                          className="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 text-xs font-medium rounded transition"
+                          className="px-3 py-1.5 text-xs font-semibold tracking-wide rounded-lg cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600 transition-all duration-200 ease-in-out active:scale-95"
                         >
                           View Receipt
                         </button>
