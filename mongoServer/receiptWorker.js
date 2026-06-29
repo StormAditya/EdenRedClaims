@@ -226,7 +226,7 @@ const runBatchProcessing = async () => {
 
 console.log('Initializing...');
 
-cron.schedule('*/4 * * * *', () => {
+cron.schedule('*/2 * * * *', () => {
   runBatchProcessing();
 });
 
@@ -239,7 +239,7 @@ setInterval(() => {
   const currentMinutes = now.getMinutes();
   const currentSeconds = now.getSeconds();
 
-  const nextTargetMinute = currentMinutes + (4 - (currentMinutes % 4));
+  const nextTargetMinute = currentMinutes + (2 - (currentMinutes % 2));
   
   const targetTime = new Date(now);
   targetTime.setMinutes(nextTargetMinute);
