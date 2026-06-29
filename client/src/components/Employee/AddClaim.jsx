@@ -38,6 +38,10 @@ const AddClaim = () => {
                 "http://localhost:5001/api/receipts/amount",
                 { imageBuffer: base64Data }
             );
+            if (response.data.isReceipt=== false) {
+                setErrorMessage("The uploaded file is not recognized as a valid receipt.");
+                return;
+            }
             if (response.data && response.data.totalAmount !== undefined) {
                 setClaimAmount(response.data.totalAmount);
                 setFileScanned(true);
@@ -119,7 +123,7 @@ const AddClaim = () => {
 
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
-            <header className="max-w-7xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
+            <header className="max-w-8xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
                 <div>
                     <h1 className="text-2xl font-black tracking-tight text-white">
                         Add Claim
@@ -127,20 +131,20 @@ const AddClaim = () => {
                 </div>
                 <button
                     onClick={handleBack}
-                    className="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 text-xs font-bold tracking-wider uppercase border border-zinc-800 rounded-lg transition"
+                    className="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 text-xs font-bold cursor-pointer tracking-wider uppercase border border-zinc-800 rounded-lg transition"
                 >
                     Back
                 </button>
             </header>
 
             {errorMessage && (
-                <div className="max-w-7xl mx-auto mb-4 p-3 bg-red-950/50 border border-red-500/40 text-red-200 rounded-lg">
+                <div className="max-w-8xl mx-auto mb-4 p-3 bg-red-950/50 border border-red-500/40 text-red-200 rounded-lg">
                     {errorMessage}
                 </div>
             )}
 
             {fileScanned && (
-                <div className="max-w-7xl mx-auto mb-4 p-3 bg-emerald-500 border-b-emerald-700 text-emerald-200 font-bold rounded-lg">
+                <div className="max-w-8xl mx-auto mb-4 p-3 bg-emerald-500 border-b-emerald-700 text-emerald-200 font-bold rounded-lg">
                     File Scanned
                 </div>
             )}

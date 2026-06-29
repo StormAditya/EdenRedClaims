@@ -112,10 +112,26 @@ const updateClaimAdmin = async (req, res) => {
     try{
         
         const { claim_id, status_id } = req.body
+        const claimToUpdate = await claims.findOne({
+            where: {
+                id: claim_id
+            }
+        })
+        var approvedAmount = null;
+        if(!claimToUpdate){
+            return res.status(404).json({success: false, msg: 'Claim_ID not found'})
+        }
+        if(status_id === 2){
+            approvedAmount = claimToUpdate.claim_amount;
+        }
+        if(status_id === 3){
+            approvedAmount = 0;
+        }
 
         const [updatedRows] = await claims.update(
             {
-                status_id: status_id
+                status_id: status_id,
+                approved_amount: approvedAmount
             },
             {
                 where: {
@@ -123,6 +139,7 @@ const updateClaimAdmin = async (req, res) => {
                 }
             }
         )
+
 
         if(updatedRows === 0){
             return res.status(404).json({success: false, msg: 'Claim_ID not found'})
