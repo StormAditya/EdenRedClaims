@@ -169,8 +169,9 @@ const AdminClaims = ({ user, onLogout }) => {
       const THREE_HOURS_IN_MS = 3 * 60 * 60 * 1000; 
       return Difference > THREE_HOURS_IN_MS;
       };
-      const monthDiff = !isMoreThanThreeHoursDiff(selectedClaim.submission_date);
-      if ((prevStatus !== newStatus)) {
+      const monthDiff = isMoreThanThreeHoursDiff(selectedClaim.submission_date);
+      if ((prevStatus !== newStatus)&&(!monthDiff)) {
+        console.log(monthDiff);
         response = await axios.patch(
           `http://localhost:5050/api/admin-dashboard/claims/`,
           {
@@ -183,7 +184,12 @@ const AdminClaims = ({ user, onLogout }) => {
         );
       }
       else{
-          setErrorMessage("Cannot update same status.");
+        if(monthDiff){
+          setErrorMessage("You cannot update the status of a claim that was submitted more than 3 hours ago.");
+        }
+        else{
+          setErrorMessage("Cannot update claim to the same status.");
+        }
         return;
       }
 
