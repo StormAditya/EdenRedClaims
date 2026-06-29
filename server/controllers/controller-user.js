@@ -6,7 +6,7 @@ require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me'
 const createUser = async (req, res) => {
     try{
-        const {name, password, user_type, balance, email_id, address, contact_number, company} = req.body
+        const {name, password, user_type, balance, email_id, address, contact_number, company_id} = req.body
         
         const hashedPassword = await encrypt(String(password));
         
@@ -16,7 +16,8 @@ const createUser = async (req, res) => {
                 name: name,
                 password: hashedPassword,
                 user_type: user_type,
-                email_id: email_id
+                email_id: email_id,
+                company_id: company_id
             })
             res.status(200).json({success:true, data: newUser})
         }
@@ -30,7 +31,7 @@ const createUser = async (req, res) => {
                 address: address,
                 contact_number: contact_number,
                 balance: balance,
-                company: company
+                company_id: company_id
                 
             })
             res.status(200).json({success:true, data: newUser})
@@ -46,12 +47,13 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email_id, password } = req.body;
-
+    const { email_id, password, company_id } = req.body;
+    console.log(company_id);
     const user = await User.findOne({ 
       where: { 
-        email_id: email_id, 
-      } 
+        email_id: email_id,
+        company_id: company_id
+      }
     });
 
     if (!user) {
@@ -73,6 +75,7 @@ const loginUser = async (req, res) => {
       userId: user.id,
       name: user.name,
       email: user.email_id,
+      company_id: user.company_id,
       contact_number: user.contact_number,
       isAdmin: (user.user_type === 'admin') ? true : false,
     };
@@ -93,7 +96,12 @@ const loginUser = async (req, res) => {
 
 const getUser = async (req, res) => {
   try{
-    const users = await User.findAll()
+    const company_id = req.user.company_id
+    const users = await User.findAll({
+      where: {
+        company_id: company_id
+      }
+    })
 
     return res.status(200).json({success:true, data: users})
   }

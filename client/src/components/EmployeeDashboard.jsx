@@ -49,34 +49,51 @@ export default function EmployeeDashboard({ user, onLogout }) {
     setLoading(true);
     setErrorMessage("");
     try {
-      const response = await axios.delete(
-        "http://localhost:5050/api/employee-dashboard/claims",
-        {
-          headers: getAuthHeader(),
-          data: { claim_id: claimIdToDelete },
-        },
-      );
-      console.log(claimIdToDelete)
-      const receiptResponse = await axios.delete(
-        "http://localhost:5001/api/receipts",
-        {
-          data: { claim_id: Number(claimIdToDelete) }
-        }
-      )
+
+      const currClaim = claims.find((claim) => claim.id === claimIdToDelete);
+
+      if (!currClaim) {
+        setErrorMessage('Claim not found...');
+        return;
+      }
+
+      if (currClaim.status_id !== 1) {
+        setErrorMessage('Unable to delete non pending claims');
+        return;
+      }
+
+      let response = null;
+      let receiptResponse = null;
+
+      if (currClaim.status_id === 1) {
+        response = await axios.delete(
+          "http://localhost:5050/api/employee-dashboard/claims",
+          {
+            headers: getAuthHeader(),
+            data: { claim_id: claimIdToDelete },
+          },
+        );
+
+        receiptResponse = await axios.delete(
+          "http://localhost:5001/api/receipts",
+          {
+            data: { claim_id: Number(claimIdToDelete) }
+          }
+        )
+      }
 
       if (response.data?.success && receiptResponse.status === 200) {
         await fetchClaims();
       }
-      else {
-        throw new Error("Unable to delete...")
-      }
+
     } catch (err) {
       console.error(err);
-      setErrorMessage("Unable to delete claims...");
+      setErrorMessage("Unable to delete claim...");
     } finally {
       setLoading(false);
     }
   }
+
   const fetchStatuses = async () => {
     try {
       const response = await axios.get(
@@ -188,6 +205,12 @@ export default function EmployeeDashboard({ user, onLogout }) {
         </button>
       </header>
 
+      {errorMessage && (
+        <div className="max-w-7xl mx-auto mb-4 p-3 bg-red-950/50 border border-red-500/40 text-red-200 rounded-lg">
+          {errorMessage}
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-1 bg-gradient-to-br from-blue-950/40 to-zinc-900/40 backdrop-blur-md border border-blue-500/20 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
           <div className="absolute -top-12 -right-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl" />
@@ -283,12 +306,15 @@ export default function EmployeeDashboard({ user, onLogout }) {
                       </td>
                       <td className="py-4 text-right">
                         <div className="grid grid-cols-2 gap-1/6 justify-items-centre pl-2">
-                          <div className="bg-red-500 w-6 h-6 flex justify-center items-center rounded-md">
+                          <div className={`w-6 h-6 flex justify-center items-center rounded-md ${claim.statusID !== 1 ? 
+                            "bg-gray-400 cursor-not-allowed pointer-events-none"
+                             : "bg-red-500  cursor-pointer" }`}
+                             onClick={() => removeClaim(claim.claimID)}
+                             >
                             <img
                               src="/public/images/trashIcon.svg"
                               alt="Delete"
-                              className="w-5 h-5 cursor-pointer"
-                              onClick={() => removeClaim(claim.claimID)}
+                              className="w-5 h-5"
                             />
                           </div>
                           <div className="bg-yellow-300 w-6 h-6 flex justify-center items-center rounded-md">

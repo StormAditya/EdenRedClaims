@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { customSelectStyles, companiesTypeOptions } from "../assets/roleSelectStyle";
+import Select from "react-select";
 
 
 export default function Login({ onLogin }) {
     const [email_id, setemail_id] = useState('');
     const [password, setpassword] = useState('');
+    const [company, setCompany] = useState('');
     const [error, seterror] = useState('');
-    
+    const [companies, setCompanies] = useState([]);
+
     const navigate = useNavigate();
 
     const normalizeUser = (userData) => ({
@@ -20,17 +24,17 @@ export default function Login({ onLogin }) {
         role: userData.role ?? userData.user_type ?? 'employee',
         balance: Number(userData.balance ?? 0),
         user_type: userData.user_type ?? userData.role ?? 'employee',
-        company: userData.company
+        company: userData.company_id
     });
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         seterror('');
-
-        try{
+        try {
             const response = await axios.post('http://localhost:5050/api/login', {
                 email_id: email_id,
-                password: password
+                password: password,
+                company_id: company
             })
 
             const { token, data } = response.data;
@@ -43,16 +47,31 @@ export default function Login({ onLogin }) {
                 onLogin(userData);
             }
 
-            if(userData.role === 'admin'){
+            if (userData.role === 'admin') {
                 navigate("/admin-dashboard");
             }
             else navigate("/employee-dashboard");
         }
-        catch(err){
+        catch (err) {
             seterror("Incorrect email or password, please try again");
         }
-        
+
     };
+
+    const fetchCompanies = async () => {
+        try {
+            const response = await axios.get('http://localhost:5050/api/company');
+            setCompanies(Array.isArray(response.data?.data) ? response.data.data : []);
+        } catch (err) {
+            console.error(err);
+            setErrorMessage("Unable to fetch company.");
+            setCategories([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchCompanies();
+    }, []);
 
     const register = () => navigate('/register');
 
@@ -78,7 +97,7 @@ export default function Login({ onLogin }) {
                 <form onSubmit={handleSubmit} className="space-y-6 pb-3">
                     <div>
                         <label
-                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
                             Email
                         </label>
                         <input
@@ -90,8 +109,8 @@ export default function Login({ onLogin }) {
                         />
                     </div>
                     <div>
-                        <label 
-                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                        <label
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
                             Password
                         </label>
                         <input
@@ -102,6 +121,24 @@ export default function Login({ onLogin }) {
                             onChange={(e) => setpassword(e.target.value)}
                             className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
                         />
+                    </div>
+                    <div>
+                        <label
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                            Company Name
+                        </label>
+                        <Select
+                            options={companiesTypeOptions}
+                            required
+                            styles={customSelectStyles}
+                            placeholder="Select Company Type"
+                            value={companiesTypeOptions.find((option) => option.value === company)}
+                            onChange={(selectedOption) => setCompany(companies.find((comp) => comp.company_name === selectedOption.value)?.id)}
+                            placeholder="Select Company"
+                            menuPortalTarget={document.body}
+                            className="w-full"
+                        />
+
                     </div>
                     <button
                         type="submit"

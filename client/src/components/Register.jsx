@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { customSelectStyles, companies } from "../assets/roleSelectStyle";
+import { customSelectStyles, companiesTypeOptions } from "../assets/roleSelectStyle";
+import Select from "react-select";
 
 
 export default function Register({ onLogin }) {
@@ -11,6 +12,7 @@ export default function Register({ onLogin }) {
     const [address, setAddress] = useState('');
     const [name, setName] = useState('');
     const [company, setCompany] = useState('');
+    const [companies, setCompanies] = useState([]);
 
     const normalizeUser = (userData) => ({
         userID: userData.userID ?? userData.id ?? userData.userId,
@@ -26,19 +28,47 @@ export default function Register({ onLogin }) {
     });
 
     const [error, seterror] = useState('');
-    
+
     const navigate = useNavigate();
-    
+
+    const validateForm = () => {
+        if (!email_id || !address || !contact_number || !name || !password || !company) {
+            return "All required fields must be filled.";
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email_id)) {
+            return "Please enter a valid email address.";
+        }
+
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(contact_number)) {
+            return "Contact number must be exactly 10 digits.";
+        }
+
+        if (password.length < 8) {
+            return "Password must be at least 8 characters long.";
+        }
+
+        if (name.trim().length < 2) {
+            return "Name must be at least 2 characters long.";
+        }
+
+        return null;
+    };
+
     const handleRegister = async (e) => {
         seterror('');
         e.preventDefault();
 
-        if(!email_id || !address || !contact_number || !name || !password){
-            seterror("All required fields must be filled.");
+        const validationError = validateForm();
+
+        if (validationError) {
+            seterror(validationError);
             return;
         }
 
-        try{
+        try {
             const response = await axios.post('http://localhost:5050/api/register', {
                 email_id: email_id,
                 password: password,
@@ -46,19 +76,34 @@ export default function Register({ onLogin }) {
                 contact_number: contact_number,
                 name: name,
                 user_type: 'employee',
-                company: company
+                company_id: company
             });
 
             navigate('/login');
         }
-        catch(err){
+        catch (err) {
             seterror(
                 err.response?.data?.message ||
                 "Registration failed. Please try again."
             );
         }
-        
+
     };
+
+    const fetchCompanies = async () => {
+        try {
+            const response = await axios.get('http://localhost:5050/api/company');
+            setCompanies(Array.isArray(response.data?.data) ? response.data.data : []);
+        } catch (err) {
+            console.error(err);
+            setErrorMessage("Unable to fetch company.");
+            setCategories([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchCompanies();
+    }, []);
 
     const handleBack = () => navigate('/login')
 
@@ -84,7 +129,7 @@ export default function Register({ onLogin }) {
                 <form className="space-y-3">
                     <div >
                         <label
-                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
                             Name
                         </label>
                         <input
@@ -97,7 +142,7 @@ export default function Register({ onLogin }) {
                     </div>
                     <div>
                         <label
-                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
                             Email
                         </label>
                         <input
@@ -110,7 +155,7 @@ export default function Register({ onLogin }) {
                     </div>
                     <div>
                         <label
-                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
                             Contact Number
                         </label>
                         <input
@@ -128,7 +173,7 @@ export default function Register({ onLogin }) {
                     </div>
                     <div>
                         <label
-                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
                             Address
                         </label>
                         <input
@@ -140,21 +185,26 @@ export default function Register({ onLogin }) {
                         />
                     </div>
                     <div>
-                        <label 
-                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                        <label
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
                             Company Name
                         </label>
-                        <input
-                            type="text"
+                        <Select
+                            options={companiesTypeOptions}
                             required
-                            value={company}
-                            onChange={(e) => setCompany(e.target.value)}
-                            className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+                            styles={customSelectStyles}
+                            placeholder="Select Company Type"
+                            value={companiesTypeOptions.find((option) => option.value === company)}
+                            onChange={(selectedOption) => setCompany(companies.find((comp) => comp.company_name === selectedOption.value)?.id)}
+                            placeholder="Select Company"
+                            menuPortalTarget={document.body}
+                            className="w-full"
                         />
+
                     </div>
                     <div>
-                        <label 
-                        className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                        <label
+                            className="block text-xs font-bold text-cyan-300 uppercase tracking-wider mb-2">
                             Password
                         </label>
                         <input
@@ -180,7 +230,7 @@ export default function Register({ onLogin }) {
                             Back
                         </button>
                     </div>
-                    
+
                 </form>
             </div>
         </div>

@@ -67,11 +67,11 @@ export const statusTypeOptions = [
   }
 ];
 
-export const companies = [
+export const companiesTypeOptions = [
   {
-    value: 'amazon', label: 'Amazon'
+    value: 'Amazon', label: 'Amazon'
   },
   {
-    value: 'dallasTech' , label: 'DallasTech'
+    value: 'DallasTech' , label: 'DallasTech'
   }
 ]

@@ -25,8 +25,8 @@ const AdminCreateUser = ({ user, onLogout }) => {
         setErrorMessage('');
 
         let response = null;
-
         try {
+            console.log(user)
             if (role !== 'employee') {
                 if (!email || !name || !password) {
                     setErrorMessage("All required fields must be filled.");
@@ -38,7 +38,7 @@ const AdminCreateUser = ({ user, onLogout }) => {
                     password: password,
                     name: name,
                     user_type: role,
-                    company: user.company
+                    company_id: user.company
                 });
             }
             else {
@@ -54,7 +54,8 @@ const AdminCreateUser = ({ user, onLogout }) => {
                     contact_number: contactNo,
                     name: name,
                     user_type: 'employee',
-                    company: user.company
+                    balance: 5000,
+                    company_id: user.company
                 });
 
                 console.log(response);

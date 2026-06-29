@@ -92,7 +92,7 @@ const ClaimUpdate = () => {
 
         receiptResponse = await axios.patch(
           "http://localhost:5001/api/receipts", {
-          
+
           imageBuffer: base64File,
           claim_id: Number(claimID)
         }
@@ -138,6 +138,12 @@ const ClaimUpdate = () => {
           Back
         </button>
       </header>
+
+      {errorMessage && (
+        <div className="max-w-7xl mx-auto mb-4 p-3 bg-red-950/50 border border-red-500/40 text-red-200 rounded-lg">
+          {errorMessage}
+        </div>
+      )}
 
       <form
         className="mb-10 flex flex-col gap-4 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between"

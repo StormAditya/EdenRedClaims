@@ -21,7 +21,12 @@ const createClaim = async (req, res) => {
 
 const getAllClaims = async (req,res) => {
     try{
-        const claimsData = await claims.findAll()
+        const company_id = req.user.company_id
+        const claimsData = await claims.findAll({
+            where: {
+                company_id: company_id
+            }
+        })
         return res.status(200).json({success:true, data: claimsData})
     }catch(err){
         console.error(err)
@@ -40,7 +45,7 @@ const getClaims = async (req, res) => {
 
         const claimsData = await claims.findAll({
             where: {
-                user_id: userId
+                user_id: userId,
             }
         }) 
         return res.status(200).json({success:true, data: claimsData})

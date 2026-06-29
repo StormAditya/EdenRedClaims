@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize')
 const sequelize = require('../config/database')
 
 const User = sequelize.define('User', {
-    id:{
+    id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
@@ -43,21 +43,29 @@ const User = sequelize.define('User', {
                 msg: 'email is required'
             }
         }
-    }, 
+    },
     address: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    company: {
-        type: DataTypes.STRING,
-        allowNull: true,
+    company_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Company Name is required'
+            },
+            notNull: {
+                msg: 'Name is reqd'
+            }
+        }
     },
     contact_number: {
         type: DataTypes.BIGINT,
         allowNull: true,
     },
     user_type: {
-        type:DataTypes.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
             isAlpha: true

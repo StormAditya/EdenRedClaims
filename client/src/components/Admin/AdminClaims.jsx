@@ -204,6 +204,7 @@ const AdminClaims = ({ user, onLogout }) => {
       setErrorMessage("Unable to fetch categories.");
       setCategories([]);
     }
+    
   };
 
   useEffect(() => {
