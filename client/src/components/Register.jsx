@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { customSelectStyles, companies } from "../assets/roleSelectStyle";
 
 
 export default function Register({ onLogin }) {
@@ -113,8 +114,13 @@ export default function Register({ onLogin }) {
                             Contact Number
                         </label>
                         <input
-                            type='text'
+                            type="tel"
+                            name="phone"
+                            placeholder="9999999999"
+                            pattern="[0-9]{10}"
                             required
+                            maxLength="10"
+                            minLength="10"
                             value={contact_number}
                             onChange={(e) => setContact_number(e.target.value)}
                             className="w-full bg-zinc-900/60 text-white placeholder-zinc-500 border border-zinc-700 focus:border-cyan-400 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"

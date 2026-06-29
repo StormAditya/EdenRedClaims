@@ -18,6 +18,7 @@ const AdminClaims = ({ user, onLogout }) => {
   const [categories, setCategories] = useState([]);
   const [receipt, setReceipt] = useState('');
 
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchUsers = async () => {
@@ -58,6 +59,7 @@ const AdminClaims = ({ user, onLogout }) => {
     } finally {
       setLoading(false);
     }
+
   };
 
   const fetchReceipt = async (idToFetch) => {
@@ -85,21 +87,108 @@ const AdminClaims = ({ user, onLogout }) => {
     }
   }
 
-  const handleStatusUpdate = async (claimId, newStatus) => {
+  const updatebalance = async (currClaim, balanceInWait, prevStatus, updatedStatus) => {
+    setLoading(true);
+    setErrorMessage('');
     try {
-      await axios.patch(
-        `http://localhost:5050/api/admin-dashboard/claims/`,
-        {
-          claim_id: claimId,
-          status_id: newStatus,
-        },
-        {
-          headers: getAuthHeader(),
-        },
-      );
+      console.log(balanceInWait);
+      const currUser = users.find((u) => u.id === currClaim.user_id);
+      const prevBalance = currUser.balance;
 
-      console.log(`Claim ${claimId} status updated to: ${newStatus}`);
-      fetchClaims();
+      let newBalance = currUser.balance;
+      let response = null;
+
+      if (prevStatus === 1 && updatedStatus === 2) {
+        newBalance = currUser.balance - balanceInWait;
+        response = await axios.patch(
+          "http://localhost:5050/api/admin-dashboard/users/balance",
+          {
+            id: currUser.id,
+            balance: newBalance,
+          },
+          {
+            headers: getAuthHeader(),
+          },
+        );
+      }
+      else if (prevStatus === 2 && updatedStatus === 3) {
+        newBalance = currUser.balance + balanceInWait;
+        response = await axios.patch(
+          "http://localhost:5050/api/admin-dashboard/users/balance",
+          {
+            id: currUser.id,
+            balance: newBalance,
+          },
+          {
+            headers: getAuthHeader(),
+          },
+        );
+      }
+      else if (prevStatus === 3 && updatedStatus === 2) {
+        newBalance = currUser.balance - balanceInWait;
+        response = await axios.patch(
+          "http://localhost:5050/api/admin-dashboard/users/balance",
+          {
+            id: currUser.id,
+            balance: newBalance,
+          },
+          {
+            headers: getAuthHeader(),
+          },
+        );
+      }
+
+      if (response.data?.success) {
+        console.log(`Balance for user Updated...\nPrevious Balance: ${prevBalance}\tUpdated Balance: ${newBalance}`);
+      }
+      else {
+        console.log('Error to update balance...')
+      }
+
+    }
+    catch (err) {
+      console.error(err);
+      setErrorMessage("Unable to update user Balance.");
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
+  const handleStatusUpdate = async (claimId, newStatus) => {
+    setErrorMessage('');
+    try {
+      const selectedClaim = claims.find((claim) => claim.id === claimId);
+      const prevStatus = selectedClaim.status_id;
+
+      let response = null;
+
+      if (prevStatus !== newStatus) {
+        response = await axios.patch(
+          `http://localhost:5050/api/admin-dashboard/claims/`,
+          {
+            claim_id: claimId,
+            status_id: newStatus,
+          },
+          {
+            headers: getAuthHeader(),
+          },
+        );
+      }
+      else{
+        setErrorMessage('Cannot update same status...')
+        return;
+      }
+
+      if (response.data?.success) {
+        console.log(`Claim ${claimId} status updated to: ${newStatus}`);
+        const updatedStatus = newStatus;
+        const balanceInWait = selectedClaim.claim_amount;
+        await updatebalance(selectedClaim, balanceInWait, prevStatus, updatedStatus);
+        fetchClaims();
+
+      }
+
     } catch (err) {
       console.error(err);
       setErrorMessage(`Failed to update claim to ${newStatus}.`);
@@ -147,7 +236,7 @@ const AdminClaims = ({ user, onLogout }) => {
           <header className="w-full flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
             <div>
               <h1 className="text-2xl font-black tracking-tight text-white">
-                Admin Portal
+                Claims
               </h1>
               <p className="text-sm text-zinc-400 mt-1">
                 Welcome back,{" "}
@@ -216,10 +305,10 @@ const AdminClaims = ({ user, onLogout }) => {
                       <td className="py-4 px-4 text-center whitespace-nowrap">
                         <span
                           className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide border ${claim.status_id === 2
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : claim.status_id === 3
-                                ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-                                : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            : claim.status_id === 3
+                              ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                              : "bg-amber-500/10 text-amber-400 border-amber-500/20"
                             }`}
                         >
                           {claim.status_id === 1

@@ -181,7 +181,10 @@ const AdminCreateUser = ({ user, onLogout }) => {
                             type="tel"
                             name="phone"
                             placeholder="9999999999"
+                            pattern="[0-9]{10}"
                             required
+                            maxLength="10"
+                            minLength="10"
                             value={contactNo}
                             onChange={(e) => setContactNo(e.target.value)}
                             className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"

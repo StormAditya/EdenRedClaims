@@ -66,3 +66,12 @@ export const statusTypeOptions = [
     value: 'disabled', label: 'disabled'
   }
 ];
+
+export const companies = [
+  {
+    value: 'amazon', label: 'Amazon'
+  },
+  {
+    value: 'dallasTech' , label: 'DallasTech'
+  }
+]
