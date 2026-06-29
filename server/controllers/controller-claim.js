@@ -119,6 +119,9 @@ const updateClaimAdmin = async (req, res) => {
         if(status_id === 2){
             approvedAmount = claimToUpdate.claim_amount;
         }
+        if(status_id === 3){
+            approvedAmount = 0;
+        }
 
         const [updatedRows] = await claims.update(
             {

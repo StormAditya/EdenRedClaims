@@ -131,20 +131,20 @@ const AddClaim = () => {
                 </div>
                 <button
                     onClick={handleBack}
-                    className="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 text-xs font-bold tracking-wider uppercase border border-zinc-800 rounded-lg transition"
+                    className="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white px-4 py-2 text-xs font-bold cursor-pointer tracking-wider uppercase border border-zinc-800 rounded-lg transition"
                 >
                     Back
                 </button>
             </header>
 
             {errorMessage && (
-                <div className="max-w-7xl mx-auto mb-4 p-3 bg-red-950/50 border border-red-500/40 text-red-200 rounded-lg">
+                <div className="max-w-8xl mx-auto mb-4 p-3 bg-red-950/50 border border-red-500/40 text-red-200 rounded-lg">
                     {errorMessage}
                 </div>
             )}
 
             {fileScanned && (
-                <div className="max-w-7xl mx-auto mb-4 p-3 bg-emerald-500 border-b-emerald-700 text-emerald-200 font-bold rounded-lg">
+                <div className="max-w-8xl mx-auto mb-4 p-3 bg-emerald-500 border-b-emerald-700 text-emerald-200 font-bold rounded-lg">
                     File Scanned
                 </div>
             )}
