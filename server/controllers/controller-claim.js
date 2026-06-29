@@ -9,6 +9,7 @@ const createClaim = async (req, res) => {
             category_id: category_id,
             description: description,
             claim_amount: claim_amount,
+            company_id: req.user.company_id,
         })
         
         res.status(200).json({success:true, data: newClaim})
