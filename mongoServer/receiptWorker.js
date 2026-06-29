@@ -6,8 +6,7 @@ const Claims = require('./models/Claims');
 const User = require('./models/User');
 const { getMonthDifference } = require('./utils/dateUtils');
 
-const BATCH_INTERVAL_MINUTES = 5;
-
+const STATUS_PENDING = 1; 
 const STATUS_APPROVED = 2; 
 const STATUS_REJECTED = 3; 
 const STATUS_PARTIAL_APPROVED = 4; 
@@ -80,7 +79,21 @@ const runBatchProcessing = async () => {
   console.log(`\n[${new Date().toLocaleTimeString()}] Cron Triggered...`);
 
   try {
+    const pendingClaims = await Claims.findAll({
+      where: { status_id: STATUS_PENDING },
+      attributes: ['id', 'claim_amount', 'submission_date', 'user_id']
+    });
+
+    if (pendingClaims.length === 0) {
+      console.log('No pending claims found in PostgreSQL.');
+      isProcessing = false;
+      return;
+    }
+
+    const pendingClaimIds = pendingClaims.map(claim => claim.id);
+
     const unprocessedReceipts = await Receipt.find({
+      claim_id: { $in: pendingClaimIds }, 
       $or: [
         { items: { $exists: true, $size: 0 } },
         { totalAmount: 0 }
@@ -89,15 +102,23 @@ const runBatchProcessing = async () => {
     });
 
     if (unprocessedReceipts.length === 0) {
-      console.log('No new receipts found.');
+      console.log('No unprocessed MongoDB receipts found matching pending claims.');
       isProcessing = false;
       return;
     }
 
-    console.log(`Found ${unprocessedReceipts.length} receipt(s).`);
+    console.log(`Found ${unprocessedReceipts.length} receipt(s) eligible for processing.`);
+
+    const claimsMap = new Map(pendingClaims.map(c => [c.id, c]));
 
     for (const receipt of unprocessedReceipts) {
       try {
+        const pgClaim = claimsMap.get(receipt.claim_id);
+        if (!pgClaim) {
+          console.log(`Claim ID ${receipt.claim_id} mismatch error.`);
+          continue;
+        }
+
         console.log(`\nQuerying Qwen2.5VL for Claim ID: ${receipt.claim_id}...`);
         const structuredData = await processReceiptWithQwen(receipt.imageBuffer);
 
@@ -114,15 +135,9 @@ const runBatchProcessing = async () => {
         
         receipt.items = structuredData.items || [];
         await receipt.save();
-        console.log(`Receipt data saved`);
+        console.log(`Receipt data saved to MongoDB.`);
 
-        const pgClaim = await Claims.findByPk(receipt.claim_id);
-
-        if (!pgClaim) {
-          console.log(`Claim ID ${receipt.claim_id} not found in PostgreSQL.`);
-          continue;
-        }
-
+        
         if (isDateInvalid) {
           pgClaim.status_id = STATUS_REJECTED;
           pgClaim.validation_date = new Date();
@@ -139,7 +154,6 @@ const runBatchProcessing = async () => {
 
         const monthDiff = getMonthDifference(submissionDate, receiptDate);
         const isWithinThreeMonths = monthDiff >= 0 && monthDiff <= 3;
-        
         const isAmountValid = pgAmount <= mongoAmount;
 
         console.log(`Validation Metrics for Claim ${receipt.claim_id}:`);
@@ -147,7 +161,6 @@ const runBatchProcessing = async () => {
         console.log(`   - Submission Date: ${submissionDate.toISOString().split('T')[0]} Receipt Date: ${receiptDate.toISOString().split('T')[0]} Window: ${isWithinThreeMonths}`);
 
         if (isAmountValid && isWithinThreeMonths) {
-
           const user = await User.findByPk(pgClaim.user_id);
 
           if (!user) {
@@ -210,7 +223,6 @@ const runBatchProcessing = async () => {
     isProcessing = false;
   }
 };
-
 
 console.log('Initializing...');
 
