@@ -123,7 +123,7 @@ const AddClaim = () => {
 
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
-            <header className="max-w-7xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
+            <header className="max-w-8xl mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
                 <div>
                     <h1 className="text-2xl font-black tracking-tight text-white">
                         Add Claim
