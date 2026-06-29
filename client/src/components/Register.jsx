@@ -100,7 +100,7 @@ export default function Register({ onLogin }) {
                             Email
                         </label>
                         <input
-                            type='text'
+                            type='email'
                             required
                             value={email_id}
                             onChange={(e) => setEmail_id(e.target.value)}
