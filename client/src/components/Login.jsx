@@ -82,7 +82,7 @@ export default function Login({ onLogin }) {
                             Email
                         </label>
                         <input
-                            type='text'
+                            type='email'
                             required
                             value={email_id}
                             onChange={(e) => setemail_id(e.target.value)}
