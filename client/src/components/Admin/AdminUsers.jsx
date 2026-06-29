@@ -7,7 +7,6 @@ import { getAuthHeader } from "../Utils/auth";
 import { customSelectStyles, options } from "../../assets/selectstyle";
 import Sidebar from "./Sidebar";
 
-
 const AdminUsers = ({ user, onLogout }) => {
   const [isSidebarVisible, setSidebarVisible] = useState(true);
   const [users, setUsers] = useState([]);
@@ -53,7 +52,8 @@ const AdminUsers = ({ user, onLogout }) => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-zinc-950 text-zinc-100 font-sans">
+    
+    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
       <Sidebar
         user={user}
         onLogout={onLogout}
@@ -61,7 +61,8 @@ const AdminUsers = ({ user, onLogout }) => {
         setSidebarVisible={setSidebarVisible}
       />
 
-      <div className="flex-1 p-6 md:p-12 overflow-y-auto relative">
+      
+      <div className="flex-1 h-full p-6 md:p-12 overflow-y-auto relative">
         {!isSidebarVisible && (
           <button
             onClick={() => setSidebarVisible(true)}
@@ -72,13 +73,11 @@ const AdminUsers = ({ user, onLogout }) => {
           </button>
         )}
 
-
-
         <div className={`max-w-7xl mx-auto transition-all duration-300 ${!isSidebarVisible ? "md:pl-12" : ""}`}>
           <header className="max-w-11/12 mx-auto flex justify-between items-center mb-8 border-b border-zinc-800 pb-5">
             <div>
               <h1 className="text-2xl font-black tracking-tight text-white">
-                Goon
+                Users Management
               </h1>
             </div>
             <button
@@ -105,8 +104,16 @@ const AdminUsers = ({ user, onLogout }) => {
                   {users.length} Total Users
                 </span>
               </div>
-
             </div>
+
+            {errorMessage && (
+              <p className="text-red-500 mb-4 text-sm">{errorMessage}</p>
+            )}
+            {loading && (
+              <p className="text-cyan-500 mb-4 text-sm">
+                Loading users data...
+              </p>
+            )}
 
             <div className="overflow-x-auto">
               <table className="w-full text-center border-collapse">
@@ -118,14 +125,14 @@ const AdminUsers = ({ user, onLogout }) => {
                     <th className="pb-3 font-medium">Balance</th>
                     <th className="pb-3 font-medium">Role</th>
                     <th className="pb-3 font-medium">Status</th>
+                    <th className="pb-3 font-medium text-right pr-4">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/50 text-sm">
                   {users.map((u) => {
-
                     return (
                       <tr
-                        key={u.user_id}
+                        key={u.user_id || u.id}
                         className="group hover:bg-zinc-900/20 transition-colors"
                       >
                         <td className="py-4 font-mono font-medium text-zinc-400">
@@ -149,9 +156,9 @@ const AdminUsers = ({ user, onLogout }) => {
                         <td className="py-4">
                           <span
                             className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide
-                          ${u.user_type === "employee" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : ""}
-                          ${u.user_type === "admin" ? "bg-red-500/10 text-red-400 border border-red-500/20" : ""}
-                        `}
+                              ${u.user_type === "employee" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : ""}
+                              ${u.user_type === "admin" ? "bg-red-500/10 text-red-400 border border-red-500/20" : ""}
+                            `}
                           >
                             {u.user_type}
                           </span>
@@ -159,36 +166,36 @@ const AdminUsers = ({ user, onLogout }) => {
                         <td className="py-4">
                           <span
                             className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide
-                          ${u.status === "active" ? "bg-lime-500/10 text-lime-400 border border-lime-500/20" : "bg-amber-500/10 text-amber-400 border border-amber-500/20"}
-                        `}
+                              ${u.status === "active" ? "bg-lime-500/10 text-lime-400 border border-lime-500/20" : "bg-amber-500/10 text-amber-400 border border-amber-500/20"}
+                            `}
                           >
                             {u.status}
                           </span>
                         </td>
-                        <td className="py-4 text-right">
-                          <div className="grid grid-cols-1 gap-1/6 justify-items-centre pl-2">
+                        <td className="py-4 text-right pr-4">
+                          <div className="flex justify-end pl-2">
                             <div className={`w-6 h-6 flex justify-center items-center rounded-md
-                          ${user.userID === u.id
+                              ${user.userID === u.id
                                 ? "bg-gray-500 cursor-not-allowed pointer-events-none"
                                 : "bg-yellow-500 cursor-pointer"
-                              }`}>
+                              }`}
+                            >
                               <img
                                 src="/public/images/editIcon.svg"
-                                alt="Delete"
+                                alt="Edit"
                                 className="w-5 h-5 cursor-pointer"
                                 onClick={() => handleEdit(u.id)}
                               />
                             </div>
                           </div>
                         </td>
-
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
 
-              {users.length === 0 && (
+              {users.length === 0 && !loading && (
                 <div className="text-center py-12 text-zinc-500 text-sm">
                   No users exist...
                 </div>
