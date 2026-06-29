@@ -19,7 +19,7 @@ const amountReceipt = async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: 'Analyze this receipt image and extract the total final amount paid.',
+          content: 'Analyze if this is actually a receipt image and extract the total final amount paid.',
           images: [cleanBase64]
         }
       ],
@@ -28,10 +28,14 @@ const amountReceipt = async (req, res) => {
         properties: {
           totalAmount: { 
             type: 'number', 
-            description: 'The final grand total amount listed on the receipt' 
+            description: 'The total amount listed on the receipt' 
+          },
+          isReceipt: {
+            type: 'boolean',
+            description: 'Indicates if the image is a valid receipt'
           }
         },
-        required: ['totalAmount']
+        required: ['totalAmount', 'isReceipt']
       },
       options: { 
         temperature: 0.0 
@@ -54,7 +58,8 @@ const amountReceipt = async (req, res) => {
     const structuredData = JSON.parse(result.message.content);
     return res.status(200).json({
       success: true,
-      totalAmount: structuredData.totalAmount || 0.0
+      totalAmount: structuredData.totalAmount || 0.0,
+      isReceipt: structuredData.isReceipt || false
     });
 
   } catch (error) {

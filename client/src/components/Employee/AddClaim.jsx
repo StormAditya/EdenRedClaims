@@ -38,6 +38,10 @@ const AddClaim = () => {
                 "http://localhost:5001/api/receipts/amount",
                 { imageBuffer: base64Data }
             );
+            if (response.data.isReceipt=== false) {
+                setErrorMessage("The uploaded file is not recognized as a valid receipt.");
+                return;
+            }
             if (response.data && response.data.totalAmount !== undefined) {
                 setClaimAmount(response.data.totalAmount);
                 setFileScanned(true);
