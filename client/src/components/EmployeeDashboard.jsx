@@ -317,7 +317,10 @@ export default function EmployeeDashboard({ user, onLogout }) {
                               className="w-5 h-5"
                             />
                           </div>
-                          <div className="bg-yellow-300 w-6 h-6 flex justify-center items-center rounded-md">
+                          <div className={`w-6 h-6 flex justify-center items-center rounded-md ${claim.statusID !== 1 ? 
+                            "bg-gray-400 cursor-not-allowed pointer-events-none"
+                             : "bg-yellow-300  cursor-pointer" }`}
+                          >
                             <img
                               src="/public/images/editIcon.svg"
                               alt="Edit"
