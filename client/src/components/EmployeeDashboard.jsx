@@ -166,6 +166,14 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const handleAdd = () => {
     navigate('/employee-dashboard/addClaim');
   }
+
+  const handleRefresh = async () => {
+    await Promise.all([
+        fetchClaims(),
+        fetchBalance()
+    ])
+  }
+
   useEffect(() => {
     fetchClaims();
     fetchStatuses();
@@ -173,16 +181,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
     fetchBalance();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      await Promise.all([
-        fetchClaims(),
-        fetchBalance()
-      ]);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
 
   return (
@@ -237,6 +235,11 @@ export default function EmployeeDashboard({ user, onLogout }) {
               Claims History
             </h2>
             <div className="flex flex-row gap-3">
+              <div
+                onClick={handleRefresh} 
+                className="p-0 w-9 h-8 inline-flex items-center justify-center rounded-lg border text-center border-lime-400/40 bg-lime-500 text-lg font-bold uppercase tracking-wide text-gray-900 transition hover:border-lime-400 hover:bg-lime-500/50 hover:cursor-pointer">
+                <img className="w-6 h-6" src="/public/images/refresh.svg"/>
+              </div>
               <button
                 onClick={handleAdd}
                 className="p-0 w-9 h-8 inline-flex items-center justify-center rounded-lg border text-center border-cyan-400/40 bg-cyan-400 text-lg font-bold uppercase tracking-wide text-gray-900 transition hover:border-cyan-400 hover:bg-cyan-500/50 hover:cursor-pointer"

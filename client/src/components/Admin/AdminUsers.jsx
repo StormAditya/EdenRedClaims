@@ -12,6 +12,8 @@ const AdminUsers = ({ user, onLogout }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [companies, setCompanies] = useState([]);
+  
 
   const fetchUser = async () => {
     setLoading(true);
@@ -37,8 +39,23 @@ const AdminUsers = ({ user, onLogout }) => {
     }
   }
 
+  const fetchCompanies = async () => {
+    try {
+      const response = await axios.get('http://localhost:5050/api/company');
+      const data = Array.isArray(response.data.data) ? response.data.data : [];
+      setCompanies(data);
+
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Unable to fetch company.");
+      setCategories([]);
+    }
+  }
+
   useEffect(() => {
     fetchUser();
+    fetchCompanies();
+    
   }, []);
 
   const navigate = useNavigate();
@@ -52,7 +69,7 @@ const AdminUsers = ({ user, onLogout }) => {
   }
 
   return (
-    
+
     <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
       <Sidebar
         user={user}
@@ -61,7 +78,7 @@ const AdminUsers = ({ user, onLogout }) => {
         setSidebarVisible={setSidebarVisible}
       />
 
-      
+
       <div className="flex-1 h-full p-6 md:p-12 overflow-y-auto relative">
         {!isSidebarVisible && (
           <button
@@ -116,6 +133,7 @@ const AdminUsers = ({ user, onLogout }) => {
                     <th className="pb-3 font-medium">User ID</th>
                     <th className="pb-3 font-medium">Name</th>
                     <th className="pb-3 font-medium">Email ID</th>
+                    <th className="pb-3 font-medium">Company</th>
                     <th className="pb-3 font-medium">Balance</th>
                     <th className="pb-3 font-medium">Role</th>
                     <th className="pb-3 font-medium">Status</th>
@@ -143,6 +161,12 @@ const AdminUsers = ({ user, onLogout }) => {
                           title={u.email_id}
                         >
                           {u.email_id}
+                        </td>
+                        <td
+                          className="py-4 text-zinc-400 max-w-xs truncate pr-4"
+                          title={companies.find((comp) => comp.id === u.company_id)?.company_name ?? ""}
+                        >
+                          {companies.find((comp) => comp.id === u.company_id)?.company_name ?? ""}
                         </td>
                         <td className="py-4 font-bold text-white">
                           Rs.{(u.balance === null) ? 0 : u.balance.toFixed(2)}

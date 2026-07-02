@@ -6,7 +6,7 @@ import { getAuthHeader } from "../Utils/auth";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { customSelectStyles, userTypeOptions, statusTypeOptions } from "../../assets/roleSelectStyle";
+import { customSelectStyles, userTypeOptions, statusTypeOptions, companiesTypeOptions } from "../../assets/roleSelectStyle";
 
 
 const AdminCreateUser = ({ user, onLogout }) => {
@@ -19,6 +19,8 @@ const AdminCreateUser = ({ user, onLogout }) => {
     const [email, setEmail] = useState('');
     const [contactNo, setContactNo] = useState('');
     const [address, setAddress] = useState('');
+    const [company, setCompany] = useState('');
+    const [companies, setCompanies] = useState([]);
 
     const createUser = async () => {
         setLoading(true);
@@ -26,7 +28,7 @@ const AdminCreateUser = ({ user, onLogout }) => {
 
         let response = null;
         try {
-            console.log(user)
+            
             if (role !== 'employee') {
                 if (!email || !name || !password) {
                     setErrorMessage("All required fields must be filled.");
@@ -38,7 +40,6 @@ const AdminCreateUser = ({ user, onLogout }) => {
                     password: password,
                     name: name,
                     user_type: role,
-                    company_id: user.company
                 });
             }
             else {
@@ -55,10 +56,8 @@ const AdminCreateUser = ({ user, onLogout }) => {
                     name: name,
                     user_type: 'employee',
                     balance: 5000,
-                    company_id: user.company
+                    company_id: company
                 });
-
-                console.log(response);
 
             }
             if (response.data?.success) {
@@ -70,18 +69,32 @@ const AdminCreateUser = ({ user, onLogout }) => {
             console.error(err);
             setErrorMessage("User creation failed. Please try again.");
         }
-        finally{
+        finally {
             setLoading(false);
         }
 
+    }
+
+    const fetchCompanies = async () => {
+        try {
+            const response = await axios.get('http://localhost:5050/api/company');
+            setCompanies(Array.isArray(response.data?.data) ? response.data.data : []);
+        } catch (err) {
+            console.error(err);
+            setErrorMessage("Unable to fetch company.");
+            setCategories([]);
+        }
     }
 
     const navigate = useNavigate();
 
     const handleBack = () => {
         navigate('/admin-dashboard/users')
-
     }
+
+    useEffect(() => {
+        fetchCompanies();
+    }, [])
 
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans p-6 md:p-12">
@@ -125,87 +138,102 @@ const AdminCreateUser = ({ user, onLogout }) => {
             </div >
 
             {(role === 'employee' || role === 'admin') && (
-            <div
-                id="generalData"
-                className="mb-10 flex flex-col gap-6 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-            >
-                <div className="w-full flex flex-row gap-5">
-                    <div id="nameDiv" className="flex flex-col gap-3 w-130">
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Max"
-                            required
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                        />
+                <div
+                    id="generalData"
+                    className="mb-10 flex flex-col gap-6 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                >
+                    <div className="w-full flex flex-row gap-5">
+                        <div id="nameDiv" className="flex flex-col gap-3 w-130">
+                            <label>Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Max"
+                                required
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                            />
+                        </div>
+                        <div id="emailDiv" className="flex flex-col gap-3 w-130">
+                            <label>Email ID</label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Max@gmail.com"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                            />
+                        </div>
+                        <div id="passDiv" className="flex flex-col gap-3 w-130">
+                            <label>Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="*******"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                            />
+                        </div>
                     </div>
-                    <div id="emailDiv" className="flex flex-col gap-3 w-130">
-                        <label>Email ID</label>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Max@gmail.com"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                        />
-                    </div>
-                    <div id="passDiv" className="flex flex-col gap-3 w-130">
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="*******"
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                        />
-                    </div>
-                </div>
-            </div >
+                </div >
             )}
 
             {role === "employee" && (
-            <div
-                id="employeeData"
-                className="mb-10 flex flex-col gap-6 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-            >
-                <div className="w-full flex flex-row gap-5">
-                    <div id="contactDiv" className="flex flex-col gap-3 w-130">
-                        <label>Contact Number</label>
-                        <input
-                            type="tel"
-                            name="phone"
-                            placeholder="9999999999"
-                            pattern="[0-9]{10}"
-                            required
-                            maxLength="10"
-                            minLength="10"
-                            value={contactNo}
-                            onChange={(e) => setContactNo(e.target.value)}
-                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                        />
-                    </div>
-                    <div id="addressDiv" className="flex flex-col gap-3 w-130">
-                        <label>Address</label>
-                        <input
-                            type="text"
-                            name="address"
-                            placeholder="9th Mulberry Street 11th Corner"
-                            required
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
-                        />
-                    </div>
+                <div
+                    id="employeeData"
+                    className="mb-10 flex flex-col gap-6 rounded-2xl border border-blue-500/20 bg-blue-950/30 p-4 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                >
+                    <div className="w-full flex flex-row gap-5">
+                        <div id="contactDiv" className="flex flex-col gap-3 w-full">
+                            <label>Contact Number</label>
+                            <input
+                                type="tel"
+                                name="phone"
+                                placeholder="9999999999"
+                                pattern="[0-9]{10}"
+                                required
+                                maxLength="10"
+                                minLength="10"
+                                value={contactNo}
+                                onChange={(e) => setContactNo(e.target.value)}
+                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                            />
+                        </div>
+                        <div id="addressDiv" className="flex flex-col gap-3 w-full">
+                            <label>Address</label>
+                            <input
+                                type="text"
+                                name="address"
+                                placeholder="9th Mulberry Street 11th Corner"
+                                required
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                className="w-full rounded-lg border border-blue-500/20 bg-blue-950/30 px-4 py-3 shadow-2xl shadow-blue-950/30 backdrop-blur-md"
+                            />
+                        </div>
+                        <div id="companyDiv" className="flex flex-col gap-3 w-full">
+                            <label>Company</label>
+                            <Select
+                                required
+                                options={companiesTypeOptions}
+                                styles={customSelectStyles}
+                                placeholder="Select Company"
+                                value={companiesTypeOptions.find((option) => option.value === company)}
+                                onChange={(selectedOption) => setCompany(companies.find((comp) => comp.company_name === selectedOption.value)?.id)}
+                                placeholder="Select Company"
+                                menuPortalTarget={document.body}
+                                className="w-full"
 
-                </div>
-            </div >
+                            />
+                        </div>
+
+                    </div>
+                </div >
             )}
             <div
                 id="buttonDiv"

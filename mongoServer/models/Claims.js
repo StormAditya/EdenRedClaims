@@ -67,15 +67,7 @@ const Claims = sequelize.define('Claims', {
     },
     company_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'Company Name is required'
-            },
-            notNull: {
-                msg: 'Name is reqd'
-            }
-        }
+        allowNull: true,
     },
     status_id:{
         type: DataTypes.INTEGER,

@@ -76,7 +76,8 @@ export default function Register({ onLogin }) {
                 contact_number: contact_number,
                 name: name,
                 user_type: 'employee',
-                company_id: company
+                company_id: company,
+                balance: 5000
             });
 
             navigate('/login');

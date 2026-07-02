@@ -50,15 +50,7 @@ const User = sequelize.define('User', {
     },
     company_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: 'Company Name is required'
-            },
-            notNull: {
-                msg: 'Name is reqd'
-            }
-        }
+        allowNull: true,
     },
     contact_number: {
         type: DataTypes.BIGINT,

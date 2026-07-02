@@ -21,6 +21,7 @@ const getCompany = async (req, res) => {
         const companies = await company.findAll()
 
         return res.status(200).json({success: true, data: companies})
+
     }
     catch(err){
         console.error(err)

@@ -4,6 +4,7 @@ const { encrypt, validate } = require('../utils/passwordEncryption')
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me'
+
 const createUser = async (req, res) => {
     try{
         const {name, password, user_type, balance, email_id, address, contact_number, company_id} = req.body
@@ -17,7 +18,6 @@ const createUser = async (req, res) => {
                 password: hashedPassword,
                 user_type: user_type,
                 email_id: email_id,
-                company_id: company_id
             })
             res.status(200).json({success:true, data: newUser})
         }
@@ -52,7 +52,6 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ 
       where: { 
         email_id: email_id,
-        company_id: company_id
       }
     });
 
@@ -96,10 +95,8 @@ const loginUser = async (req, res) => {
 
 const getUser = async (req, res) => {
   try{
-    const company_id = req.user.company_id
     const users = await User.findAll({
       where: {
-        company_id: company_id
       }
     })
 

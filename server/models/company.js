@@ -7,20 +7,12 @@ const Company = sequelize.define('Company', {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    allowNull: false,
+    allowNull: true,
   },
   company_name: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true,
     unique: true,
-    validate: {
-        notEmpty:{
-            msg:'Company Name is required'
-        },
-        notNull: {
-            msg: 'Name is reqd'
-        }
-    }
   }
 }, {
   tableName: 'Company'
