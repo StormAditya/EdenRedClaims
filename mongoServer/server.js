@@ -28,6 +28,10 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 //require('./receiptWorker');
 require('./receiptWorkerGemini')
 
+app.get('/', (req, res) => {
+  res.send('Backend server is up and running!');
+});
+
 app.use('/', receiptRouter);
 app.listen(PORT, () => {
   console.log('server on...')
