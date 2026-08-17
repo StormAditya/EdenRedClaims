@@ -48,11 +48,20 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email_id, password, company_id } = req.body;
-    console.log(company_id);
+
+    if (!email_id || !password || company_id === undefined || company_id === null || company_id === '') {
+      return res.status(400).json({ success: false, msg: 'Email, password, and company are required' });
+    }
+
+    const normalizedCompanyId = Number(company_id);
+    if (!Number.isInteger(normalizedCompanyId) || normalizedCompanyId <= 0) {
+      return res.status(400).json({ success: false, msg: 'Invalid company selected' });
+    }
+
     const user = await User.findOne({ 
       where: { 
         email_id: email_id,
-        company_id: company_id
+        company_id: normalizedCompanyId
       }
     });
 
@@ -96,7 +105,12 @@ const loginUser = async (req, res) => {
 
 const getUser = async (req, res) => {
   try{
-    const company_id = req.user.company_id
+    const company_id = req.user?.company_id
+
+    if (!company_id) {
+      return res.status(401).json({ success: false, msg: 'Missing company in token' })
+    }
+
     const users = await User.findAll({
       where: {
         company_id: company_id

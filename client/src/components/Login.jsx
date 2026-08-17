@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { customSelectStyles, companiesTypeOptions } from "../assets/roleSelectStyle";
+import { customSelectStyles } from "../assets/roleSelectStyle";
 import Select from "react-select";
 
 
@@ -13,6 +13,10 @@ export default function Login({ onLogin }) {
     const [companies, setCompanies] = useState([]);
 
     const navigate = useNavigate();
+    const companyOptions = companies.map((companyItem) => ({
+        value: companyItem.id,
+        label: companyItem.company_name,
+    }));
 
     const normalizeUser = (userData) => ({
         userID: userData.userID ?? userData.id ?? userData.userId,
@@ -64,8 +68,7 @@ export default function Login({ onLogin }) {
             setCompanies(Array.isArray(response.data?.data) ? response.data.data : []);
         } catch (err) {
             console.error(err);
-            setErrorMessage("Unable to fetch company.");
-            setCategories([]);
+            seterror('Unable to fetch company.');
         }
     };
 
@@ -128,12 +131,11 @@ export default function Login({ onLogin }) {
                             Company Name
                         </label>
                         <Select
-                            options={companiesTypeOptions}
+                            options={companyOptions}
                             required
                             styles={customSelectStyles}
-                            placeholder="Select Company Type"
-                            value={companiesTypeOptions.find((option) => option.value === company)}
-                            onChange={(selectedOption) => setCompany(companies.find((comp) => comp.company_name === selectedOption.value)?.id)}
+                            value={companyOptions.find((option) => option.value === company) || null}
+                            onChange={(selectedOption) => setCompany(selectedOption ? Number(selectedOption.value) : null)}
                             placeholder="Select Company"
                             menuPortalTarget={document.body}
                             className="w-full"
